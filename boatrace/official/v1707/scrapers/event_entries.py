@@ -3,6 +3,7 @@ from typing import IO, List
 
 from boatrace.models.gender import Gender
 from boatrace.models.racer_rank import RacerRank
+from boatrace.official.exceptions import DataNotFound
 from boatrace.official.models import EventEntry
 from bs4 import BeautifulSoup
 
@@ -20,6 +21,9 @@ def scrape_pre_inspection_information(file: IO) -> List[EventEntry]:
         List[EventEntry]: パース結果を保持するデータモデルのコレクション
     """
     soup = BeautifulSoup(file, "html.parser")
+
+    if re.match(r"データ[がは]ありません", soup.select_one(".l-main").get_text().strip()):
+        raise DataNotFound
 
     data = []
     series_entry_rows = soup.select(".table1 table tbody tr")

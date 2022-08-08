@@ -1,7 +1,9 @@
 import os
 
+import pytest
 from boatrace.models.gender import Gender
 from boatrace.models.racer_rank import RacerRank
+from boatrace.official.exceptions import DataNotFound
 from boatrace.official.v1707.scrapers.event_entries import (
     scrape_pre_inspection_information,
 )
@@ -43,3 +45,15 @@ def test_scrape_a_pre_inspection_information():
         "anterior_time": 6.96,
         "racer_gender": Gender.FEMALE,
     }
+
+
+def test_scrape_a_no_contents_page():
+    file_path = os.path.normpath(
+        os.path.join(
+            base_path, "./fixtures/pre_inspection_information/data_not_found.html"
+        )
+    )
+
+    with open(file_path, mode="r") as file:
+        with pytest.raises(DataNotFound):
+            scrape_pre_inspection_information(file)
