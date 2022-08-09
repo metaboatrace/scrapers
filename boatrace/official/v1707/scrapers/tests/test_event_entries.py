@@ -57,3 +57,39 @@ def test_scrape_a_no_contents_page():
     with open(file_path, mode="r") as file:
         with pytest.raises(DataNotFound):
             scrape_pre_inspection_information(file)
+
+
+def test_scrape_a_pre_inspection_information_of_parallel_series():
+    file_path = os.path.normpath(
+        os.path.join(
+            base_path, "./fixtures/pre_inspection_information/20191218_12#.html"
+        )
+    )
+    with open(file_path, mode="r") as file:
+        data = scrape_pre_inspection_information(file)
+
+    assert len(data) == 59
+    assert data[0].__dict__ == {
+        "racer_registration_number": 4320,
+        "racer_last_name": "峰",
+        "racer_first_name": "竜太",
+        "racer_rank": RacerRank.A1,
+        "motor_number": 88,
+        "quinella_rate_of_motor": 56.8,
+        "boat_number": 26,
+        "quinella_rate_of_boat": 45.9,
+        "anterior_time": 6.7,
+        "racer_gender": Gender.MALE,
+    }
+    assert data[-1].__dict__ == {
+        "racer_registration_number": 3942,
+        "racer_last_name": "寺田",
+        "racer_first_name": "祥",
+        "racer_rank": RacerRank.A1,
+        "motor_number": 29,
+        "quinella_rate_of_motor": 25.7,
+        "boat_number": 87,
+        "quinella_rate_of_boat": 35.6,
+        "anterior_time": 6.76,
+        "racer_gender": Gender.MALE,
+    }
