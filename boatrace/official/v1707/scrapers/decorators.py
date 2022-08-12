@@ -12,6 +12,9 @@ def no_content_handleable(func):
         if re.match(r"データ[がは]ありません", soup.select_one(".l-main").get_text().strip()):
             raise DataNotFound
 
+        if "※ データはありません。" in soup.body.get_text():
+            raise DataNotFound
+
         file.seek(0)
         return func(file)
 

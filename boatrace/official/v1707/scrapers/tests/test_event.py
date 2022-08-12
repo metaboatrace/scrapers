@@ -4,7 +4,7 @@ from datetime import date
 import pytest
 from boatrace.models.race_grade import RaceGrade
 from boatrace.models.race_kind import RaceKind
-from boatrace.official.exceptions import ScrapingError
+from boatrace.official.exceptions import DataNotFound, ScrapingError
 from boatrace.official.v1707.scrapers.event import scrape_monthly_schedule
 
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -101,4 +101,16 @@ def test_scrape_a_monthly_schedule_is_specified_stadium():
 
     with open(file_path, mode="r") as file:
         with pytest.raises(ScrapingError):
+            scrape_monthly_schedule(file)
+
+
+def test_scrape_a_no_contents_page():
+    file_path = os.path.normpath(
+        os.path.join(
+            os.path.join(base_path, "./fixtures/monthly_schedule/data_not_found.html")
+        )
+    )
+
+    with open(file_path, mode="r") as file:
+        with pytest.raises(DataNotFound):
             scrape_monthly_schedule(file)

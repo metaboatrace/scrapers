@@ -8,9 +8,11 @@ from boatrace.models.race_kind import RaceKind
 from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.exceptions import ScrapingError
 from boatrace.official.models import Event
+from boatrace.official.v1707.scrapers.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 
 
+@no_content_handleable
 def scrape_monthly_schedule(file: IO) -> List[Event]:
     """月間スケジュールをスクレイピングする
 
@@ -18,6 +20,7 @@ def scrape_monthly_schedule(file: IO) -> List[Event]:
         file (IO): 月間スケジュールのHTML
 
     Raises:
+        DataNotFound:
         ScrapingError:
 
     Returns:
