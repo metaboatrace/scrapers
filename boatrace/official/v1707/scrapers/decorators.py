@@ -15,6 +15,9 @@ def no_content_handleable(func):
         if "※ データはありません。" in soup.body.get_text():
             raise DataNotFound
 
+        if "※ データが存在しないのでページを表示できません。" in soup.body.get_text():
+            raise DataNotFound
+
         file.seek(0)
         return func(file)
 
