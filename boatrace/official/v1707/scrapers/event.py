@@ -5,6 +5,7 @@ from typing import IO, List, Tuple
 
 from boatrace.models.race_grade import RaceGrade
 from boatrace.models.race_kind import RaceKind
+from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.exceptions import ScrapingError
 from boatrace.official.models import Event
 from bs4 import BeautifulSoup
@@ -49,7 +50,7 @@ def scrape_monthly_schedule(file: IO) -> List[Event]:
             if title and (date_pointer.month == current_month):
                 data.append(
                     Event(
-                        stadium_tel_code=stadium_tel_code,
+                        stadium_tel_code=StadiumTelCode(stadium_tel_code),
                         title=title,
                         starts_on=date_pointer,
                         days=series_days,

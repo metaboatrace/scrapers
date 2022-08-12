@@ -10,7 +10,7 @@ from boatrace.models.stadium_tel_code import StadiumTelCode
 
 @dataclass(frozen=True)
 class Event:
-    stadium_tel_code: int
+    stadium_tel_code: StadiumTelCode
     title: str
     starts_on: date
     days: int
