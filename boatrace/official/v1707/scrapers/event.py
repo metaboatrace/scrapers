@@ -118,32 +118,22 @@ def _parse_race_grade_from_event_title(event_title: str):
     if match := re.search(
         r"G[1-3]{1}", event_title.translate(str.maketrans("ＧⅠⅡⅢ１２３", "G123123"))
     ):
-        grade = match.group(0)
-        if grade == "G1":
-            return RaceGrade.G1
-        if grade == "G2":
-            return RaceGrade.G2
-        if grade == "G3":
-            return RaceGrade.G3
-        else:
+        try:
+            return RaceGrade(match.group(0))
+        except ValueError:
             return None
     else:
         return None
 
 
 def _parse_race_grade_from_html_class(html_class: str):
-    if html_class == "is-gradeColorSG":
-        return RaceGrade.SG
-    elif html_class == "is-gradeColorG1":
-        return RaceGrade.G1
-    elif html_class == "is-gradeColorG2":
-        return RaceGrade.G2
-    elif html_class == "is-gradeColorG3":
+    if match := re.match(r"is-gradeColor(SG|G[123])", html_class):
+        return RaceGrade(match.group(1))
+
+    if html_class == "is-gradeColorLady":
         return RaceGrade.G3
-    elif html_class == "is-gradeColorLady":
-        return RaceGrade.G3
-    else:
-        return None
+
+    return None
 
 
 def _parse_race_kind_from_event_title(event_title: str):
