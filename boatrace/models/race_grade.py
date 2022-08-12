@@ -1,9 +1,9 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class RaceGrade(Enum):
-    SG = auto()
-    G1 = auto()
-    G2 = auto()
-    G3 = auto()
-    NO_GRADE = auto()
+    SG = "SG"
+    G1 = "G1"
+    G2 = "G2"
+    G3 = "G3"
+    NO_GRADE = "NO_GRADE"
