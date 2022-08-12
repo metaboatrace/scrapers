@@ -16,7 +16,7 @@ def scrape_pre_inspection_information(file: IO) -> List[EventEntry]:
         file (IO): 前検情報のHTML
 
     Raises:
-        ScrapingError:
+        DataNotFound:
 
     Returns:
         List[EventEntry]: パース結果を保持するデータモデルのコレクション
@@ -42,7 +42,7 @@ def scrape_pre_inspection_information(file: IO) -> List[EventEntry]:
                 racer_registration_number=int(cells[1].get_text()),
                 racer_last_name=racer_last_name,
                 racer_first_name=racer_first_name,
-                racer_rank=_parse_racer_rank(cells[3].get_text().strip()),
+                racer_rank=RacerRank(cells[3].get_text().strip()),
                 motor_number=int(cells[4].get_text()),
                 quinella_rate_of_motor=float(cells[5].get_text().replace("%", "")),
                 boat_number=int(cells[6].get_text()),
@@ -55,16 +55,3 @@ def scrape_pre_inspection_information(file: IO) -> List[EventEntry]:
         )
 
     return data
-
-
-def _parse_racer_rank(rank_str: str):
-    if rank_str == "A1":
-        return RacerRank.A1
-    elif rank_str == "A2":
-        return RacerRank.A2
-    elif rank_str == "B1":
-        return RacerRank.B1
-    elif rank_str == "B2":
-        return RacerRank.B2
-    else:
-        return None
