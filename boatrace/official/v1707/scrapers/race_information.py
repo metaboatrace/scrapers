@@ -53,9 +53,9 @@ def scrape_race_information(file: IO) -> RaceInformation:
         raise ScrapingError
 
     return RaceInformation(
-        date=race_holding_date,
+        race_holding_date=race_holding_date,
         stadium_tel_code=stadium_tel_code,
-        number=race_number,
+        race_number=race_number,
         title=title,
         race_laps=RaceLapsFactory.create(metre),
         deadline_at=deadline_at,

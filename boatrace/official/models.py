@@ -37,9 +37,9 @@ class EventEntry:
 
 @dataclass(frozen=True)
 class RaceInformation:
-    date: date
+    race_holding_date: date
     stadium_tel_code: StadiumTelCode
-    number: int
+    race_number: int
     title: str
     race_laps: RaceLaps
     deadline_at: datetime
