@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 
+from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
 from boatrace.models.gender import Gender
 from boatrace.models.prefecture import Prefecture
@@ -64,3 +65,13 @@ class Racer:
     born_prefecture: Prefecture
     term: int
     current_rating: RacerRank
+
+
+@dataclass(frozen=True)
+class Payoff:
+    race_holding_date: date
+    stadium_tel_code: StadiumTelCode
+    race_number: int
+    betting_method: BettingMethod
+    betting_number: int
+    amount: int
