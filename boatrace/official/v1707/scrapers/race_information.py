@@ -1,14 +1,12 @@
 import re
-from datetime import date, datetime
-from operator import itemgetter
+from datetime import datetime
 from typing import IO
-from urllib.parse import parse_qs, urlparse
 
 from boatrace.models.race_laps import RaceLapsFactory
-from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.exceptions import ScrapingError
 from boatrace.official.models import RaceInformation
 from boatrace.official.v1707.scrapers.decorators import no_content_handleable
+from boatrace.official.v1707.scrapers.utils import parse_race_key_attributes
 from bs4 import BeautifulSoup
 
 
@@ -27,33 +25,14 @@ def scrape_race_information(file: IO) -> RaceInformation:
         RaceInformation: パース結果を保持するデータモデル
     """
     soup = BeautifulSoup(file, "html.parser")
-    todays_race_list_url = soup.select_one(
-        "body > div.l-header > ul > li:nth-child(3) > a"
-    )["href"]
-    stadiutm_tel_codes, dates = itemgetter("jcd", "hd")(
-        parse_qs(urlparse(todays_race_list_url).query)
-    )
-
-    if len(stadiutm_tel_codes) != 1 or len(dates) != 1:
-        raise ScrapingError
-
-    stadiutm_tel_code = StadiumTelCode(int(stadiutm_tel_codes[0]))
-    date_string = dates[0]
-    race_holding_date = date(
-        int(date_string[:4]), int(date_string[4:6]), int(date_string[6:])
-    )
+    race_key_attributes = parse_race_key_attributes(soup)
+    race_holding_date = race_key_attributes["race_holding_date"]
+    stadium_tel_code = race_key_attributes["stadium_tel_code"]
+    race_number = race_key_attributes["race_number"]
 
     deadline_table = soup.select_one(".table1")
-    deadline_table.select_one("tr th:not([class])").text
-    if m := re.match(
-        r"(\d{1,2})R", deadline_table.select_one("tr th:not([class])").text
-    ):
-        number = int(m.group(1))
-    else:
-        raise ScrapingError
-
     deadline_text = (
-        deadline_table.select("tbody tr")[-1].select("td")[number].get_text()
+        deadline_table.select("tbody tr")[-1].select("td")[race_number].get_text()
     )
     hour, minute = [int(t) for t in deadline_text.split(":")]
     deadline_at = datetime(
@@ -75,8 +54,8 @@ def scrape_race_information(file: IO) -> RaceInformation:
 
     return RaceInformation(
         date=race_holding_date,
-        stadium_tel_code=stadiutm_tel_code,
-        number=number,
+        stadium_tel_code=stadium_tel_code,
+        number=race_number,
         title=title,
         race_laps=RaceLapsFactory.create(metre),
         deadline_at=deadline_at,
