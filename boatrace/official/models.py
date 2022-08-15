@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 
+from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
 from boatrace.models.gender import Gender
 from boatrace.models.prefecture import Prefecture
@@ -37,9 +38,9 @@ class EventEntry:
 
 @dataclass(frozen=True)
 class RaceInformation:
-    date: date
+    race_holding_date: date
     stadium_tel_code: StadiumTelCode
-    number: int
+    race_number: int
     title: str
     race_laps: RaceLaps
     deadline_at: datetime
@@ -64,3 +65,13 @@ class Racer:
     born_prefecture: Prefecture
     term: int
     current_rating: RacerRank
+
+
+@dataclass(frozen=True)
+class Payoff:
+    race_holding_date: date
+    stadium_tel_code: StadiumTelCode
+    race_number: int
+    betting_method: BettingMethod
+    betting_number: int
+    amount: int

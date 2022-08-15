@@ -16,9 +16,9 @@ def test_scrape_a_race_information():
         data = scrape_race_information(file)
 
     assert data.__dict__ == {
-        "date": date(2015, 10, 16),
+        "race_holding_date": date(2015, 10, 16),
         "stadium_tel_code": StadiumTelCode.TOKONAME,
-        "number": 2,
+        "race_number": 2,
         "title": "予選",
         "race_laps": RaceLaps.THREE,
         "deadline_at": datetime(2015, 10, 16, 11, 13),
@@ -35,9 +35,9 @@ def test_scrape_a_race_information_which_uses_stabilizers():
         data = scrape_race_information(file)
 
     assert data.__dict__ == {
-        "date": date(2018, 3, 1),
+        "race_holding_date": date(2018, 3, 1),
         "stadium_tel_code": StadiumTelCode.GAMAGORI,
-        "number": 8,
+        "race_number": 8,
         "title": "一般戦",
         "race_laps": RaceLaps.THREE,
         "deadline_at": datetime(2018, 3, 1, 18, 26),
@@ -54,9 +54,9 @@ def test_scrape_a_race_information_which_is_course_fixed():
         data = scrape_race_information(file)
 
     assert data.__dict__ == {
-        "date": date(2018, 3, 1),
+        "race_holding_date": date(2018, 3, 1),
         "stadium_tel_code": StadiumTelCode.GAMAGORI,
-        "number": 7,
+        "race_number": 7,
         "title": "一般戦",
         "race_laps": RaceLaps.THREE,
         "deadline_at": datetime(2018, 3, 1, 17, 57),
@@ -73,9 +73,9 @@ def test_scrape_a_race_information_which_is_who_laps():
         data = scrape_race_information(file)
 
     assert data.__dict__ == {
-        "date": date(2018, 3, 1),
+        "race_holding_date": date(2018, 3, 1),
         "stadium_tel_code": StadiumTelCode.MARUGAME,
-        "number": 12,
+        "race_number": 12,
         "title": "一般選抜",
         "race_laps": RaceLaps.TWO,
         "deadline_at": datetime(2018, 3, 1, 20, 42),

@@ -4,3 +4,7 @@ class ScrapingError(Exception):
 
 class DataNotFound(Exception):
     pass
+
+
+class RaceCanceled(Exception):
+    pass
