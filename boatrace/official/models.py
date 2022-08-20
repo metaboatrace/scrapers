@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
+from xmlrpc.client import boolean
 
 from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
@@ -75,3 +76,16 @@ class Payoff:
     betting_method: BettingMethod
     betting_number: int
     amount: int
+
+
+@dataclass(frozen=True)
+class RaceEntry:
+    race_holding_date: date
+    stadium_tel_code: StadiumTelCode
+    race_number: int
+    racer_registration_number: int
+    racer_first_name: str
+    racer_last_name: str
+    current_racer_rating: RacerRank
+    pit_number: int  # todo: enum で持つべき？
+    is_absent: bool
