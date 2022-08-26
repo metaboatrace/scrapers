@@ -89,3 +89,5 @@ class RaceEntry:
     current_racer_rating: RacerRank
     pit_number: int  # todo: enum で持つべき？
     is_absent: bool
+    motor_number: int
+    boat_number: int

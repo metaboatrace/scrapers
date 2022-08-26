@@ -31,6 +31,9 @@ def scrape_race_entries(file: IO) -> List[RaceEntry]:
             row.select_one("tr").select("td")[2].select_one("span").text.strip()
         )
 
+        motor_number = int(row.select_one("tr").select("td")[6].text.strip().split()[0])
+        boat_number = int(row.select_one("tr").select("td")[7].text.strip().split()[0])
+
         is_absent = "is-miss" in row["class"]
 
         data.append(
@@ -42,6 +45,8 @@ def scrape_race_entries(file: IO) -> List[RaceEntry]:
                 pit_number=pit_number,
                 current_racer_rating=racer_rank,
                 is_absent=is_absent,
+                motor_number=motor_number,
+                boat_number=boat_number,
             )
         )
 

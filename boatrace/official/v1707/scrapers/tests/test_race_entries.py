@@ -28,6 +28,8 @@ def test_scrape_race_entries():
             current_racer_rating=RacerRank.A1,
             pit_number=1,
             is_absent=False,
+            motor_number=66,
+            boat_number=40,
         ),
         RaceEntry(
             race_holding_date=date(2018, 3, 1),
@@ -39,6 +41,8 @@ def test_scrape_race_entries():
             current_racer_rating=RacerRank.B1,
             pit_number=2,
             is_absent=False,
+            motor_number=41,
+            boat_number=43,
         ),
         RaceEntry(
             race_holding_date=date(2018, 3, 1),
@@ -50,6 +54,8 @@ def test_scrape_race_entries():
             current_racer_rating=RacerRank.B1,
             pit_number=3,
             is_absent=False,
+            motor_number=58,
+            boat_number=74,
         ),
         RaceEntry(
             race_holding_date=date(2018, 3, 1),
@@ -61,6 +67,8 @@ def test_scrape_race_entries():
             current_racer_rating=RacerRank.A2,
             pit_number=4,
             is_absent=False,
+            motor_number=33,
+            boat_number=13,
         ),
         RaceEntry(
             race_holding_date=date(2018, 3, 1),
@@ -72,6 +80,8 @@ def test_scrape_race_entries():
             current_racer_rating=RacerRank.B1,
             pit_number=5,
             is_absent=False,
+            motor_number=71,
+            boat_number=65,
         ),
         RaceEntry(
             race_holding_date=date(2018, 3, 1),
@@ -83,6 +93,8 @@ def test_scrape_race_entries():
             current_racer_rating=RacerRank.B1,
             pit_number=6,
             is_absent=False,
+            motor_number=40,
+            boat_number=68,
         ),
     ]
 
@@ -106,6 +118,8 @@ def test_scrape_race_entries_including_absent():
             current_racer_rating=RacerRank.A1,
             pit_number=1,
             is_absent=True,
+            motor_number=62,
+            boat_number=25,
         ),
         RaceEntry(
             race_holding_date=date(2015, 11, 16),
@@ -117,6 +131,8 @@ def test_scrape_race_entries_including_absent():
             current_racer_rating=RacerRank.B1,
             pit_number=2,
             is_absent=False,
+            motor_number=61,
+            boat_number=31,
         ),
         RaceEntry(
             race_holding_date=date(2015, 11, 16),
@@ -128,6 +144,8 @@ def test_scrape_race_entries_including_absent():
             current_racer_rating=RacerRank.B1,
             pit_number=3,
             is_absent=False,
+            motor_number=56,
+            boat_number=60,
         ),
         RaceEntry(
             race_holding_date=date(2015, 11, 16),
@@ -139,6 +157,8 @@ def test_scrape_race_entries_including_absent():
             current_racer_rating=RacerRank.A1,
             pit_number=4,
             is_absent=False,
+            motor_number=68,
+            boat_number=43,
         ),
         RaceEntry(
             race_holding_date=date(2015, 11, 16),
@@ -150,6 +170,8 @@ def test_scrape_race_entries_including_absent():
             current_racer_rating=RacerRank.A2,
             pit_number=5,
             is_absent=False,
+            motor_number=26,
+            boat_number=46,
         ),
         RaceEntry(
             race_holding_date=date(2015, 11, 16),
@@ -161,5 +183,7 @@ def test_scrape_race_entries_including_absent():
             current_racer_rating=RacerRank.A2,
             pit_number=6,
             is_absent=False,
+            motor_number=20,
+            boat_number=69,
         ),
     ]
