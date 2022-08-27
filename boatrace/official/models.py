@@ -99,3 +99,11 @@ class MotorPerformance:
     number: int
     quinella_rate: Optional[float]
     trio_rate: Optional[float]
+
+
+@dataclass(frozen=True)
+class BoatPerformance:
+    recorded_date: date
+    number: int
+    quinella_rate: Optional[float]
+    trio_rate: Optional[float]
