@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from xmlrpc.client import boolean
+from typing import Optional
 
 from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
@@ -91,3 +91,11 @@ class RaceEntry:
     is_absent: bool
     motor_number: int
     boat_number: int
+
+
+@dataclass(frozen=True)
+class MotorPerformance:
+    recorded_date: date
+    number: int
+    quinella_rate: Optional[float]
+    trio_rate: Optional[float]
