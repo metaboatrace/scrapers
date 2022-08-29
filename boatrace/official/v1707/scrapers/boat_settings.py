@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import IO
+from typing import IO, List
 
+from boatrace.models.motor_parts import MotorParts, MotorPartsFactory
 from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.exceptions import DataNotFound
 from boatrace.official.v1707.scrapers.decorators import no_content_handleable
@@ -17,11 +18,13 @@ class Dto:
     pit_number: int
     tilt: float
     is_new_propeller: bool
+    motor_parts_exchanges: List[tuple[MotorParts, int]]
 
 
 @no_content_handleable
 def scrape_boat_settings(file: IO) -> Dto:
     NEW_PROPELLER_MARK = "新"
+    MOTOR_PARTS_QUANTITY_DELIMITER = "×"
 
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
@@ -41,6 +44,21 @@ def scrape_boat_settings(file: IO) -> Dto:
         except ValueError:
             raise DataNotFound
 
+        numbers = dict(zip(["１", "２", "３", "４", "５", "６", "７", "８", "９"], range(1, 10)))
+        motor_parts_exchanges = []
+        for li in row.select("td")[7].select("li"):
+            if MOTOR_PARTS_QUANTITY_DELIMITER in li.get_text():
+                parts_name, quantity_text = li.get_text().split(
+                    MOTOR_PARTS_QUANTITY_DELIMITER
+                )
+            else:
+                parts_name = li.get_text()
+                quantity_text = None
+
+            motor_parts_exchanges.append(
+                (MotorPartsFactory.create(parts_name), numbers.get(quantity_text, 1))
+            )
+
         data.append(
             Dto(
                 race_holding_date=race_holding_date,
@@ -49,6 +67,7 @@ def scrape_boat_settings(file: IO) -> Dto:
                 pit_number=pit_number,
                 tilt=tilt,
                 is_new_propeller=is_new_propeller,
+                motor_parts_exchanges=motor_parts_exchanges,
             )
         )
 
