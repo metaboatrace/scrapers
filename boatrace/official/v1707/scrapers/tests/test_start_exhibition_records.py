@@ -10,7 +10,7 @@ from boatrace.official.v1707.scrapers.start_exhibition_records import (
 base_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_scrape_race_exhibition_records():
+def test_scrape_start_exhibition_records():
     file_path = os.path.normpath(
         os.path.join(
             base_path, "./fixtures/race_before_information/20151116_23#_1R.html"
@@ -72,7 +72,8 @@ def test_scrape_race_exhibition_records():
     ]
 
 
-def test_scrape_race_exhibition_records_including_absent_racer():
+# レース欠場者とスタ展欠場者で場合分けした方がいいかと思ったがどちらも出力されるtableは同じなのでこれで網羅できたと見做す
+def test_scrape_start_exhibition_records_including_absent_racer():
     file_path = os.path.normpath(
         os.path.join(
             base_path, "./fixtures/race_before_information/20170625_06#_10R.html"
