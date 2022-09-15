@@ -12,7 +12,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 def test_scrape_a_race():
     file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/race_payoff/20151115_07#_12R.html")
+        os.path.join(base_path, "./fixtures/race_result/20151115_07#_12R.html")
     )
     with open(file_path, mode="r") as file:
         data = scrape_race_payoff(file)
@@ -30,7 +30,7 @@ def test_scrape_a_race():
 
 def test_scrape_a_race_which_has_an_absent():
     file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/race_payoff/20151116_03#_11R.html")
+        os.path.join(base_path, "./fixtures/race_result/20151116_03#_11R.html")
     )
     with open(file_path, mode="r") as file:
         data = scrape_race_payoff(file)
@@ -47,7 +47,7 @@ def test_scrape_a_race_which_has_an_absent():
 
 def test_scrape_a_race_which_has_four_disqualified_racers():
     file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/race_payoff/20151114_02#_2R.html")
+        os.path.join(base_path, "./fixtures/race_result/20151114_02#_2R.html")
     )
     with open(file_path, mode="r") as file:
         data = scrape_race_payoff(file)
@@ -57,7 +57,7 @@ def test_scrape_a_race_which_has_four_disqualified_racers():
 
 def test_scrape_a_no_contents_page():
     file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/race_payoff/data_not_found.html")
+        os.path.join(base_path, "./fixtures/race_result/data_not_found.html")
     )
 
     with open(file_path, mode="r") as file:
@@ -67,7 +67,7 @@ def test_scrape_a_no_contents_page():
 
 def test_scrape_a_canceled_race():
     file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/race_payoff/canceled.html")
+        os.path.join(base_path, "./fixtures/race_result/canceled.html")
     )
 
     with open(file_path, mode="r") as file:
