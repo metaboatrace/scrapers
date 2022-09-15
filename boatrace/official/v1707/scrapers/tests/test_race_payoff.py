@@ -5,7 +5,7 @@ import pytest
 from boatrace.models.betting_method import BettingMethod
 from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.exceptions import DataNotFound, RaceCanceled
-from boatrace.official.v1707.scrapers.race_payoff import scrape_race_payoff
+from boatrace.official.v1707.scrapers.race_payoff import Payoff, scrape_race_payoff
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,6 +43,34 @@ def test_scrape_a_race_which_has_an_absent():
         "betting_number": 234,
         "amount": 3100,
     }
+
+
+def test_scrape_race_which_has_a_tie():
+    file_path = os.path.normpath(
+        os.path.join(base_path, "./fixtures/race_result/20181116_18#_7R.html")
+    )
+
+    with open(file_path, mode="r") as file:
+        data = scrape_race_payoff(file)
+
+    assert data == [
+        Payoff(
+            race_holding_date=date(2018, 11, 16),
+            stadium_tel_code=StadiumTelCode.TOKUYAMA,
+            race_number=7,
+            betting_method=BettingMethod.TRIFECTA,
+            betting_number=142,
+            amount=2230,
+        ),
+        Payoff(
+            race_holding_date=date(2018, 11, 16),
+            stadium_tel_code=StadiumTelCode.TOKUYAMA,
+            race_number=7,
+            betting_method=BettingMethod.TRIFECTA,
+            betting_number=412,
+            amount=15500,
+        ),
+    ]
 
 
 def test_scrape_a_race_which_has_four_disqualified_racers():
