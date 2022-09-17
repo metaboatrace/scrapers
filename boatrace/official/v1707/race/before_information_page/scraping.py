@@ -4,16 +4,16 @@ from datetime import date
 from typing import IO, List
 
 from boatrace.models.stadium_tel_code import StadiumTelCode
+from boatrace.official.v1707.race.utils import parse_race_key_attributes
 from boatrace.official.v1707.scrapers.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
-from boatrace.official.v1707.scrapers.utils import parse_race_key_attributes
 from bs4 import BeautifulSoup
 
 
 @dataclass(frozen=True)
-class Dto:
+class StartExhibitionRecord:
     race_holding_date: date
     stadium_tel_code: StadiumTelCode
     race_number: int
@@ -24,7 +24,7 @@ class Dto:
 
 @no_content_handleable
 @race_cancellation_handleable
-def scrape_start_exhibition_records(file: IO) -> List[Dto]:
+def extract_start_exhibition_records(file: IO) -> List[StartExhibitionRecord]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -51,7 +51,7 @@ def scrape_start_exhibition_records(file: IO) -> List[Dto]:
             start_time = start_time * -1
 
         data.append(
-            Dto(
+            StartExhibitionRecord(
                 **race_key_attributes,
                 pit_number=pit_number,
                 start_course=start_course,
