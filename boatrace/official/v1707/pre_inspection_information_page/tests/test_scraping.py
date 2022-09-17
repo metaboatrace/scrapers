@@ -1,27 +1,26 @@
 import os
 
 import pytest
-from boatrace.models.gender import Gender
-from boatrace.models.racer_rank import RacerRank
+from boatrace.models import Gender, RacerRank
 from boatrace.official.exceptions import DataNotFound
 from boatrace.official.v1707.pre_inspection_information_page.scraping import (
-    ScrapingResult,
-    scrape_event_entries,
+    EventEntry,
+    extract_event_entries,
 )
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_scrape_a_pre_inspection_information():
+def test_extract_event_entries_a_pre_inspection_information_page():
     file_path = os.path.normpath(
         os.path.join(base_path, "./fixtures/20151112_23#.html")
     )
     with open(file_path, mode="r") as file:
-        data = scrape_event_entries(file)
+        data = extract_event_entries(file)
 
     assert len(data) == 44
     # 件数的に全件確認は辛いので代表値のみチェック
-    assert data[0] == ScrapingResult(
+    assert data[0] == EventEntry(
         racer_registration_number=3470,
         racer_last_name="新田",
         racer_first_name="芳美",
@@ -33,7 +32,7 @@ def test_scrape_a_pre_inspection_information():
         anterior_time=7.07,
         racer_gender=Gender.FEMALE,
     )
-    assert data[-1] == ScrapingResult(
+    assert data[-1] == EventEntry(
         racer_registration_number=3518,
         racer_last_name="倉田",
         racer_first_name="郁美",
@@ -47,25 +46,25 @@ def test_scrape_a_pre_inspection_information():
     )
 
 
-def test_scrape_a_no_contents_page():
+def test_extract_event_entries_from_a_no_contents_page():
     file_path = os.path.normpath(
         os.path.join(base_path, "./fixtures/data_not_found.html")
     )
 
     with open(file_path, mode="r") as file:
         with pytest.raises(DataNotFound):
-            scrape_event_entries(file)
+            extract_event_entries(file)
 
 
-def test_scrape_a_pre_inspection_information_of_parallel_series():
+def test_extract_event_entries_a_pre_inspection_information_of_parallel_series():
     file_path = os.path.normpath(
         os.path.join(base_path, "./fixtures/20191218_12#.html")
     )
     with open(file_path, mode="r") as file:
-        data = scrape_event_entries(file)
+        data = extract_event_entries(file)
 
     assert len(data) == 59
-    assert data[0] == ScrapingResult(
+    assert data[0] == EventEntry(
         racer_registration_number=4320,
         racer_last_name="峰",
         racer_first_name="竜太",
@@ -77,7 +76,7 @@ def test_scrape_a_pre_inspection_information_of_parallel_series():
         anterior_time=6.7,
         racer_gender=Gender.MALE,
     )
-    assert data[-1] == ScrapingResult(
+    assert data[-1] == EventEntry(
         racer_registration_number=3942,
         racer_last_name="寺田",
         racer_first_name="祥",

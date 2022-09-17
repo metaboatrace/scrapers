@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 
 @dataclass(frozen=True)
-class ScrapingResult:
+class EventEntry:
     racer_registration_number: int
     racer_last_name: str
     racer_first_name: str
@@ -22,7 +22,7 @@ class ScrapingResult:
 
 
 @no_content_handleable
-def scrape_event_entries(file: IO) -> List[ScrapingResult]:
+def extract_event_entries(file: IO) -> List[EventEntry]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []
@@ -40,7 +40,7 @@ def scrape_event_entries(file: IO) -> List[ScrapingResult]:
             racer_first_name = ""
 
         data.append(
-            ScrapingResult(
+            EventEntry(
                 racer_registration_number=int(cells[1].get_text()),
                 racer_last_name=racer_last_name,
                 racer_first_name=racer_first_name,
