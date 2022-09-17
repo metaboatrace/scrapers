@@ -4,9 +4,7 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import IO, List, Tuple
 
-from boatrace.models.race_grade import RaceGrade
-from boatrace.models.race_kind import RaceKind
-from boatrace.models.stadium_tel_code import StadiumTelCode
+from boatrace.models import RaceGrade, RaceKind, StadiumTelCode
 from boatrace.official.exceptions import ScrapingError
 from boatrace.official.v1707.scrapers.decorators import no_content_handleable
 from bs4 import BeautifulSoup
