@@ -1,6 +1,3 @@
-# todo: 場所を移す
-# レース関連のエンティティに関する処理なのにこの名前空間にあるのは違和感があるので
-
 import re
 from datetime import date
 from operator import itemgetter

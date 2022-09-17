@@ -1,25 +1,12 @@
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 
 from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
 from boatrace.models.prefecture import Prefecture
-from boatrace.models.race_laps import RaceLaps
 from boatrace.models.racer_rank import RacerRank
 from boatrace.models.stadium_tel_code import StadiumTelCode
-
-
-@dataclass(frozen=True)
-class RaceInformation:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    title: str
-    race_laps: RaceLaps
-    deadline_at: datetime
-    is_course_fixed: bool
-    use_stabilizer: bool
 
 
 # note: 体重も級別も一応保持する
@@ -49,21 +36,6 @@ class Payoff:
     betting_method: BettingMethod
     betting_number: int
     amount: int
-
-
-@dataclass(frozen=True)
-class RaceEntry:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    racer_registration_number: int
-    racer_first_name: str
-    racer_last_name: str
-    current_racer_rating: RacerRank
-    pit_number: int  # todo: enum で持つべき？
-    is_absent: bool
-    motor_number: int
-    boat_number: int
 
 
 @dataclass(frozen=True)
