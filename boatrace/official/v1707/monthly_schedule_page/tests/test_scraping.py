@@ -2,21 +2,17 @@ import os
 from datetime import date
 
 import pytest
-from boatrace.models.race_grade import RaceGrade
-from boatrace.models.race_kind import RaceKind
+from boatrace.models import RaceGrade, RaceKind
 from boatrace.official.exceptions import DataNotFound, ScrapingError
-from boatrace.official.v1707.monthly_schedule_page.scraping import (
-    ScrapingResult,
-    scrape_events,
-)
+from boatrace.official.v1707.monthly_schedule_page.scraping import Event, extract_events
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_scrape_a_monthly_schedule():
+def test_extract_events_from_a_monthly_schedule_page():
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2015_11.html"))
     with open(file_path, mode="r") as file:
-        data = scrape_events(file)
+        data = extract_events(file)
 
     assert len(data) == 59
     assert len(list(filter(lambda x: x.stadium_tel_code == 1, data))) == 3
@@ -45,7 +41,7 @@ def test_scrape_a_monthly_schedule():
     assert len(list(filter(lambda x: x.stadium_tel_code == 24, data))) == 2
 
     # 代表値（月を跨ぐ開催の次節）
-    assert data[3] == ScrapingResult(
+    assert data[3] == Event(
         stadium_tel_code=2,
         title="戸田ルーキーシリーズ第７戦",
         starts_on=date(2015, 11, 7),
@@ -55,7 +51,7 @@ def test_scrape_a_monthly_schedule():
     )
 
     # 代表値（1日が初日）
-    assert data[6] == ScrapingResult(
+    assert data[6] == Event(
         stadium_tel_code=3,
         title="ヴィーナスシリーズ第７戦\u3000江戸川ＪＩＮＲＯ\u3000ＣＵＰ",
         starts_on=date(2015, 11, 1),
@@ -65,7 +61,7 @@ def test_scrape_a_monthly_schedule():
     )
 
     # 代表値（下旬初日で月を跨ぐ節）
-    assert data[15] == ScrapingResult(
+    assert data[15] == Event(
         stadium_tel_code=6,
         title="公営レーシングプレスアタック",
         starts_on=date(2015, 11, 28),
@@ -75,7 +71,7 @@ def test_scrape_a_monthly_schedule():
     )
 
     # 代表値（SG）
-    assert data[50] == ScrapingResult(
+    assert data[50] == Event(
         stadium_tel_code=21,
         title="ＳＧ１８回チャレンジカップ／ＧⅡ２回レディースＣＣ",
         starts_on=date(2015, 11, 24),
@@ -85,7 +81,7 @@ def test_scrape_a_monthly_schedule():
     )
 
     # 代表値（グレードとカテゴリの取得）
-    assert data[54] == ScrapingResult(
+    assert data[54] == Event(
         stadium_tel_code=23,
         title="ＧⅢオールレディース\u3000ＲＫＢラジオ杯",
         starts_on=date(2015, 11, 7),
@@ -95,19 +91,19 @@ def test_scrape_a_monthly_schedule():
     )
 
 
-def test_scrape_a_monthly_schedule_is_specified_stadium():
+def test_extract_events_from_a_monthly_schedule_page_for_specified_stadium():
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2016_03_14#.html"))
 
     with open(file_path, mode="r") as file:
         with pytest.raises(ScrapingError):
-            scrape_events(file)
+            extract_events(file)
 
 
-def test_scrape_a_no_contents_page():
+def test_extract_events_from_a_no_contents_page():
     file_path = os.path.normpath(
         os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
     )
 
     with open(file_path, mode="r") as file:
         with pytest.raises(DataNotFound):
-            scrape_events(file)
+            extract_events(file)

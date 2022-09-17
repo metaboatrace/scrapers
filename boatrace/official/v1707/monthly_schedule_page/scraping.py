@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 
 @dataclass(frozen=True)
-class ScrapingResult:
+class Event:
     stadium_tel_code: StadiumTelCode
     title: str
     starts_on: date
@@ -21,7 +21,11 @@ class ScrapingResult:
 
 
 @no_content_handleable
-def scrape_events(file: IO) -> List[ScrapingResult]:
+# note: 命名について
+# scrape_events にしようと思ったが scrape の目的語はスクレイピング対象のWebページだから違和感ある
+# get_events はアクセサメソッド見たいなニュアンスがあって違和感ある
+# 引数のWebページのHTMLからデータを抜き出すという意味で extract が合ってると思ったので以下の名前にした
+def extract_events(file: IO) -> List[Event]:
     soup = BeautifulSoup(file, "html.parser")
 
     schedule_rows = soup.select("table.is-spritedNone1 tbody tr")
@@ -48,7 +52,7 @@ def scrape_events(file: IO) -> List[ScrapingResult]:
 
             if title and (date_pointer.month == current_month):
                 data.append(
-                    ScrapingResult(
+                    Event(
                         stadium_tel_code=StadiumTelCode(stadium_tel_code),
                         title=title,
                         starts_on=date_pointer,
