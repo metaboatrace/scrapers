@@ -3,7 +3,9 @@ from datetime import date
 
 from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.v1707.race.before_information_page.scraping import (
+    CircumferenceExhibitionRecord,
     StartExhibitionRecord,
+    extract_circumference_exhibition_records,
     extract_start_exhibition_records,
 )
 
@@ -119,5 +121,168 @@ def test_extract_start_exhibition_records_from_a_page_including_absent_racer():
             pit_number=6,
             start_course=5,
             start_time=0.16,
+        ),
+    ]
+
+
+def test_extract_circumference_exhibition_records():
+    file_path = os.path.normpath(
+        os.path.join(base_path, "./fixtures/20151116_23#_1R.html")
+    )
+
+    with open(file_path, mode="r") as file:
+        data = extract_circumference_exhibition_records(file)
+
+    assert data == [
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=1,
+            pit_number=1,
+            exhibition_time=6.7,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=1,
+            pit_number=2,
+            exhibition_time=6.81,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=1,
+            pit_number=3,
+            exhibition_time=6.84,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=1,
+            pit_number=4,
+            exhibition_time=6.86,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=1,
+            pit_number=5,
+            exhibition_time=6.83,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=1,
+            pit_number=6,
+            exhibition_time=6.81,
+        ),
+    ]
+
+
+def test_extarct_circumference_exhibition_records_including_st_absent_racer():
+    file_path = os.path.normpath(
+        # 5号艇がスタ展出てない
+        os.path.join(
+            base_path,
+            "./fixtures/20170625_06#_10R.html",
+        )
+    )
+
+    with open(file_path, mode="r") as file:
+        data = extract_circumference_exhibition_records(file)
+
+    assert data == [
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2017, 6, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=10,
+            pit_number=1,
+            exhibition_time=6.66,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2017, 6, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=10,
+            pit_number=2,
+            exhibition_time=6.76,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2017, 6, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=10,
+            pit_number=3,
+            exhibition_time=6.71,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2017, 6, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=10,
+            pit_number=4,
+            exhibition_time=6.77,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2017, 6, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=10,
+            pit_number=5,
+            exhibition_time=6.73,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2017, 6, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=10,
+            pit_number=6,
+            exhibition_time=6.73,
+        ),
+    ]
+
+
+def test_extract_circumference_exhibition_records_including_race_absent_racer():
+    file_path = os.path.normpath(
+        # 1号艇が欠場
+        os.path.join(
+            base_path,
+            "./fixtures/20151116_03#_11R.html",
+        )
+    )
+
+    with open(file_path, mode="r") as file:
+        data = extract_circumference_exhibition_records(file)
+
+    assert data == [
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.EDOGAWA,
+            race_number=11,
+            pit_number=2,
+            exhibition_time=6.91,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.EDOGAWA,
+            race_number=11,
+            pit_number=3,
+            exhibition_time=7.04,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.EDOGAWA,
+            race_number=11,
+            pit_number=4,
+            exhibition_time=7,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.EDOGAWA,
+            race_number=11,
+            pit_number=5,
+            exhibition_time=7.16,
+        ),
+        CircumferenceExhibitionRecord(
+            race_holding_date=date(2015, 11, 16),
+            stadium_tel_code=StadiumTelCode.EDOGAWA,
+            race_number=11,
+            pit_number=6,
+            exhibition_time=6.78,
         ),
     ]
