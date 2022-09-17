@@ -1,26 +1,29 @@
 import re
+from dataclasses import dataclass
 from typing import IO, List
 
 from boatrace.models.gender import Gender
 from boatrace.models.racer_rank import RacerRank
-from boatrace.official.models import EventEntry
 from boatrace.official.v1707.scrapers.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 
 
+@dataclass(frozen=True)
+class ScrapingResult:
+    racer_registration_number: int
+    racer_last_name: str
+    racer_first_name: str
+    racer_rank: RacerRank
+    motor_number: int
+    quinella_rate_of_motor: float
+    boat_number: int
+    quinella_rate_of_boat: float
+    anterior_time: float
+    racer_gender: Gender
+
+
 @no_content_handleable
-def scrape_pre_inspection_information(file: IO) -> List[EventEntry]:
-    """前検情報をスクレイピングする
-
-    Args:
-        file (IO): 前検情報のHTML
-
-    Raises:
-        DataNotFound:
-
-    Returns:
-        List[EventEntry]: パース結果を保持するデータモデルのコレクション
-    """
+def scrape_event_entries(file: IO) -> List[ScrapingResult]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []
@@ -38,7 +41,7 @@ def scrape_pre_inspection_information(file: IO) -> List[EventEntry]:
             racer_first_name = ""
 
         data.append(
-            EventEntry(
+            ScrapingResult(
                 racer_registration_number=int(cells[1].get_text()),
                 racer_last_name=racer_last_name,
                 racer_first_name=racer_first_name,

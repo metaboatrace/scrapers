@@ -4,25 +4,10 @@ from typing import Optional
 
 from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
-from boatrace.models.gender import Gender
 from boatrace.models.prefecture import Prefecture
 from boatrace.models.race_laps import RaceLaps
 from boatrace.models.racer_rank import RacerRank
 from boatrace.models.stadium_tel_code import StadiumTelCode
-
-
-@dataclass(frozen=True)
-class EventEntry:
-    racer_registration_number: int
-    racer_last_name: str
-    racer_first_name: str
-    racer_rank: RacerRank
-    motor_number: int
-    quinella_rate_of_motor: float
-    boat_number: int
-    quinella_rate_of_boat: float
-    anterior_time: float
-    racer_gender: Gender
 
 
 @dataclass(frozen=True)
