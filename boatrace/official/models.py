@@ -6,21 +6,9 @@ from boatrace.models.betting_method import BettingMethod
 from boatrace.models.branch import Branch
 from boatrace.models.gender import Gender
 from boatrace.models.prefecture import Prefecture
-from boatrace.models.race_grade import RaceGrade
-from boatrace.models.race_kind import RaceKind
 from boatrace.models.race_laps import RaceLaps
 from boatrace.models.racer_rank import RacerRank
 from boatrace.models.stadium_tel_code import StadiumTelCode
-
-
-@dataclass(frozen=True)
-class Event:
-    stadium_tel_code: StadiumTelCode
-    title: str
-    starts_on: date
-    days: int
-    grade: RaceGrade
-    kind: RaceKind
 
 
 @dataclass(frozen=True)

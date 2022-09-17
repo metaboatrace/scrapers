@@ -5,17 +5,18 @@ import pytest
 from boatrace.models.race_grade import RaceGrade
 from boatrace.models.race_kind import RaceKind
 from boatrace.official.exceptions import DataNotFound, ScrapingError
-from boatrace.official.v1707.scrapers.event import scrape_monthly_schedule
+from boatrace.official.v1707.monthly_schedule_page.scraping import (
+    ScrapingResult,
+    scrape_events,
+)
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_scrape_a_monthly_schedule():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/monthly_schedule/2015_11.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2015_11.html"))
     with open(file_path, mode="r") as file:
-        data = scrape_monthly_schedule(file)
+        data = scrape_events(file)
 
     assert len(data) == 59
     assert len(list(filter(lambda x: x.stadium_tel_code == 1, data))) == 3
@@ -44,73 +45,69 @@ def test_scrape_a_monthly_schedule():
     assert len(list(filter(lambda x: x.stadium_tel_code == 24, data))) == 2
 
     # 代表値（月を跨ぐ開催の次節）
-    assert data[3].__dict__ == {
-        "stadium_tel_code": 2,
-        "title": "戸田ルーキーシリーズ第７戦",
-        "starts_on": date(2015, 11, 7),
-        "days": 6,
-        "grade": RaceGrade.NO_GRADE,
-        "kind": RaceKind.ROOKIE,
-    }
+    assert data[3] == ScrapingResult(
+        stadium_tel_code=2,
+        title="戸田ルーキーシリーズ第７戦",
+        starts_on=date(2015, 11, 7),
+        days=6,
+        grade=RaceGrade.NO_GRADE,
+        kind=RaceKind.ROOKIE,
+    )
 
     # 代表値（1日が初日）
-    assert data[6].__dict__ == {
-        "stadium_tel_code": 3,
-        "title": "ヴィーナスシリーズ第７戦\u3000江戸川ＪＩＮＲＯ\u3000ＣＵＰ",
-        "starts_on": date(2015, 11, 1),
-        "days": 6,
-        "grade": RaceGrade.NO_GRADE,
-        "kind": RaceKind.VENUS,
-    }
+    assert data[6] == ScrapingResult(
+        stadium_tel_code=3,
+        title="ヴィーナスシリーズ第７戦\u3000江戸川ＪＩＮＲＯ\u3000ＣＵＰ",
+        starts_on=date(2015, 11, 1),
+        days=6,
+        grade=RaceGrade.NO_GRADE,
+        kind=RaceKind.VENUS,
+    )
 
     # 代表値（下旬初日で月を跨ぐ節）
-    assert data[15].__dict__ == {
-        "stadium_tel_code": 6,
-        "title": "公営レーシングプレスアタック",
-        "starts_on": date(2015, 11, 28),
-        "days": 5,
-        "grade": RaceGrade.NO_GRADE,
-        "kind": RaceKind.UNCATEGORIZED,
-    }
+    assert data[15] == ScrapingResult(
+        stadium_tel_code=6,
+        title="公営レーシングプレスアタック",
+        starts_on=date(2015, 11, 28),
+        days=5,
+        grade=RaceGrade.NO_GRADE,
+        kind=RaceKind.UNCATEGORIZED,
+    )
 
     # 代表値（SG）
-    assert data[50].__dict__ == {
-        "stadium_tel_code": 21,
-        "title": "ＳＧ１８回チャレンジカップ／ＧⅡ２回レディースＣＣ",
-        "starts_on": date(2015, 11, 24),
-        "days": 6,
-        "grade": RaceGrade.SG,
-        "kind": RaceKind.UNCATEGORIZED,
-    }
+    assert data[50] == ScrapingResult(
+        stadium_tel_code=21,
+        title="ＳＧ１８回チャレンジカップ／ＧⅡ２回レディースＣＣ",
+        starts_on=date(2015, 11, 24),
+        days=6,
+        grade=RaceGrade.SG,
+        kind=RaceKind.UNCATEGORIZED,
+    )
 
     # 代表値（グレードとカテゴリの取得）
-    assert data[54].__dict__ == {
-        "stadium_tel_code": 23,
-        "title": "ＧⅢオールレディース\u3000ＲＫＢラジオ杯",
-        "starts_on": date(2015, 11, 7),
-        "days": 6,
-        "grade": RaceGrade.G3,
-        "kind": RaceKind.ALL_LADIES,
-    }
+    assert data[54] == ScrapingResult(
+        stadium_tel_code=23,
+        title="ＧⅢオールレディース\u3000ＲＫＢラジオ杯",
+        starts_on=date(2015, 11, 7),
+        days=6,
+        grade=RaceGrade.G3,
+        kind=RaceKind.ALL_LADIES,
+    )
 
 
 def test_scrape_a_monthly_schedule_is_specified_stadium():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/monthly_schedule/2016_03_14#.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2016_03_14#.html"))
 
     with open(file_path, mode="r") as file:
         with pytest.raises(ScrapingError):
-            scrape_monthly_schedule(file)
+            scrape_events(file)
 
 
 def test_scrape_a_no_contents_page():
     file_path = os.path.normpath(
-        os.path.join(
-            os.path.join(base_path, "./fixtures/monthly_schedule/data_not_found.html")
-        )
+        os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
     )
 
     with open(file_path, mode="r") as file:
         with pytest.raises(DataNotFound):
-            scrape_monthly_schedule(file)
+            scrape_events(file)

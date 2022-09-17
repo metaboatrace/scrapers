@@ -1,5 +1,6 @@
 import calendar
 import re
+from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import IO, List, Tuple
 
@@ -7,25 +8,22 @@ from boatrace.models.race_grade import RaceGrade
 from boatrace.models.race_kind import RaceKind
 from boatrace.models.stadium_tel_code import StadiumTelCode
 from boatrace.official.exceptions import ScrapingError
-from boatrace.official.models import Event
 from boatrace.official.v1707.scrapers.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 
 
+@dataclass(frozen=True)
+class ScrapingResult:
+    stadium_tel_code: StadiumTelCode
+    title: str
+    starts_on: date
+    days: int
+    grade: RaceGrade
+    kind: RaceKind
+
+
 @no_content_handleable
-def scrape_monthly_schedule(file: IO) -> List[Event]:
-    """月間スケジュールをスクレイピングする
-
-    Args:
-        file (IO): 月間スケジュールのHTML
-
-    Raises:
-        DataNotFound:
-        ScrapingError:
-
-    Returns:
-        List[Event]: パース結果を保持するデータモデルのコレクション
-    """
+def scrape_events(file: IO) -> List[ScrapingResult]:
     soup = BeautifulSoup(file, "html.parser")
 
     schedule_rows = soup.select("table.is-spritedNone1 tbody tr")
@@ -52,7 +50,7 @@ def scrape_monthly_schedule(file: IO) -> List[Event]:
 
             if title and (date_pointer.month == current_month):
                 data.append(
-                    Event(
+                    ScrapingResult(
                         stadium_tel_code=StadiumTelCode(stadium_tel_code),
                         title=title,
                         starts_on=date_pointer,
