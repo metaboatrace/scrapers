@@ -36,11 +36,3 @@ class Payoff:
     betting_method: BettingMethod
     betting_number: int
     amount: int
-
-
-@dataclass(frozen=True)
-class MotorPerformance:
-    recorded_date: date
-    number: int
-    quinella_rate: Optional[float]
-    trio_rate: Optional[float]
