@@ -12,15 +12,15 @@ from boatrace.models import (
 )
 from boatrace.models.disqualification import DisqualificationFactory
 from boatrace.models.winning_trick import WinningTrickFactory
+from boatrace.official.v1707.decorators import (
+    no_content_handleable,
+    race_cancellation_handleable,
+)
 from boatrace.official.v1707.race.common import (
     WeatherCondition,
     extract_weather_condition_base_data,
 )
 from boatrace.official.v1707.race.utils import parse_race_key_attributes
-from boatrace.official.v1707.scrapers.decorators import (
-    no_content_handleable,
-    race_cancellation_handleable,
-)
 from bs4 import BeautifulSoup
 
 

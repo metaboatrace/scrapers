@@ -6,7 +6,7 @@ from typing import IO, List, Tuple
 
 from boatrace.models import RaceGrade, RaceKind, StadiumTelCode
 from boatrace.official.exceptions import ScrapingError
-from boatrace.official.v1707.scrapers.decorators import no_content_handleable
+from boatrace.official.v1707.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import IO, List
 
 from boatrace.models import Gender, RacerRank
-from boatrace.official.v1707.scrapers.decorators import no_content_handleable
+from boatrace.official.v1707.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 
 
