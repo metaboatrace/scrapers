@@ -4,13 +4,12 @@ from functools import reduce
 from itertools import zip_longest
 from typing import IO, List
 
-from boatrace.models.betting_method import BettingMethod
-from boatrace.models.stadium_tel_code import StadiumTelCode
+from boatrace.models import BettingMethod, StadiumTelCode
+from boatrace.official.v1707.race.utils import parse_race_key_attributes
 from boatrace.official.v1707.scrapers.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
-from boatrace.official.v1707.scrapers.utils import parse_race_key_attributes
 from bs4 import BeautifulSoup
 
 
@@ -22,7 +21,7 @@ def _grouper(n, iterable, fillvalue=None):
 
 # ※ 三連単のみ対応
 @dataclass(frozen=True)
-class Dto:
+class Odds:
     race_holding_date: date
     stadium_tel_code: StadiumTelCode
     race_number: int
@@ -33,7 +32,7 @@ class Dto:
 
 @no_content_handleable
 @race_cancellation_handleable
-def scrape_trifecta(file: IO) -> List[Dto]:
+def extract_odds(file: IO) -> List[Odds]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -64,7 +63,7 @@ def scrape_trifecta(file: IO) -> List[Dto]:
             continue
 
         data.append(
-            Dto(
+            Odds(
                 **race_key_attributes,
                 betting_method=BettingMethod.TRIFECTA,
                 betting_number=int(
