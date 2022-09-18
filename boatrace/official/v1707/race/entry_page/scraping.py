@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import IO, List
+from typing import IO, List, Optional
 
 from boatrace.models import RaceLaps, RacerRank, StadiumTelCode
 from boatrace.models.race_laps import RaceLapsFactory
@@ -36,6 +36,14 @@ class RaceEntry:
     is_absent: bool
     motor_number: int
     boat_number: int
+
+
+@dataclass(frozen=True)
+class BoatPerformance:
+    recorded_date: datetime.date
+    number: int
+    quinella_rate: Optional[float]
+    trio_rate: Optional[float]
 
 
 @no_content_handleable
@@ -118,6 +126,40 @@ def extract_race_entries(file: IO) -> List[RaceEntry]:
                 is_absent=is_absent,
                 motor_number=motor_number,
                 boat_number=boat_number,
+            )
+        )
+
+    return data
+
+
+@no_content_handleable
+def extract_boat_performances(file: IO) -> List[BoatPerformance]:
+    soup = BeautifulSoup(file, "html.parser")
+    race_key_attributes = parse_race_key_attributes(soup)
+
+    PLACE_HOLDER_OF_UNRECORDED_DATA = "-"
+
+    data = []
+    for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
+        data_strings = row.select_one("tr").select("td")[7].text.strip().split()
+        number = int(data_strings[0])
+        quinella_rate = (
+            float(data_strings[1])
+            if data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA
+            else None
+        )
+        trio_rate = (
+            float(data_strings[2])
+            if data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA
+            else None
+        )
+
+        data.append(
+            BoatPerformance(
+                recorded_date=race_key_attributes["race_holding_date"],
+                number=number,
+                quinella_rate=quinella_rate,
+                trio_rate=trio_rate,
             )
         )
 
