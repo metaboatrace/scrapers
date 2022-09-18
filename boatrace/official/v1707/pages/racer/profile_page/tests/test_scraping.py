@@ -4,7 +4,7 @@ from datetime import date
 import pytest
 from boatrace.models import Branch, Prefecture, RacerRank
 from boatrace.official.exceptions import DataNotFound
-from boatrace.official.v1707.racer.profile_page.scraping import (
+from boatrace.official.v1707.pages.racer.profile_page.scraping import (
     Racer,
     extract_racer_profile,
 )

@@ -4,7 +4,10 @@ from datetime import date
 import pytest
 from boatrace.models import RaceGrade, RaceKind
 from boatrace.official.exceptions import DataNotFound, ScrapingError
-from boatrace.official.v1707.monthly_schedule_page.scraping import Event, extract_events
+from boatrace.official.v1707.pages.monthly_schedule_page.scraping import (
+    Event,
+    extract_events,
+)
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 

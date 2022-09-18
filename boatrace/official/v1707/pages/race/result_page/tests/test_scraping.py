@@ -10,7 +10,7 @@ from boatrace.models import (
     WinningTrick,
 )
 from boatrace.official.exceptions import DataNotFound, RaceCanceled
-from boatrace.official.v1707.race.result_page.scraping import (
+from boatrace.official.v1707.pages.race.result_page.scraping import (
     Payoff,
     RaceRecord,
     WeatherCondition,

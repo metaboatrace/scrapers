@@ -2,7 +2,7 @@ import os
 from datetime import date, datetime
 
 from boatrace.models import RaceLaps, RacerRank, StadiumTelCode
-from boatrace.official.v1707.race.entry_page.scraping import (
+from boatrace.official.v1707.pages.race.entry_page.scraping import (
     BoatPerformance,
     MotorPerformance,
     RaceEntry,

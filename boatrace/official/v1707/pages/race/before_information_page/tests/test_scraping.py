@@ -4,7 +4,7 @@ from datetime import date
 import pytest
 from boatrace.models import MotorParts, StadiumTelCode, Weather
 from boatrace.official.exceptions import DataNotFound
-from boatrace.official.v1707.race.before_information_page.scraping import (
+from boatrace.official.v1707.pages.race.before_information_page.scraping import (
     BoatSetting,
     CircumferenceExhibitionRecord,
     RacerCondition,

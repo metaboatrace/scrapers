@@ -3,7 +3,7 @@ import os
 import pytest
 from boatrace.models import Gender, RacerRank
 from boatrace.official.exceptions import DataNotFound
-from boatrace.official.v1707.pre_inspection_information_page.scraping import (
+from boatrace.official.v1707.pages.pre_inspection_information_page.scraping import (
     EventEntry,
     extract_event_entries,
 )

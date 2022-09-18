@@ -10,11 +10,11 @@ from boatrace.official.v1707.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
-from boatrace.official.v1707.race.common import (
+from boatrace.official.v1707.pages.race.common import (
     WeatherCondition,
     extract_weather_condition_base_data,
 )
-from boatrace.official.v1707.race.utils import parse_race_key_attributes
+from boatrace.official.v1707.pages.race.utils import parse_race_key_attributes
 from bs4 import BeautifulSoup
 
 

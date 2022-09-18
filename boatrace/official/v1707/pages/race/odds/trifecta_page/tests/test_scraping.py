@@ -4,7 +4,10 @@ from datetime import date
 import pytest
 from boatrace.models import BettingMethod, StadiumTelCode
 from boatrace.official.exceptions import DataNotFound, RaceCanceled
-from boatrace.official.v1707.race.odds.trifecta_page.scraping import Odds, extract_odds
+from boatrace.official.v1707.pages.race.odds.trifecta_page.scraping import (
+    Odds,
+    extract_odds,
+)
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
