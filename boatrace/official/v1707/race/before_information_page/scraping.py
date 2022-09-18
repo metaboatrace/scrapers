@@ -31,6 +31,14 @@ class CircumferenceExhibitionRecord:
     exhibition_time: float
 
 
+@dataclass(frozen=True)
+class RacerCondition:
+    recorded_on: date
+    racer_registration_number: int
+    weight: int
+    adjust: float
+
+
 @no_content_handleable
 @race_cancellation_handleable
 def extract_start_exhibition_records(file: IO) -> List[StartExhibitionRecord]:
@@ -96,6 +104,42 @@ def extract_circumference_exhibition_records(
                 **race_key_attributes,
                 pit_number=pit_number,
                 exhibition_time=exhibition_time,
+            )
+        )
+
+    return data
+
+
+@no_content_handleable
+@race_cancellation_handleable
+def extract_racer_conditions(file: IO) -> List[RacerCondition]:
+    soup = BeautifulSoup(file, "html.parser")
+
+    # hack: 欲しいのは日付だけで場コードと何レース目かは不要なんだけどいったんこれで
+    race_key_attributes = parse_race_key_attributes(soup)
+
+    data = []
+    for row in soup.select(".table1")[1].select("tbody"):
+        if "is-miss" in row["class"]:
+            # 欠場
+            continue
+
+        if m := re.search(
+            r"toban=(\d{4})$", row.select("td")[2].select_one("a")["href"]
+        ):
+            racer_registration_number = int(m.group(1))
+        else:
+            raise ValueError
+
+        weight = float(row.select("td")[3].text[:-2])
+        adjust = float(row.select("td")[12].text)
+
+        data.append(
+            RacerCondition(
+                recorded_on=race_key_attributes["race_holding_date"],
+                racer_registration_number=racer_registration_number,
+                weight=weight,
+                adjust=adjust,
             )
         )
 
