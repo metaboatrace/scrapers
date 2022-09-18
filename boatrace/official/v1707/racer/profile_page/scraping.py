@@ -1,29 +1,35 @@
 import re
+from dataclasses import dataclass
 from datetime import date
 from typing import IO
 
-from boatrace.models.branch import Branch
+from boatrace.models import Branch, Prefecture, RacerRank
 from boatrace.models.prefecture import PrefectureFactory
-from boatrace.models.racer_rank import RacerRank
-from boatrace.official.models import Racer
 from boatrace.official.v1707.scrapers.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 
 
+# note: 体重も級別も一応保持する
+# 体重は節間日次で変動し、レースの直前情報でレース時の最新情報は取得できる
+# 級別も成績に応じて期毎に改められる
+# ただ、取得できるデータ（特にコストもかからないもの）は保持しておいた方がライブラリとしての汎用性が高くなるため持っておく
+# 血液型は流石にいらないと思うので取ってない
+@dataclass(frozen=True)
+class Racer:
+    last_name: str
+    first_name: str
+    registration_number: int
+    birth_date: date
+    height: int
+    weight: float
+    branch_prefecture: Branch
+    born_prefecture: Prefecture
+    term: int
+    current_rating: RacerRank
+
+
 @no_content_handleable
-def scrape_racer_profile(file: IO) -> Racer:
-    """レーサーのプロフィールをスクレイピングする
-
-    Args:
-        file (IO): レーサープロフィールのHTML
-
-    Raises:
-        DataNotFound:
-        ScrapingError:
-
-    Returns:
-        Racer: パース結果を保持するデータモデル
-    """
+def extract_racer_profile(file: IO) -> Racer:
     soup = BeautifulSoup(file, "html.parser")
 
     full_name = soup.select_one(".racer1_bodyName").get_text()
