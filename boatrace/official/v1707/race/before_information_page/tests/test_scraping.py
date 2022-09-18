@@ -2,17 +2,19 @@ import os
 from datetime import date
 
 import pytest
-from boatrace.models import MotorParts, StadiumTelCode
+from boatrace.models import MotorParts, StadiumTelCode, Weather
 from boatrace.official.exceptions import DataNotFound
 from boatrace.official.v1707.race.before_information_page.scraping import (
     BoatSetting,
     CircumferenceExhibitionRecord,
     RacerCondition,
     StartExhibitionRecord,
+    WeatherCondition,
     extract_boat_settings,
     extract_circumference_exhibition_records,
     extract_racer_conditions,
     extract_start_exhibition_records,
+    extract_weather_condition,
 )
 
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -656,3 +658,36 @@ def test_scrape_boat_settings_including_motor_parts_exchanges():
             motor_parts_exchanges=[],
         ),
     ]
+
+
+def test_extract_weather_condition():
+    file_path = os.path.normpath(
+        os.path.join(base_path, "./fixtures/20151115_07#_12R.html")
+    )
+
+    with open(file_path, mode="r") as file:
+        data = extract_weather_condition(file)
+
+    assert data == WeatherCondition(
+        race_holding_date=date(2015, 11, 15),
+        stadium_tel_code=StadiumTelCode.GAMAGORI,
+        race_number=12,
+        in_performance=False,
+        weather=Weather.FINE,
+        wavelength=2.0,
+        wind_angle=315.0,
+        wind_velocity=4.0,
+        air_temperature=17.0,
+        water_temperature=17.0,
+    )
+
+
+def test_extract_weather_condition_from_incomplete_information():
+    file_path = os.path.normpath(
+        os.path.join(base_path, "./fixtures/20171030_03#_1R.html")
+    )
+
+    with open(file_path, mode="r") as file:
+        with pytest.raises(ValueError):
+            # 0:00現在表示があったら欠損値があるはずなのでこの例外になる
+            extract_weather_condition(file)

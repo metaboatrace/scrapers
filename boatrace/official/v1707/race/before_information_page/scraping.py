@@ -6,6 +6,10 @@ from typing import IO, List
 from boatrace.models import MotorParts, StadiumTelCode
 from boatrace.models.motor_parts import MotorPartsFactory
 from boatrace.official.exceptions import DataNotFound
+from boatrace.official.v1707.race.common import (
+    WeatherCondition,
+    extract_weather_condition_base_data,
+)
 from boatrace.official.v1707.race.utils import parse_race_key_attributes
 from boatrace.official.v1707.scrapers.decorators import (
     no_content_handleable,
@@ -160,6 +164,7 @@ def extract_racer_conditions(file: IO) -> List[RacerCondition]:
 
 
 @no_content_handleable
+@race_cancellation_handleable
 def extract_boat_settings(file: IO) -> BoatSetting:
     NEW_PROPELLER_MARK = "新"
     MOTOR_PARTS_QUANTITY_DELIMITER = "×"
@@ -210,3 +215,19 @@ def extract_boat_settings(file: IO) -> BoatSetting:
         )
 
     return data
+
+
+@no_content_handleable
+@race_cancellation_handleable
+def extract_weather_condition(file: IO) -> WeatherCondition:
+    soup = BeautifulSoup(file, "html.parser")
+    race_key_attributes = parse_race_key_attributes(soup)
+
+    file.seek(0)
+    weather_condition_base_attributes = extract_weather_condition_base_data(file)
+
+    return WeatherCondition(
+        **race_key_attributes,
+        **weather_condition_base_attributes,
+        in_performance=False,
+    )

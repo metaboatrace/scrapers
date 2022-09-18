@@ -1,21 +1,16 @@
 import re
 from dataclasses import dataclass
 from datetime import date
-from typing import IO
+from typing import IO, Dict
 
 import numpy as np
-from boatrace.models.stadium_tel_code import StadiumTelCode
-from boatrace.models.weather import Weather, WeatherFactory
-from boatrace.official.v1707.scrapers.decorators import (
-    no_content_handleable,
-    race_cancellation_handleable,
-)
-from boatrace.official.v1707.scrapers.utils import parse_race_key_attributes
+from boatrace.models import StadiumTelCode, Weather
+from boatrace.models.weather import WeatherFactory
 from bs4 import BeautifulSoup
 
 
 @dataclass(frozen=True)
-class Dto:
+class WeatherCondition:
     race_holding_date: date
     stadium_tel_code: StadiumTelCode
     race_number: int
@@ -28,21 +23,8 @@ class Dto:
     water_temperature: float
 
 
-@no_content_handleable
-@race_cancellation_handleable
-def scrape_weather_condition(file: IO) -> Dto:
+def extract_weather_condition_base_data(file: IO) -> Dict:
     soup = BeautifulSoup(file, "html.parser")
-    race_key_attributes = parse_race_key_attributes(soup)
-
-    active_tab = soup.select_one(
-        "body > main > div > div > div > div.contentsFrame1_inner > div.tab3.is-type1__3rdadd > ul > li.is-active"
-    )
-    if active_tab.text == "直前情報":
-        in_performance = False
-    elif active_tab.text == "結果":
-        in_performance = True
-    else:
-        raise ValueError
 
     WIND_ICON_IDS = list(range(1, 17))
     NO_WIND_ICON_ID = 17
@@ -99,13 +81,11 @@ def scrape_weather_condition(file: IO) -> Dto:
         .replace("℃", "")
     )
 
-    return Dto(
-        **race_key_attributes,
-        in_performance=in_performance,
-        weather=weather,
-        wavelength=wavelength,
-        wind_angle=wind_angle,
-        wind_velocity=wind_velocity,
-        air_temperature=air_temperature,
-        water_temperature=water_temperature,
-    )
+    return {
+        "weather": weather,
+        "wavelength": wavelength,
+        "wind_angle": wind_angle,
+        "wind_velocity": wind_velocity,
+        "air_temperature": air_temperature,
+        "water_temperature": water_temperature,
+    }

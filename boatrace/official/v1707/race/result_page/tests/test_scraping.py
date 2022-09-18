@@ -2,11 +2,13 @@ import os
 from datetime import date
 
 import pytest
-from boatrace.models import BettingMethod, StadiumTelCode
+from boatrace.models import BettingMethod, StadiumTelCode, Weather
 from boatrace.official.exceptions import DataNotFound, RaceCanceled
 from boatrace.official.v1707.race.result_page.scraping import (
     Payoff,
+    WeatherCondition,
     extract_race_payoffs,
+    extract_weather_condition,
 )
 
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -104,3 +106,25 @@ def test_extract_payoffs_from_a_canceled_race():
     with open(file_path, mode="r") as file:
         with pytest.raises(RaceCanceled):
             extract_race_payoffs(file)
+
+
+def test_extract_weather_condition():
+    file_path = os.path.normpath(
+        os.path.join(base_path, "./fixtures/20181116_18#_7R.html")
+    )
+
+    with open(file_path, mode="r") as file:
+        data = extract_weather_condition(file)
+
+    assert data == WeatherCondition(
+        race_holding_date=date(2018, 11, 16),
+        stadium_tel_code=StadiumTelCode.TOKUYAMA,
+        race_number=7,
+        in_performance=True,
+        weather=Weather.CLOUDY,
+        wavelength=1.0,
+        wind_angle=135.0,
+        wind_velocity=1.0,
+        air_temperature=15.0,
+        water_temperature=18.0,
+    )
