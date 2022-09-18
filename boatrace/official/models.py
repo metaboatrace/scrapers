@@ -26,13 +26,3 @@ class Racer:
     born_prefecture: Prefecture
     term: int
     current_rating: RacerRank
-
-
-@dataclass(frozen=True)
-class Payoff:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    betting_method: BettingMethod
-    betting_number: int
-    amount: int

@@ -1,31 +1,30 @@
 import re
+from dataclasses import dataclass
+from datetime import date
 from typing import IO, List
 
-from boatrace.models.betting_method import BettingMethod
-from boatrace.official.models import Payoff
+from boatrace.models import BettingMethod, StadiumTelCode
+from boatrace.official.v1707.race.utils import parse_race_key_attributes
 from boatrace.official.v1707.scrapers.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
-from boatrace.official.v1707.scrapers.utils import parse_race_key_attributes
 from bs4 import BeautifulSoup
+
+
+@dataclass(frozen=True)
+class Payoff:
+    race_holding_date: date
+    stadium_tel_code: StadiumTelCode
+    race_number: int
+    betting_method: BettingMethod
+    betting_number: int
+    amount: int
 
 
 @race_cancellation_handleable
 @no_content_handleable
-def scrape_race_payoff(file: IO) -> List[Payoff]:
-    """レースの払い戻し情報をスクレイピングする
-
-    Args:
-        file (IO): レース結果のHTML
-
-    Raises:
-        ScrapingError:
-        DataNotFound:
-
-    Returns:
-        List[PayOff]: パース結果を保持するデータモデル
-    """
+def extract_race_payoffs(file: IO) -> List[Payoff]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
     race_holding_date = race_key_attributes["race_holding_date"]
