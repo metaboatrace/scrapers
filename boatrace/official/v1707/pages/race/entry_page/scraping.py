@@ -4,9 +4,9 @@ from datetime import datetime
 from typing import IO, List, Optional
 
 from boatrace.models import RaceLaps, RacerRank, StadiumTelCode
-from boatrace.models.race_laps import RaceLapsFactory
 from boatrace.official.exceptions import ScrapingError
 from boatrace.official.v1707.decorators import no_content_handleable
+from boatrace.official.v1707.factories import RaceLapsFactory
 from boatrace.official.v1707.pages.race.utils import parse_race_key_attributes
 from bs4 import BeautifulSoup
 

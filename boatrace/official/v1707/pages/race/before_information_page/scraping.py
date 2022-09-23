@@ -4,12 +4,12 @@ from datetime import date
 from typing import IO, List
 
 from boatrace.models import MotorParts, StadiumTelCode
-from boatrace.models.motor_parts import MotorPartsFactory
 from boatrace.official.exceptions import DataNotFound
 from boatrace.official.v1707.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
+from boatrace.official.v1707.factories import MotorPartsFactory
 from boatrace.official.v1707.pages.race.common import (
     WeatherCondition,
     extract_weather_condition_base_data,
