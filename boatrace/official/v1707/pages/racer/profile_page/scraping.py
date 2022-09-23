@@ -4,7 +4,7 @@ from datetime import date
 from typing import IO
 
 from boatrace.models import Branch, Prefecture, RacerRank
-from boatrace.models.prefecture import PrefectureFactory
+from boatrace.official.factories import PrefectureFactory
 from boatrace.official.v1707.decorators import no_content_handleable
 from bs4 import BeautifulSoup
 

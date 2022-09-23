@@ -5,7 +5,7 @@ from typing import IO, Dict
 
 import numpy as np
 from boatrace.models import StadiumTelCode, Weather
-from boatrace.models.weather import WeatherFactory
+from boatrace.official.v1707.factories import WeatherFactory
 from bs4 import BeautifulSoup
 
 

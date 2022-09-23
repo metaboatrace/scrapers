@@ -10,11 +10,13 @@ from boatrace.models import (
     StadiumTelCode,
     WinningTrick,
 )
-from boatrace.models.disqualification import DisqualificationFactory
-from boatrace.models.winning_trick import WinningTrickFactory
 from boatrace.official.v1707.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
+)
+from boatrace.official.v1707.factories import (
+    DisqualificationFactory,
+    WinningTrickFactory,
 )
 from boatrace.official.v1707.pages.race.common import (
     WeatherCondition,
