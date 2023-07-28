@@ -1,7 +1,8 @@
 from datetime import date
 
-from boatrace.models import StadiumTelCode
-from boatrace.official.v1707.pages.race.entry_page.location import (
+from metaboatrace.models.stadium import StadiumTelCode
+
+from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.location import (
     create_race_entry_page_url,
 )
 
