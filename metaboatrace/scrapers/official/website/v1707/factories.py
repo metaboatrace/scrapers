@@ -1,15 +1,12 @@
-from boatrace.models import (
-    Disqualification,
-    MotorParts,
-    RaceLaps,
-    Weather,
-    WinningTrick,
-)
+from typing import Literal, Optional, cast
+
+from metaboatrace.models.boat import MotorParts
+from metaboatrace.models.race import Disqualification, Weather, WinningTrick
 
 
 class DisqualificationFactory:
     @staticmethod
-    def create(name: str):
+    def create(name: str) -> Optional[Disqualification]:
         if "転" in name:
             return Disqualification.CAPSIZE
         elif "落" in name:
@@ -45,7 +42,7 @@ class DisqualificationFactory:
 
 class MotorPartsFactory:
     @staticmethod
-    def create(name: str):
+    def create(name: str) -> MotorParts:
         if "電気" in name:
             return MotorParts.ELECTRICAL_SYSTEM
         elif "キャブ" in name:
@@ -70,13 +67,13 @@ class RaceLapsFactory:
     METRE_PER_A_LAP = 600
 
     @classmethod
-    def create(cls, metre: int):
-        return RaceLaps(metre / cls.METRE_PER_A_LAP)
+    def create(cls, metre: Literal[1200, 1800]) -> Literal[2, 3]:
+        return cast(Literal[2, 3], metre // cls.METRE_PER_A_LAP)
 
 
 class WinningTrickFactory:
     @staticmethod
-    def create(name: str):
+    def create(name: str) -> WinningTrick:
         if "逃げ" == name:
             return WinningTrick.NIGE
         elif "差し" == name:
@@ -95,7 +92,7 @@ class WinningTrickFactory:
 
 class WeatherFactory:
     @staticmethod
-    def create(name: str):
+    def create(name: str) -> Weather:
         if "晴" in name:
             return Weather.FINE
         elif "曇" in name:
