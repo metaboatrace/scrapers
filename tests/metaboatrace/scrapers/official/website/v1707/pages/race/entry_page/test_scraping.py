@@ -2,7 +2,8 @@ import os
 from datetime import date, datetime
 
 from boatrace.models import RaceLaps, RacerRank, StadiumTelCode
-from boatrace.official.v1707.pages.race.entry_page.scraping import (
+
+from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.scraping import (
     BoatPerformance,
     MotorPerformance,
     RaceEntry,
@@ -17,9 +18,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_extract_race_information_from_an_entry_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151016_08#_2R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151016_08#_2R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_information(file)
 
@@ -36,9 +35,7 @@ def test_extract_race_information_from_an_entry_page():
 
 
 def test_extract_race_information_using_stabilizers_from_an_entry_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20180301_07#_8R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180301_07#_8R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_information(file)
 
@@ -55,9 +52,7 @@ def test_extract_race_information_using_stabilizers_from_an_entry_page():
 
 
 def test_extract_course_fixed_race_information_from_an_entry_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20180301_07#_7R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180301_07#_7R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_information(file)
 
@@ -74,9 +69,7 @@ def test_extract_course_fixed_race_information_from_an_entry_page():
 
 
 def test_extract_two_laps_race_information_from_an_entry_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20180301_15#_12R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180301_15#_12R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_information(file)
 
@@ -93,9 +86,7 @@ def test_extract_two_laps_race_information_from_an_entry_page():
 
 
 def test_extract_race_entries_from_an_entry_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20180301_07#_8R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180301_07#_8R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_race_entries(file)
@@ -183,9 +174,7 @@ def test_extract_race_entries_from_an_entry_page():
 
 
 def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151116_03#_11R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_03#_11R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_race_entries(file)
@@ -273,9 +262,7 @@ def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent():
 
 
 def test_extract_boat_performances():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20180301_07#_8R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180301_07#_8R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_boat_performances(file)
@@ -321,9 +308,7 @@ def test_extract_boat_performances():
 
 
 def test_extract_boat_performances_including_missing_values():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151116_03#_11R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_03#_11R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_boat_performances(file)
@@ -369,9 +354,7 @@ def test_extract_boat_performances_including_missing_values():
 
 
 def test_extract_motor_performances():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20180301_07#_8R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180301_07#_8R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_motor_performances(file)
@@ -417,9 +400,7 @@ def test_extract_motor_performances():
 
 
 def test_extract_motor_performances_including_missing_values():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151116_03#_11R.html")
-    )
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_03#_11R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_motor_performances(file)
