@@ -7,7 +7,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.location
 )
 
 
-def test_create_race_entry_page_url():
+def test_create_race_entry_page_url() -> None:
     assert (
         create_race_entry_page_url(
             race_holding_date=date(2022, 9, 19),
