@@ -88,10 +88,9 @@ def extract_race_entries(file: IO) -> List[RaceEntry]:
 @no_content_handleable
 def extract_racers(file: IO) -> List[Racer]:
     soup = BeautifulSoup(file, "html.parser")
-    race_key_attributes = parse_race_key_attributes(soup)
 
     data = []
-    for pit_number, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
+    for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         racer_photo_path = row.select_one("tr").select("td")[1].select_one("img")["src"]
         if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
             racer_registration_number = int(m.group(1))
@@ -101,16 +100,17 @@ def extract_racers(file: IO) -> List[Racer]:
         racer_full_name = row.select_one("tr").select("td")[2].select_one("a").text.strip()
         racer_last_name, racer_first_name = re.split(r"[　 ]+", racer_full_name)
 
-        racer_rank = RacerRank(row.select_one("tr").select("td")[2].select_one("span").text.strip())
+        racer_rank = RacerRank.from_string(
+            row.select_one("tr").select("td")[2].select_one("span").text.strip()
+        )
 
         data.append(
+            # note: 出走表から性別は取れない
             Racer(
-                **race_key_attributes,
                 registration_number=racer_registration_number,
-                racer_last_name=racer_last_name,
-                racer_first_name=racer_first_name,
-                pit_number=pit_number,
-                current_racer_rating=racer_rank,
+                last_name=racer_last_name,
+                first_name=racer_first_name,
+                current_rating=racer_rank,
             )
         )
 
