@@ -4,20 +4,11 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import IO, List, Tuple
 
-from boatrace.models import RaceGrade, RaceKind, StadiumTelCode
-from boatrace.official.exceptions import ScrapingError
-from boatrace.official.v1707.decorators import no_content_handleable
 from bs4 import BeautifulSoup
+from metaboatrace.models.stadium import Event, SeriesGrade, SeriesKind, StadiumTelCode
 
-
-@dataclass(frozen=True)
-class Event:
-    stadium_tel_code: StadiumTelCode
-    title: str
-    starts_on: date
-    days: int
-    grade: RaceGrade
-    kind: RaceKind
+from metaboatrace.scrapers.official.website.exceptions import ScrapingError
+from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
 
 
 @no_content_handleable
@@ -54,15 +45,15 @@ def extract_events(file: IO) -> List[Event]:
                 data.append(
                     Event(
                         stadium_tel_code=StadiumTelCode(stadium_tel_code),
-                        title=title,
                         starts_on=date_pointer,
                         days=series_days,
                         grade=_parse_race_grade_from_html_class(series_cell["class"][0])
                         or _parse_race_grade_from_event_title(title)
-                        or RaceGrade.NO_GRADE,
+                        or SeriesGrade.NO_GRADE,
                         kind=_parse_race_kind_from_html_class(series_cell["class"][0])
                         or _parse_race_kind_from_event_title(title)
-                        or RaceKind.UNCATEGORIZED,
+                        or SeriesKind.UNCATEGORIZED,
+                        title=title,
                     )
                 )
 
@@ -80,12 +71,8 @@ def _parse_calendar(soup: BeautifulSoup) -> Tuple[int, int]:
     Returns:
         Tuple[int, int]: 西暦と月のタプル
     """
-    if match := re.search(
-        r"\?ym=(\d{6})", soup.select_one("li.title2_navsLeft a")["href"]
-    ):
-        return calendar._nextmonth(
-            year=int(match.group(1)[:4]), month=int(match.group(1)[4:])
-        )
+    if match := re.search(r"\?ym=(\d{6})", soup.select_one("li.title2_navsLeft a")["href"]):
+        return calendar._nextmonth(year=int(match.group(1)[:4]), month=int(match.group(1)[4:]))
     else:
         raise ScrapingError
 
@@ -119,11 +106,9 @@ def _parse_offset_date(soup: BeautifulSoup) -> date:
 
 
 def _parse_race_grade_from_event_title(event_title: str):
-    if match := re.search(
-        r"G[1-3]{1}", event_title.translate(str.maketrans("ＧⅠⅡⅢ１２３", "G123123"))
-    ):
+    if match := re.search(r"G[1-3]{1}", event_title.translate(str.maketrans("ＧⅠⅡⅢ１２３", "G123123"))):
         try:
-            return RaceGrade(match.group(0))
+            return SeriesGrade(match.group(0))
         except ValueError:
             return None
     else:
@@ -132,29 +117,29 @@ def _parse_race_grade_from_event_title(event_title: str):
 
 def _parse_race_grade_from_html_class(html_class: str):
     if match := re.match(r"is-gradeColor(SG|G[123])", html_class):
-        return RaceGrade(match.group(1))
+        return SeriesGrade.from_string(match.group(1))
 
     if html_class == "is-gradeColorLady":
-        return RaceGrade.G3
+        return SeriesGrade.G3
 
     return None
 
 
 def _parse_race_kind_from_event_title(event_title: str):
     if match := re.search(r"男女[wWＷ]優勝戦", event_title):
-        return RaceKind.DOUBLE_WINNER
+        return SeriesKind.DOUBLE_WINNER
     else:
         return None
 
 
 def _parse_race_kind_from_html_class(html_class: str):
     if html_class == "is-gradeColorRookie":
-        return RaceKind.ROOKIE
+        return SeriesKind.ROOKIE
     elif html_class == "is-gradeColorVenus":
-        return RaceKind.VENUS
+        return SeriesKind.VENUS
     elif html_class == "is-gradeColorLady":
-        return RaceKind.ALL_LADIES
+        return SeriesKind.ALL_LADIES
     elif html_class == "is-gradeColorTakumi":
-        return RaceKind.SENIOR
+        return SeriesKind.SENIOR
     else:
         return None
