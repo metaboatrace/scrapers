@@ -1,6 +1,4 @@
-from boatrace.official.v1707.pages.racer.profile_page.location import (
-    create_racer_profile_page_url,
-)
+from boatrace.official.v1707.pages.racer.profile_page.location import create_racer_profile_page_url
 
 
 def test_create_event_entry_page_url():
