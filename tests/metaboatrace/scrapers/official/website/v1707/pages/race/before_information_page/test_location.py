@@ -1,12 +1,13 @@
 from datetime import date
 
-from boatrace.models import StadiumTelCode
-from boatrace.official.v1707.pages.race.before_information_page.location import (
+from metaboatrace.models.stadium import StadiumTelCode
+
+from metaboatrace.scrapers.official.website.v1707.pages.race.before_information_page.location import (
     create_race_before_information_page_url,
 )
 
 
-def test_create_race_before_information_page_url():
+def test_create_race_before_information_page_url() -> None:
     assert (
         create_race_before_information_page_url(
             race_holding_date=date(2022, 9, 19),
