@@ -26,7 +26,7 @@ def test_extract_racer_profile() -> None:
         first_name="順平",
         term=100,
         birth_date=date(1986, 10, 7),
-        height=160,
+        height=162,
         born_prefecture=Prefecture.FUKUSHIMA,
         branch=Branch.SAITAMA,
         current_rating=RacerRank.A1,
