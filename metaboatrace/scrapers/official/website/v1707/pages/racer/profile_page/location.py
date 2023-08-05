@@ -1,6 +1,6 @@
 import urllib.parse
 
-from boatrace.official.v1707 import BASE_URL
+from metaboatrace.scrapers.official.website.v1707 import BASE_URL
 
 
 def create_racer_profile_page_url(racer_registration_number: int):
