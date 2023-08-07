@@ -1,59 +1,26 @@
 import re
 from dataclasses import dataclass
-from datetime import date
 from typing import IO, List
 
-from boatrace.models import MotorParts, StadiumTelCode
-from boatrace.official.exceptions import DataNotFound
-from boatrace.official.v1707.decorators import (
+from bs4 import BeautifulSoup
+from metaboatrace.models.race import (
+    BoatSetting,
+    CircumferenceExhibitionRecord,
+    StartExhibitionRecord,
+    WeatherCondition,
+)
+from metaboatrace.models.racer import RacerCondition
+
+from metaboatrace.scrapers.official.website.exceptions import DataNotFound
+from metaboatrace.scrapers.official.website.v1707.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
-from boatrace.official.v1707.factories import MotorPartsFactory
-from boatrace.official.v1707.pages.race.common import (
-    WeatherCondition,
+from metaboatrace.scrapers.official.website.v1707.factories import MotorPartsFactory
+from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
-from boatrace.official.v1707.pages.race.utils import parse_race_key_attributes
-from bs4 import BeautifulSoup
-
-
-@dataclass(frozen=True)
-class StartExhibitionRecord:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    pit_number: int
-    start_course: int
-    start_time: float
-
-
-@dataclass(frozen=True)
-class CircumferenceExhibitionRecord:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    pit_number: int
-    exhibition_time: float
-
-
-@dataclass(frozen=True)
-class RacerCondition:
-    recorded_on: date
-    racer_registration_number: int
-    weight: int
-    adjust: float
-
-
-@dataclass(frozen=True)
-class BoatSetting:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    pit_number: int
-    tilt: float
-    is_new_propeller: bool
-    motor_parts_exchanges: List[tuple[MotorParts, int]]
+from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 
 
 @no_content_handleable
@@ -141,9 +108,7 @@ def extract_racer_conditions(file: IO) -> List[RacerCondition]:
             # 欠場
             continue
 
-        if m := re.search(
-            r"toban=(\d{4})$", row.select("td")[2].select_one("a")["href"]
-        ):
+        if m := re.search(r"toban=(\d{4})$", row.select("td")[2].select_one("a")["href"]):
             racer_registration_number = int(m.group(1))
         else:
             raise ValueError
@@ -191,9 +156,7 @@ def extract_boat_settings(file: IO) -> BoatSetting:
         motor_parts_exchanges = []
         for li in row.select("td")[7].select("li"):
             if MOTOR_PARTS_QUANTITY_DELIMITER in li.get_text():
-                parts_name, quantity_text = li.get_text().split(
-                    MOTOR_PARTS_QUANTITY_DELIMITER
-                )
+                parts_name, quantity_text = li.get_text().split(MOTOR_PARTS_QUANTITY_DELIMITER)
             else:
                 parts_name = li.get_text()
                 quantity_text = None
