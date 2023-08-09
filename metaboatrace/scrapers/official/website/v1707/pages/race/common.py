@@ -1,26 +1,10 @@
 import re
-from dataclasses import dataclass
-from datetime import date
 from typing import IO, Dict
 
 import numpy as np
-from boatrace.models import StadiumTelCode, Weather
-from boatrace.official.v1707.factories import WeatherFactory
 from bs4 import BeautifulSoup
 
-
-@dataclass(frozen=True)
-class WeatherCondition:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    in_performance: bool
-    weather: Weather
-    wavelength: float
-    wind_angle: float
-    wind_velocity: float
-    air_temperature: float
-    water_temperature: float
+from metaboatrace.scrapers.official.website.v1707.factories import WeatherFactory
 
 
 def extract_weather_condition_base_data(file: IO) -> Dict:
@@ -57,28 +41,18 @@ def extract_weather_condition_base_data(file: IO) -> Dict:
     else:
         raise ValueError
 
-    weather = WeatherFactory.create(
-        data_container.select_one(".is-weather").text.strip()
-    )
+    weather = WeatherFactory.create(data_container.select_one(".is-weather").text.strip())
     wavelength = float(
-        data_container.select(".weather1_bodyUnitLabelData")[3]
-        .text.strip()
-        .replace("cm", "")
+        data_container.select(".weather1_bodyUnitLabelData")[3].text.strip().replace("cm", "")
     )
     wind_velocity = float(
-        data_container.select(".weather1_bodyUnitLabelData")[1]
-        .text.strip()
-        .replace("m", "")
+        data_container.select(".weather1_bodyUnitLabelData")[1].text.strip().replace("m", "")
     )
     air_temperature = float(
-        data_container.select(".weather1_bodyUnitLabelData")[0]
-        .text.strip()
-        .replace("℃", "")
+        data_container.select(".weather1_bodyUnitLabelData")[0].text.strip().replace("℃", "")
     )
     water_temperature = float(
-        data_container.select(".weather1_bodyUnitLabelData")[2]
-        .text.strip()
-        .replace("℃", "")
+        data_container.select(".weather1_bodyUnitLabelData")[2].text.strip().replace("℃", "")
     )
 
     return {
