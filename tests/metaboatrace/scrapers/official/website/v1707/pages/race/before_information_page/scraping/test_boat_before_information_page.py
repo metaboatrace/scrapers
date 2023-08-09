@@ -1,3 +1,15 @@
+# note: ファイル名について
+#
+# test_boat.py でいいと思うが他に同じファイルがあるとバグる
+#
+# 以下は同じファイル名だがこれらは正常にパスする
+# - tests/metaboatrace/scrapers/official/website/v1707/pages/monthly_schedule_page/test_scraping.py
+# - tests/metaboatrace/scrapers/official/website/v1707/pages/pre_inspection_information_page/test_scraping.py
+#
+# かといってこのディレクトリのテストを全て test_scraping.py に集約するとファイルが肥大化するので分割は維持する
+# とはいえテストは通さなきゃいけないのでテストファイルに接尾辞をつける
+
+
 import os
 from datetime import date
 
