@@ -2,18 +2,19 @@ import os
 from datetime import date
 
 import pytest
-from boatrace.models import (
+from metaboatrace.models.race import (
     BettingMethod,
     Disqualification,
-    StadiumTelCode,
-    Weather,
-    WinningTrick,
-)
-from boatrace.official.exceptions import DataNotFound, RaceCanceled
-from boatrace.official.v1707.pages.race.result_page.scraping import (
     Payoff,
     RaceRecord,
+    Weather,
     WeatherCondition,
+    WinningTrick,
+)
+from metaboatrace.models.stadium import StadiumTelCode
+
+from metaboatrace.scrapers.official.website.exceptions import DataNotFound, RaceCanceled
+from metaboatrace.scrapers.official.website.v1707.pages.race.result_page.scraping import (
     extract_race_payoffs,
     extract_race_records,
     extract_weather_condition,
@@ -22,10 +23,8 @@ from boatrace.official.v1707.pages.race.result_page.scraping import (
 base_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_extract_race_payoffs():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151115_07#_12R.html")
-    )
+def test_extract_race_payoffs() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151115_07#_12R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_payoffs(file)
 
@@ -35,16 +34,14 @@ def test_extract_race_payoffs():
             stadium_tel_code=StadiumTelCode.GAMAGORI,
             race_number=12,
             betting_method=BettingMethod.TRIFECTA,
-            betting_number=435,
+            betting_numbers=[4, 3, 5],
             amount=56670,
         )
     ]
 
 
-def test_extract_payoffs_from_a_race_which_has_an_absent():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151116_03#_11R.html")
-    )
+def test_extract_payoffs_from_a_race_which_has_an_absent() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_03#_11R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_payoffs(file)
 
@@ -54,16 +51,14 @@ def test_extract_payoffs_from_a_race_which_has_an_absent():
             stadium_tel_code=StadiumTelCode.EDOGAWA,
             race_number=11,
             betting_method=BettingMethod.TRIFECTA,
-            betting_number=234,
+            betting_numbers=[2, 3, 4],
             amount=3100,
         )
     ]
 
 
-def test_extract_payoffs_from_a_race_which_has_a_tie():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20181116_18#_7R.html")
-    )
+def test_extract_payoffs_from_a_race_which_has_a_tie() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20181116_18#_7R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_race_payoffs(file)
@@ -74,7 +69,7 @@ def test_extract_payoffs_from_a_race_which_has_a_tie():
             stadium_tel_code=StadiumTelCode.TOKUYAMA,
             race_number=7,
             betting_method=BettingMethod.TRIFECTA,
-            betting_number=142,
+            betting_numbers=[1, 4, 2],
             amount=2230,
         ),
         Payoff(
@@ -82,33 +77,29 @@ def test_extract_payoffs_from_a_race_which_has_a_tie():
             stadium_tel_code=StadiumTelCode.TOKUYAMA,
             race_number=7,
             betting_method=BettingMethod.TRIFECTA,
-            betting_number=412,
+            betting_numbers=[4, 1, 2],
             amount=15500,
         ),
     ]
 
 
-def test_extract_payoffs_from_a_race_which_has_four_disqualified_racers():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151114_02#_2R.html")
-    )
+def test_extract_payoffs_from_a_race_which_has_four_disqualified_racers() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151114_02#_2R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_payoffs(file)
 
     assert data == []
 
 
-def test_extract_payoffs_from_a_no_contents_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/data_not_found.html")
-    )
+def test_extract_payoffs_from_a_no_contents_page() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/data_not_found.html"))
 
     with open(file_path, mode="r") as file:
         with pytest.raises(DataNotFound):
             extract_race_payoffs(file)
 
 
-def test_extract_payoffs_from_a_canceled_race():
+def test_extract_payoffs_from_a_canceled_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/canceled.html"))
 
     with open(file_path, mode="r") as file:
@@ -116,10 +107,8 @@ def test_extract_payoffs_from_a_canceled_race():
             extract_race_payoffs(file)
 
 
-def test_extract_weather_condition():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20181116_18#_7R.html")
-    )
+def test_extract_weather_condition() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20181116_18#_7R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_weather_condition(file)
@@ -138,10 +127,8 @@ def test_extract_weather_condition():
     )
 
 
-def test_extract_race_record_from_a_race_includes_lateness_entry():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151116_09#_7R.html")
-    )
+def test_extract_race_record_from_a_race_includes_lateness_entry() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_09#_7R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_race_records(file)
@@ -222,10 +209,8 @@ def test_extract_race_record_from_a_race_includes_lateness_entry():
     ]
 
 
-def test_extract_race_records_from_a_race_which_has_a_tie():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20181116_18#_7R.html")
-    )
+def test_extract_race_records_from_a_race_which_has_a_tie() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20181116_18#_7R.html"))
 
     with open(file_path, mode="r") as file:
         data = extract_race_records(file)
@@ -306,10 +291,8 @@ def test_extract_race_records_from_a_race_which_has_a_tie():
     ]
 
 
-def test_extract_race_records_from_a_race_which_has_four_disqualified_racers():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/20151114_02#_2R.html")
-    )
+def test_extract_race_records_from_a_race_which_has_four_disqualified_racers() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151114_02#_2R.html"))
     with open(file_path, mode="r") as file:
         data = extract_race_records(file)
 
@@ -389,17 +372,15 @@ def test_extract_race_records_from_a_race_which_has_four_disqualified_racers():
     ]
 
 
-def test_extract_race_records_from_a_no_contents_page():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/data_not_found.html")
-    )
+def test_extract_race_records_from_a_no_contents_page() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/data_not_found.html"))
 
     with open(file_path, mode="r") as file:
         with pytest.raises(DataNotFound):
             extract_race_records(file)
 
 
-def test_extract_race_records_from_a_canceled_race():
+def test_extract_race_records_from_a_canceled_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/canceled.html"))
 
     with open(file_path, mode="r") as file:

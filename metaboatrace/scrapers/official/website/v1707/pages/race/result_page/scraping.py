@@ -1,53 +1,22 @@
 import re
 import unicodedata
-from dataclasses import dataclass
-from datetime import date
-from typing import IO, List, Optional
+from typing import IO, List
 
-from boatrace.models import (
-    BettingMethod,
-    Disqualification,
-    StadiumTelCode,
-    WinningTrick,
-)
-from boatrace.official.v1707.decorators import (
+from bs4 import BeautifulSoup
+from metaboatrace.models.race import BettingMethod, Payoff, RaceRecord, WeatherCondition
+
+from metaboatrace.scrapers.official.website.v1707.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
 )
-from boatrace.official.v1707.factories import (
+from metaboatrace.scrapers.official.website.v1707.factories import (
     DisqualificationFactory,
     WinningTrickFactory,
 )
-from boatrace.official.v1707.pages.race.common import (
-    WeatherCondition,
+from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
-from boatrace.official.v1707.pages.race.utils import parse_race_key_attributes
-from bs4 import BeautifulSoup
-
-
-@dataclass(frozen=True)
-class Payoff:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    betting_method: BettingMethod
-    betting_number: int
-    amount: int
-
-
-@dataclass(frozen=True)
-class RaceRecord:
-    race_holding_date: date
-    stadium_tel_code: StadiumTelCode
-    race_number: int
-    pit_number: int
-    start_course: Optional[int] = None
-    arrival: Optional[int] = None
-    total_time: Optional[float] = None
-    start_time: Optional[float] = None
-    winning_trick: Optional[WinningTrick] = None
-    disqualification: Optional[Disqualification] = None
+from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 
 
 @race_cancellation_handleable
@@ -78,12 +47,8 @@ def extract_race_payoffs(file: IO) -> List[Payoff]:
                 stadium_tel_code=stadium_tel_code,
                 race_number=race_number,
                 betting_method=BettingMethod.TRIFECTA,
-                betting_number=int(
-                    "".join([span.get_text() for span in betting_numbers])
-                ),
-                amount=int(
-                    re.match(r"¥([\d]+)", tds[1].get_text().replace(",", "")).group(1)
-                ),
+                betting_numbers=map(int, [span.get_text() for span in betting_numbers]),
+                amount=int(re.match(r"¥([\d]+)", tds[1].get_text().replace(",", "")).group(1)),
             )
         )
 
@@ -129,9 +94,7 @@ def extract_race_records(file: IO) -> RaceRecord:
 
         time_text = row.select("td")[3].text
         if m := re.search(r'(\d{1})\'(\d{2})"(\d{1})', time_text):
-            total_time = (
-                60 * int(m.group(1)) + 1 * int(m.group(2)) + 0.1 * int(m.group(3))
-            )
+            total_time = 60 * int(m.group(1)) + 1 * int(m.group(2)) + 0.1 * int(m.group(3))
         else:
             total_time = None
 
