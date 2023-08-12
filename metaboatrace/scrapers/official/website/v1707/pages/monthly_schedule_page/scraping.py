@@ -1,8 +1,7 @@
 import calendar
 import re
-from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import IO, List, Tuple
+from typing import IO, List, Optional, Tuple
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.stadium import Event, SeriesGrade, SeriesKind, StadiumTelCode
@@ -16,7 +15,7 @@ from metaboatrace.scrapers.official.website.v1707.decorators import no_content_h
 # scrape_events にしようと思ったが scrape の目的語はスクレイピング対象のWebページだから違和感ある
 # get_events はアクセサメソッド見たいなニュアンスがあって違和感ある
 # 引数のWebページのHTMLからデータを抜き出すという意味で extract が合ってると思ったので以下の名前にした
-def extract_events(file: IO) -> List[Event]:
+def extract_events(file: IO[str]) -> List[Event]:
     soup = BeautifulSoup(file, "html.parser")
 
     schedule_rows = soup.select("table.is-spritedNone1 tbody tr")
@@ -72,7 +71,7 @@ def _parse_calendar(soup: BeautifulSoup) -> Tuple[int, int]:
         Tuple[int, int]: 西暦と月のタプル
     """
     if match := re.search(r"\?ym=(\d{6})", soup.select_one("li.title2_navsLeft a")["href"]):
-        return calendar._nextmonth(year=int(match.group(1)[:4]), month=int(match.group(1)[4:]))
+        return calendar._nextmonth(year=int(match.group(1)[:4]), month=int(match.group(1)[4:]))  # type: ignore
     else:
         raise ScrapingError
 
@@ -98,14 +97,14 @@ def _parse_offset_date(soup: BeautifulSoup) -> date:
         if start_day == 1:
             return date(year, month, 1)
         else:
-            year_of_last_month, last_month = calendar._prevmonth(year, month)
+            year_of_last_month, last_month = calendar._prevmonth(year, month)  # type: ignore
             return date(year_of_last_month, last_month, start_day)
 
     else:
         raise ScrapingError
 
 
-def _parse_race_grade_from_event_title(event_title: str):
+def _parse_race_grade_from_event_title(event_title: str) -> Optional[SeriesGrade]:
     if match := re.search(r"G[1-3]{1}", event_title.translate(str.maketrans("ＧⅠⅡⅢ１２３", "G123123"))):
         try:
             return SeriesGrade(match.group(0))
@@ -115,7 +114,7 @@ def _parse_race_grade_from_event_title(event_title: str):
         return None
 
 
-def _parse_race_grade_from_html_class(html_class: str):
+def _parse_race_grade_from_html_class(html_class: str) -> Optional[SeriesGrade]:
     if match := re.match(r"is-gradeColor(SG|G[123])", html_class):
         return SeriesGrade.from_string(match.group(1))
 
@@ -125,14 +124,14 @@ def _parse_race_grade_from_html_class(html_class: str):
     return None
 
 
-def _parse_race_kind_from_event_title(event_title: str):
+def _parse_race_kind_from_event_title(event_title: str) -> Optional[SeriesKind]:
     if match := re.search(r"男女[wWＷ]優勝戦", event_title):
         return SeriesKind.DOUBLE_WINNER
     else:
         return None
 
 
-def _parse_race_kind_from_html_class(html_class: str):
+def _parse_race_kind_from_html_class(html_class: str) -> Optional[SeriesKind]:
     if html_class == "is-gradeColorRookie":
         return SeriesKind.ROOKIE
     elif html_class == "is-gradeColorVenus":

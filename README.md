@@ -1,49 +1,52 @@
+![GitHub Workflow Status](https://github.com/metaboatrace/scrapers/actions/workflows/publish.yml/badge.svg)
+![GitHub Workflow Status](https://github.com/metaboatrace/scrapers/actions/workflows/tests.yml/badge.svg)
+![GitHub Workflow Status](https://github.com/metaboatrace/scrapers/actions/workflows/lint.yml/badge.svg)
+![Coverage](https://img.shields.io/codecov/c/github/metaboatrace/scrapers.svg)
+![PyPI version](https://img.shields.io/pypi/v/metaboatrace.scrapers.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python version](https://img.shields.io/badge/python-3.10-blue.svg)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+
 ## 概要
 
-[ボートレース公式サイト](https://boatrace.jp/) のユーティリティパッケージ
+ボートレース関連の WEB サイトのスクレイピングライブラリ
 
 以下の機能を備える
 
-- URLの生成
-- スクレイピング
+- [ボートレース公式サイト](https://boatrace.jp/) に対応する下記
+  - URL の生成
+  - スクレイピング
 
-## 使用例
+## パッケージの構成
 
-### URLの生成
+名前空間パッケージになっており、共通の名前空間 (`metaboatrace`) を保持する同種のパッケージがある。
 
-#### レースの出走表ページのURLを生成する
+- [metaboatrace.models](https://github.com/metaboatrace/models)
 
-```python
->>> from datetime import date
->>> from boatrace.models import StadiumTelCode
->>> from boatrace.official.v1707.pages.race.entry_page.location import create_race_entry_page_url
->>> create_race_entry_page_url(race_holding_date=date(2022, 9, 19), stadium_tel_code=StadiumTelCode.HEIWAJIMA, race_number=12)
-'https://boatrace.jp/owpc/pc/race/racelist?rno=12&jcd=04&hd=20220919'
-```
+### ボートレース公式サイトに対応する規約
 
-前検情報やオッズなど別種のページのURL構造も location というモジュールで持っていて、使い方は各種ユニットテストを参照
+名前空間は以下のように切られている。
 
-```bash
-$ find boatrace/official/v1707 -name 'test_location*py' -type f
-boatrace/official/v1707/pages/monthly_schedule_page/tests/test_location.py
-boatrace/official/v1707/pages/pre_inspection_information_page/tests/test_location.py
-boatrace/official/v1707/pages/race/before_information_page/tests/test_location.py
-boatrace/official/v1707/pages/race/odds/trifecta_page/tests/test_location.py
-boatrace/official/v1707/pages/race/result_page/tests/test_location.py
-boatrace/official/v1707/pages/race/entry_page/tests/test_location.py
-boatrace/official/v1707/pages/racer/profile_page/tests/test_location.py
-```
+- metaboatrace.scrapers.official.website.v1707
 
-### スクレイピング
+この `v1707` の部分はボートレース公式サイトのバージョンに対応している。
 
-#### レース出走表をスクレイピングする
+バージョニングは、Ubuntu でのそれに近い。  
+Ubuntu は 22.04 のように年と月という形でバージョニングされている（22.04.1 のようセキュリティパッチのリビジョンも付くことがある）。
 
-以下は取得の一例
+ボートレースの公式サイトが現行のものになったのは 2017 年の 7 月なので、それに合わせてここでは `v1707` としている。
 
-https://github.com/BoatraceRepository/boatrace.official/blob/f0c4260d3fbbc781cd198acba647d41d6a6e4bc2/boatrace/official/v1707/pages/race/entry_page/tests/test_scraping.py#L19-L35
+## 機能
 
-インターフェースの詳細は各種ユニットテスト参照
+`metaboatrace/scrapers/official/website/v1707/pages` 直下に、公式サイトのページに対応した名前空間がある。  
+例えば、[公式サイトの月間スケジュール](https://boatrace.jp/owpc/pc/race/monthlyschedule)に対応するものは `monthly_schedule_page` である。
 
-```bash
-$ find boatrace/official/v1707 -name 'test_scraping*py' -type f
-```
+これらの配下に `location` と `scraping` というモジュールがある。
+
+前者は引数（日付など）をもとに公式サイトの URL を生成するような責務を負った関数が包含されている。  
+例えば、年と月を与えたら "https://boatrace.jp/owpc/pc/race/monthlyschedule?year=2022&month=9" といったそのデータに対応する公式サイトの月間スケジュールの URL を返すような関数が入っている。
+
+後者は、公式サイトの HTML ファイルをスクレイピングのモジュールである。  
+例えば、ここに入ってる関数は "https://boatrace.jp/owpc/pc/race/monthlyschedule?year=2022&month=9" のファイルをスクレイピングして[エンティティ](https://github.com/metaboatrace/models)を返すような処理を行う。
+
+※ ここでいうエンティティはクリーンアーキテクチャの定義上のエンティティのことであり、[metaboatrace.models](https://github.com/metaboatrace/models)はそういったものを提供しているパッケージ
