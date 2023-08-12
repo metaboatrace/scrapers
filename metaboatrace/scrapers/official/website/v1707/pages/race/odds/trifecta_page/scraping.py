@@ -1,8 +1,8 @@
 from functools import reduce
 from itertools import zip_longest
-from typing import IO, List
+from typing import IO, Generator, List
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet, Tag
 from metaboatrace.models.race import BettingMethod, Odds
 
 from metaboatrace.scrapers.official.website.v1707.decorators import (
@@ -12,15 +12,14 @@ from metaboatrace.scrapers.official.website.v1707.decorators import (
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 
 
-def _grouper(n, iterable, fillvalue=None):
-    "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+def _grouper(n: int, iterable: ResultSet[Tag], fillvalue=None):  # type: ignore
     args = [iter(iterable)] * n
     return zip_longest(fillvalue=fillvalue, *args)
 
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_odds(file: IO) -> List[Odds]:
+def extract_odds(file: IO[str]) -> List[Odds]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 

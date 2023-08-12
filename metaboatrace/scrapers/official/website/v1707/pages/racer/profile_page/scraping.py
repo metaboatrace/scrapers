@@ -11,7 +11,7 @@ from metaboatrace.scrapers.official.website.v1707.decorators import no_content_h
 
 
 @no_content_handleable
-def extract_racer_profile(file: IO) -> Racer:
+def extract_racer_profile(file: IO[str]) -> Racer:
     soup = BeautifulSoup(file, "html.parser")
 
     full_name = soup.select_one(".racer1_bodyName").get_text()

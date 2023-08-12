@@ -21,7 +21,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 
 @race_cancellation_handleable
 @no_content_handleable
-def extract_race_payoffs(file: IO) -> List[Payoff]:
+def extract_race_payoffs(file: IO[str]) -> List[Payoff]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
     race_holding_date = race_key_attributes["race_holding_date"]
@@ -48,7 +48,7 @@ def extract_race_payoffs(file: IO) -> List[Payoff]:
                 race_number=race_number,
                 betting_method=BettingMethod.TRIFECTA,
                 betting_numbers=map(int, [span.get_text() for span in betting_numbers]),
-                amount=int(re.match(r"¥([\d]+)", tds[1].get_text().replace(",", "")).group(1)),
+                amount=int(re.match(r"¥([\d]+)", tds[1].get_text().replace(",", "")).group(1)),  # type: ignore # todo: fix type
             )
         )
 
@@ -57,7 +57,7 @@ def extract_race_payoffs(file: IO) -> List[Payoff]:
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_weather_condition(file: IO) -> WeatherCondition:
+def extract_weather_condition(file: IO[str]) -> WeatherCondition:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -73,7 +73,7 @@ def extract_weather_condition(file: IO) -> WeatherCondition:
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_race_records(file: IO) -> RaceRecord:
+def extract_race_records(file: IO[str]) -> RaceRecord:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 

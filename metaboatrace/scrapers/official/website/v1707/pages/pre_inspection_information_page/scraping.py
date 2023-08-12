@@ -23,7 +23,7 @@ class EventEntry:
 
 
 @no_content_handleable
-def extract_racers(file: IO) -> List[Racer]:
+def extract_racers(file: IO[str]) -> List[Racer]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []

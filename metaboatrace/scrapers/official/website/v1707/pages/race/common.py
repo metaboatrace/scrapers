@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from metaboatrace.scrapers.official.website.v1707.factories import WeatherFactory
 
 
-def extract_weather_condition_base_data(file: IO) -> Dict:
+def extract_weather_condition_base_data(file: IO[str]):  # type: ignore # todo: fix typ
     soup = BeautifulSoup(file, "html.parser")
 
     WIND_ICON_IDS = list(range(1, 17))

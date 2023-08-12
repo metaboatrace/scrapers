@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import IO, List, Optional
+from typing import IO, List, Literal, cast
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
@@ -14,7 +14,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 
 
 @no_content_handleable
-def extract_race_information(file: IO) -> RaceInformation:
+def extract_race_information(file: IO[str]) -> RaceInformation:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
     race_holding_date = race_key_attributes["race_holding_date"]
@@ -37,7 +37,7 @@ def extract_race_information(file: IO) -> RaceInformation:
         soup.select_one("h3.title16_titleDetail__add2020").get_text().strip(),
     ):
         title = m.group(1)
-        metre = int(m.group(2))
+        metre = cast(Literal[1200, 1800], int(m.group(2)))
     else:
         raise ScrapingError
 
@@ -54,7 +54,7 @@ def extract_race_information(file: IO) -> RaceInformation:
 
 
 @no_content_handleable
-def extract_race_entries(file: IO) -> List[RaceEntry]:
+def extract_race_entries(file: IO[str]) -> List[RaceEntry]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -86,7 +86,7 @@ def extract_race_entries(file: IO) -> List[RaceEntry]:
 
 
 @no_content_handleable
-def extract_racers(file: IO) -> List[Racer]:
+def extract_racers(file: IO[str]) -> List[Racer]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []
@@ -118,7 +118,7 @@ def extract_racers(file: IO) -> List[Racer]:
 
 
 @no_content_handleable
-def extract_boat_performances(file: IO) -> List[BoatPerformance]:
+def extract_boat_performances(file: IO[str]) -> List[BoatPerformance]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -149,7 +149,7 @@ def extract_boat_performances(file: IO) -> List[BoatPerformance]:
 
 
 @no_content_handleable
-def extract_motor_performances(file: IO) -> List[MotorPerformance]:
+def extract_motor_performances(file: IO[str]) -> List[MotorPerformance]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
