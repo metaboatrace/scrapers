@@ -25,7 +25,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_start_exhibition_records(file: IO) -> List[StartExhibitionRecord]:
+def extract_start_exhibition_records(file: IO[str]) -> List[StartExhibitionRecord]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -39,7 +39,7 @@ def extract_start_exhibition_records(file: IO) -> List[StartExhibitionRecord]:
             continue
 
         m = re.search(r"_([1-6]{1}).png$", row.select_one("img")["src"])
-        pit_number = int(m.group(1))
+        pit_number = int(m.group(1))  # type: ignore
 
         start_time_element = row.select("span")[-1]
         if m := re.search(r"F?\.(\d{2})$", start_time_element.text):
@@ -66,7 +66,7 @@ def extract_start_exhibition_records(file: IO) -> List[StartExhibitionRecord]:
 @no_content_handleable
 @race_cancellation_handleable
 def extract_circumference_exhibition_records(
-    file: IO,
+    file: IO[str],
 ) -> List[CircumferenceExhibitionRecord]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
@@ -96,7 +96,7 @@ def extract_circumference_exhibition_records(
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_racer_conditions(file: IO) -> List[RacerCondition]:
+def extract_racer_conditions(file: IO[str]) -> List[RacerCondition]:
     soup = BeautifulSoup(file, "html.parser")
 
     # hack: 欲しいのは日付だけで場コードと何レース目かは不要なんだけどいったんこれで
@@ -130,7 +130,7 @@ def extract_racer_conditions(file: IO) -> List[RacerCondition]:
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_boat_settings(file: IO) -> BoatSetting:
+def extract_boat_settings(file: IO[str]) -> BoatSetting:
     NEW_PROPELLER_MARK = "新"
     MOTOR_PARTS_QUANTITY_DELIMITER = "×"
 
@@ -182,7 +182,7 @@ def extract_boat_settings(file: IO) -> BoatSetting:
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_weather_condition(file: IO) -> WeatherCondition:
+def extract_weather_condition(file: IO[str]) -> WeatherCondition:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
