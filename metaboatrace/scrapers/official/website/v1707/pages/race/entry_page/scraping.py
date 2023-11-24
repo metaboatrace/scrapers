@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import IO, List, Literal, cast
+from typing import IO, Literal, cast
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
@@ -54,7 +54,7 @@ def extract_race_information(file: IO[str]) -> RaceInformation:
 
 
 @no_content_handleable
-def extract_race_entries(file: IO[str]) -> List[RaceEntry]:
+def extract_race_entries(file: IO[str]) -> list[RaceEntry]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -86,7 +86,7 @@ def extract_race_entries(file: IO[str]) -> List[RaceEntry]:
 
 
 @no_content_handleable
-def extract_racers(file: IO[str]) -> List[Racer]:
+def extract_racers(file: IO[str]) -> list[Racer]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []
@@ -118,7 +118,7 @@ def extract_racers(file: IO[str]) -> List[Racer]:
 
 
 @no_content_handleable
-def extract_boat_performances(file: IO[str]) -> List[BoatPerformance]:
+def extract_boat_performances(file: IO[str]) -> list[BoatPerformance]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -149,7 +149,7 @@ def extract_boat_performances(file: IO[str]) -> List[BoatPerformance]:
 
 
 @no_content_handleable
-def extract_motor_performances(file: IO[str]) -> List[MotorPerformance]:
+def extract_motor_performances(file: IO[str]) -> list[MotorPerformance]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 

@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import IO, List
+from typing import IO
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.race import (
@@ -25,7 +25,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_start_exhibition_records(file: IO[str]) -> List[StartExhibitionRecord]:
+def extract_start_exhibition_records(file: IO[str]) -> list[StartExhibitionRecord]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -67,7 +67,7 @@ def extract_start_exhibition_records(file: IO[str]) -> List[StartExhibitionRecor
 @race_cancellation_handleable
 def extract_circumference_exhibition_records(
     file: IO[str],
-) -> List[CircumferenceExhibitionRecord]:
+) -> list[CircumferenceExhibitionRecord]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
@@ -96,7 +96,7 @@ def extract_circumference_exhibition_records(
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_racer_conditions(file: IO[str]) -> List[RacerCondition]:
+def extract_racer_conditions(file: IO[str]) -> list[RacerCondition]:
     soup = BeautifulSoup(file, "html.parser")
 
     # hack: 欲しいのは日付だけで場コードと何レース目かは不要なんだけどいったんこれで
