@@ -1,6 +1,6 @@
 from functools import reduce
 from itertools import zip_longest
-from typing import IO, Generator, List
+from typing import IO, Generator
 
 from bs4 import BeautifulSoup, ResultSet, Tag
 from metaboatrace.models.race import BettingMethod, Odds
@@ -19,7 +19,7 @@ def _grouper(n: int, iterable: ResultSet[Tag], fillvalue=None):  # type: ignore
 
 @no_content_handleable
 @race_cancellation_handleable
-def extract_odds(file: IO[str]) -> List[Odds]:
+def extract_odds(file: IO[str]) -> list[Odds]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
 
