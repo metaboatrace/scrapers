@@ -44,9 +44,9 @@ Ubuntu は 22.04 のように年と月という形でバージョニングされ
 これらの配下に `location` と `scraping` というモジュールがある。
 
 前者は引数（日付など）をもとに公式サイトの URL を生成するような責務を負った関数が包含されている。  
-例えば、年と月を与えたら "https://boatrace.jp/owpc/pc/race/monthlyschedule?year=2022&month=9" といったそのデータに対応する公式サイトの月間スケジュールの URL を返すような関数が入っている。
+例えば、年と月を与えたら "https://boatrace.jp/owpc/pc/race/monthlyschedule?ym=202209" といったそのデータに対応する公式サイトの月間スケジュールの URL を返すような関数が入っている。
 
 後者は、公式サイトの HTML ファイルをスクレイピングのモジュールである。  
-例えば、ここに入ってる関数は "https://boatrace.jp/owpc/pc/race/monthlyschedule?year=2022&month=9" のファイルをスクレイピングして[エンティティ](https://github.com/metaboatrace/models)を返すような処理を行う。
+例えば、ここに入ってる関数は "https://boatrace.jp/owpc/pc/race/monthlyschedule?ym=202209" のファイルをスクレイピングして[エンティティ](https://github.com/metaboatrace/models)を返すような処理を行う。
 
 ※ ここでいうエンティティはクリーンアーキテクチャの定義上のエンティティのことであり、[metaboatrace.models](https://github.com/metaboatrace/models)はそういったものを提供しているパッケージ
