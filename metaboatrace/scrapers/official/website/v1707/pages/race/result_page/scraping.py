@@ -1,6 +1,6 @@
 import re
 import unicodedata
-from typing import IO, List
+from typing import IO
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.race import BettingMethod, Payoff, RaceRecord, WeatherCondition
@@ -21,7 +21,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 
 @race_cancellation_handleable
 @no_content_handleable
-def extract_race_payoffs(file: IO[str]) -> List[Payoff]:
+def extract_race_payoffs(file: IO[str]) -> list[Payoff]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
     race_holding_date = race_key_attributes["race_holding_date"]

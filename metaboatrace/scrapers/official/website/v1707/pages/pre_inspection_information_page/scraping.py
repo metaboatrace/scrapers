@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import IO, List
+from typing import IO
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.racer import Gender, Racer, RacerRank
@@ -23,7 +23,7 @@ class EventEntry:
 
 
 @no_content_handleable
-def extract_racers(file: IO[str]) -> List[Racer]:
+def extract_racers(file: IO[str]) -> list[Racer]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []

@@ -1,7 +1,7 @@
 import calendar
 import re
 from datetime import date, timedelta
-from typing import IO, List, Optional, Tuple
+from typing import IO, Optional
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.stadium import Event, SeriesGrade, SeriesKind, StadiumTelCode
@@ -15,7 +15,7 @@ from metaboatrace.scrapers.official.website.v1707.decorators import no_content_h
 # scrape_events にしようと思ったが scrape の目的語はスクレイピング対象のWebページだから違和感ある
 # get_events はアクセサメソッド見たいなニュアンスがあって違和感ある
 # 引数のWebページのHTMLからデータを抜き出すという意味で extract が合ってると思ったので以下の名前にした
-def extract_events(file: IO[str]) -> List[Event]:
+def extract_events(file: IO[str]) -> list[Event]:
     soup = BeautifulSoup(file, "html.parser")
 
     schedule_rows = soup.select("table.is-spritedNone1 tbody tr")
@@ -61,14 +61,14 @@ def extract_events(file: IO[str]) -> List[Event]:
     return data
 
 
-def _parse_calendar(soup: BeautifulSoup) -> Tuple[int, int]:
+def _parse_calendar(soup: BeautifulSoup) -> tuple[int, int]:
     """どの年月の月間スケジュールかを返す
 
     Args:
         soup (BeautifulSoup): bs4でパースされた月間スケジュールのHTML
 
     Returns:
-        Tuple[int, int]: 西暦と月のタプル
+        tuple[int, int]: 西暦と月のタプル
     """
     if match := re.search(r"\?ym=(\d{6})", soup.select_one("li.title2_navsLeft a")["href"]):
         return calendar._nextmonth(year=int(match.group(1)[:4]), month=int(match.group(1)[4:]))  # type: ignore
@@ -86,7 +86,7 @@ def _parse_offset_date(soup: BeautifulSoup) -> date:
         soup (BeautifulSoup): bs4でパースされた月間スケジュールのHTML
 
     Returns:
-        Tuple[int, int]: 西暦と月のタプル
+        date: 月間スケジュールの起点となる日付
     """
     year, month = _parse_calendar(soup)
 
