@@ -1,6 +1,6 @@
 [project]
 name = "metaboatrace.scrapers"
-version = "2.0.0"
+version = "2.1.0"
 description = "Scrapers for Japanese boatrace websites"
 authors = [
     { name = "k0kishima", email = "okishimaxyz@gmail.com" }
