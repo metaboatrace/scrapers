@@ -1,5 +1,3 @@
-import urllib.parse
-
 from metaboatrace.scrapers.official.website.v1707 import BASE_URL
 
 
