@@ -112,10 +112,10 @@ class WeatherFactory:
 
 class EventHoldingStatusFactory:
     @staticmethod
-    def create(name: str) -> Weather:
-        if "中止" in name:
+    def create(text: str) -> Weather:
+        if "中止" == text:
             return EventHoldingStatus.CANCELED
-        elif "中止順延" in name:
+        elif "中止順延" == text:
             return EventHoldingStatus.POSTPONED
         else:
             return EventHoldingStatus.OPEN
