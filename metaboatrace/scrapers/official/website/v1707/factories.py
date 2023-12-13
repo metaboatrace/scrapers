@@ -2,6 +2,7 @@ from typing import Literal, Optional, cast
 
 from metaboatrace.models.boat import MotorParts
 from metaboatrace.models.race import Disqualification, Weather, WinningTrick
+from metaboatrace.models.stadium import EventHoldingStatus
 
 
 class DisqualificationFactory:
@@ -107,3 +108,14 @@ class WeatherFactory:
             return Weather.FOG
         else:
             raise ValueError
+
+
+class EventHoldingStatusFactory:
+    @staticmethod
+    def create(name: str) -> Weather:
+        if "中止" in name:
+            return EventHoldingStatus.CANCELED
+        elif "中止順延" in name:
+            return EventHoldingStatus.POSTPONED
+        else:
+            return EventHoldingStatus.OPEN
