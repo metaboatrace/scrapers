@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
     "beautifulsoup4>=4.12.2",
-    "metaboatrace.models>=2.1.2",
+    "metaboatrace.models>=2.1.4",
     "numpy>=1.25.2",
 ]
 readme = "README.md"
