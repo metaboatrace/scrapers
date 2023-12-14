@@ -3,9 +3,11 @@ from typing import Literal, Optional, Type, Union
 import pytest
 from metaboatrace.models.boat import MotorParts
 from metaboatrace.models.race import Disqualification, Weather, WinningTrick
+from metaboatrace.models.stadium import EventHoldingStatus
 
 from metaboatrace.scrapers.official.website.v1707.factories import (
     DisqualificationFactory,
+    EventHoldingStatusFactory,
     MotorPartsFactory,
     RaceLapsFactory,
     WeatherFactory,
@@ -112,3 +114,13 @@ def test_weather_factory(name: str, expected: Union[Weather, Type[ValueError]]) 
             WeatherFactory.create(name) == expected
     else:
         assert WeatherFactory.create(name) == expected
+
+
+def test_event_holding_status_factory() -> None:
+    assert EventHoldingStatusFactory.create("中止") == EventHoldingStatus.CANCELED
+
+    assert EventHoldingStatusFactory.create("中止順延") == EventHoldingStatus.POSTPONED
+
+    assert EventHoldingStatusFactory.create("開催") == EventHoldingStatus.OPEN
+    assert EventHoldingStatusFactory.create("不明") == EventHoldingStatus.OPEN
+    assert EventHoldingStatusFactory.create("") == EventHoldingStatus.OPEN
