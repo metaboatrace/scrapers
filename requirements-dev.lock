@@ -17,7 +17,7 @@ codecov==2.1.13
 coverage==7.2.7
 idna==3.4
 iniconfig==2.0.0
-metaboatrace-models==1.0.1
+metaboatrace-models==2.1.4
 mypy==1.4.1
 mypy-extensions==1.0.0
 numpy==1.25.2
@@ -27,7 +27,7 @@ platformdirs==3.9.1
 pluggy==1.2.0
 pydantic==2.0.3
 pydantic-core==2.3.0
-pytest==7.4.0
+pytest==7.4.3
 pytest-cov==4.1.0
 requests==2.31.0
 soupsieve==2.4.1
