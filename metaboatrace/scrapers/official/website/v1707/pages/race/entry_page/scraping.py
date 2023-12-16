@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from typing import IO, Literal, cast
 
+import pytz
 from bs4 import BeautifulSoup
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
 from metaboatrace.models.race import RaceEntry, RaceInformation
@@ -24,13 +25,17 @@ def extract_race_information(file: IO[str]) -> RaceInformation:
     deadline_table = soup.select_one(".table1")
     deadline_text = deadline_table.select("tbody tr")[-1].select("td")[race_number].get_text()
     hour, minute = [int(t) for t in deadline_text.split(":")]
-    deadline_at = datetime(
-        race_holding_date.year,
-        race_holding_date.month,
-        race_holding_date.day,
-        hour,
-        minute,
+    jst = pytz.timezone("Asia/Tokyo")
+    deadline_at_jst = jst.localize(
+        datetime(
+            race_holding_date.year,
+            race_holding_date.month,
+            race_holding_date.day,
+            hour,
+            minute,
+        )
     )
+    deadline_at = deadline_at_jst.astimezone(pytz.utc)
 
     if m := re.match(
         r"(\w+)\s*(1200|1800)m",
