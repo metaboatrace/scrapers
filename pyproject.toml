@@ -10,6 +10,8 @@ dependencies = [
     "metaboatrace.models>=2.1.4",
     "numpy>=1.25.2",
     "pytest>=7.4.3",
+    "pytz>=2023.3.post1",
+    "types-pytz>=2023.3.1.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
