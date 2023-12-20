@@ -60,6 +60,8 @@ class MotorPartsFactory:
             return MotorParts.GEAR_CASE
         elif "キャリ" in name:
             return MotorParts.CARRIER_BODY
+        elif "シャフト" in name:
+            return MotorParts.CRANKSHAFT
         else:
             raise ValueError
 

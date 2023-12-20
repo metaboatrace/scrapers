@@ -54,6 +54,7 @@ def test_disqualification_factory(
         ("ギア", MotorParts.GEAR_CASE),
         ("ギヤ", MotorParts.GEAR_CASE),
         ("キャリ", MotorParts.CARRIER_BODY),
+        ("シャフト", MotorParts.CRANKSHAFT),
         ("バルブ", ValueError),
     ],
 )
