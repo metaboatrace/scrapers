@@ -158,7 +158,9 @@ def extract_boat_settings(file: IO[str]) -> BoatSetting:
             if MOTOR_PARTS_QUANTITY_DELIMITER in li.get_text():
                 parts_name, quantity_text = li.get_text().split(MOTOR_PARTS_QUANTITY_DELIMITER)
             else:
-                parts_name = li.get_text()
+                # note: 'シャフト\xa0' みたいに非改行空白（non-breaking space）を表すエスケープシーケンスが混入している場合がある
+                # https://boatrace.jp/owpc/pc/race/beforeinfo?rno=10&jcd=06&hd=20231124
+                parts_name = li.get_text().replace("\xa0", " ")
                 quantity_text = None
 
             motor_parts_exchanges.append(
