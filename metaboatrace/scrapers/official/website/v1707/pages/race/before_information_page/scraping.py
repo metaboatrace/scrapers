@@ -44,12 +44,13 @@ def extract_start_exhibition_records(file: IO[str]) -> list[StartExhibitionRecor
         start_time_element = row.select("span")[-1]
         if m := re.search(r"F?\.(\d{2})$", start_time_element.text):
             start_time = float(f"0.{m.group(1)}")
+            if "is-fBold" in start_time_element["class"]:
+                # この場合はフライング
+                start_time = start_time * -1
+        elif start_time_element.text == "L":
+            start_time = 1.0
         else:
             raise ValueError
-
-        if "is-fBold" in start_time_element["class"]:
-            # この場合はフライング
-            start_time = start_time * -1
 
         data.append(
             StartExhibitionRecord(

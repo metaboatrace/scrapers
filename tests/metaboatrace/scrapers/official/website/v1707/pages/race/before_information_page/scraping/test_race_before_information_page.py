@@ -129,6 +129,64 @@ def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -
     ]
 
 
+def test_extract_start_exhibition_records_from_a_page_including_lateness_racer() -> None:
+    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231125_06#_4R.html"))
+
+    with open(file_path, mode="r") as file:
+        data = extract_start_exhibition_records(file)
+
+    assert data == [
+        StartExhibitionRecord(
+            race_holding_date=date(2023, 11, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=4,
+            pit_number=1,
+            start_course=1,
+            start_time=0.04,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2023, 11, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=4,
+            pit_number=2,
+            start_course=2,
+            start_time=1,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2023, 11, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=4,
+            pit_number=3,
+            start_course=3,
+            start_time=0.02,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2023, 11, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=4,
+            pit_number=4,
+            start_course=4,
+            start_time=-0.07,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2023, 11, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=4,
+            pit_number=5,
+            start_course=5,
+            start_time=0.05,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2023, 11, 25),
+            stadium_tel_code=StadiumTelCode.HAMANAKO,
+            race_number=4,
+            pit_number=6,
+            start_course=6,
+            start_time=0.05,
+        ),
+    ]
+
+
 def test_extract_circumference_exhibition_records() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
 
