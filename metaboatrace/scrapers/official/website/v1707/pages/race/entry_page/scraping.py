@@ -38,7 +38,8 @@ def extract_race_information(file: IO[str]) -> RaceInformation:
     deadline_at = deadline_at_jst.astimezone(pytz.utc)
 
     if m := re.match(
-        r"(\w+)\s*(1200|1800)m",
+        # note: r"(\w+)\s*(1200|1800)m" だと 'ガチ勝゛ち８\u3000\n\t\t1800m' みたいなのがパースできない
+        r"(.+?)\s*(1200|1800)m",
         soup.select_one("h3.title16_titleDetail__add2020").get_text().strip(),
     ):
         title = m.group(1)
