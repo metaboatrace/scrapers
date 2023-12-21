@@ -127,7 +127,89 @@ def test_extract_weather_condition() -> None:
     )
 
 
-def test_extract_race_record_from_a_race_includes_lateness_entry() -> None:
+def test_extract_race_record_from_a_race_includes_lateness_on_course() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20231204_16#_5R.html"))
+
+    with open(file_path, mode="r") as file:
+        data = extract_race_records(file)
+
+    assert data == [
+        RaceRecord(
+            race_holding_date=date(2023, 12, 4),
+            stadium_tel_code=StadiumTelCode.KOJIMA,
+            race_number=5,
+            pit_number=1,
+            start_course=1,
+            arrival=1,
+            total_time=108.1,
+            start_time=0.08,
+            winning_trick=WinningTrick.NIGE,
+            disqualification=None,
+        ),
+        RaceRecord(
+            race_holding_date=date(2023, 12, 4),
+            stadium_tel_code=StadiumTelCode.KOJIMA,
+            race_number=5,
+            pit_number=2,
+            start_course=2,
+            arrival=3,
+            total_time=112.6,
+            start_time=0.06,
+            winning_trick=None,
+            disqualification=None,
+        ),
+        RaceRecord(
+            race_holding_date=date(2023, 12, 4),
+            stadium_tel_code=StadiumTelCode.KOJIMA,
+            race_number=5,
+            pit_number=3,
+            start_course=3,
+            arrival=None,
+            total_time=None,
+            start_time=1,
+            winning_trick=None,
+            disqualification=Disqualification.LATENESS,
+        ),
+        RaceRecord(
+            race_holding_date=date(2023, 12, 4),
+            stadium_tel_code=StadiumTelCode.KOJIMA,
+            race_number=5,
+            pit_number=4,
+            start_course=4,
+            arrival=4,
+            total_time=113.6,
+            start_time=0.07,
+            winning_trick=None,
+            disqualification=None,
+        ),
+        RaceRecord(
+            race_holding_date=date(2023, 12, 4),
+            stadium_tel_code=StadiumTelCode.KOJIMA,
+            race_number=5,
+            pit_number=5,
+            start_course=5,
+            arrival=2,
+            total_time=110.4,
+            start_time=0.1,
+            winning_trick=None,
+            disqualification=None,
+        ),
+        RaceRecord(
+            race_holding_date=date(2023, 12, 4),
+            stadium_tel_code=StadiumTelCode.KOJIMA,
+            race_number=5,
+            pit_number=6,
+            start_course=6,
+            arrival=5,
+            total_time=None,
+            start_time=0.11,
+            winning_trick=None,
+            disqualification=None,
+        ),
+    ]
+
+
+def test_extract_race_record_from_a_race_includes_lateness_not_on_course() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_09#_7R.html"))
 
     with open(file_path, mode="r") as file:
