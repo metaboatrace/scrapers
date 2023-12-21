@@ -124,8 +124,12 @@ def extract_race_records(file: IO[str]) -> RaceRecord:
                 # フライングは負の数で返す
                 # disqualification でフライングかどうかはわかるが、正常なスタートと同じ値で返すのは違和感あるため
                 start_time = start_time * -1
+        elif time_text == "L":
+            # note: 出遅れはここに出るケースと出ないケースがある
+            # 出るケース -> https://boatrace.jp/owpc/pc/race/raceresult?rno=5&jcd=16&hd=20231204
+            # 出ないケース -> https://boatrace.jp/owpc/pc/race/raceresult?rno=7&jcd=09&hd=20151116
+            start_time = 1
         else:
-            # 出遅れはこの表に表示されないし、フライングの場合はF記号がついて表示されるので取れないケースはないはず
             raise ValueError
 
         data_originated_slit_table.append(
