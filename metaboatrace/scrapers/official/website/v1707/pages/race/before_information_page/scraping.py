@@ -49,6 +49,12 @@ def extract_start_exhibition_records(file: IO[str]) -> list[StartExhibitionRecor
                 start_time = start_time * -1
         elif start_time_element.text == "L":
             start_time = 1.0
+        elif pit_number:
+            # note: L マークが出てないけど舟の画像があり、周回展示には謎に出ているケース
+            # https://boatrace.jp/owpc/pc/race/beforeinfo?rno=9&jcd=20&hd=20200621
+            #
+            # これは進入は大外で出遅れと判定する
+            start_time = 1.0
         else:
             raise ValueError
 

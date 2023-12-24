@@ -129,6 +129,8 @@ def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -
     ]
 
 
+# note: これはコースに入ったけど出遅れたケース
+# https://boatrace.jp/owpc/pc/race/beforeinfo?rno=4&jcd=06&hd=20231125
 def test_extract_start_exhibition_records_from_a_page_including_lateness_racer() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231125_06#_4R.html"))
 
@@ -183,6 +185,68 @@ def test_extract_start_exhibition_records_from_a_page_including_lateness_racer()
             pit_number=6,
             start_course=6,
             start_time=0.05,
+        ),
+    ]
+
+
+# note: コースに入ってすらいないから L マークが出てない？
+# https://boatrace.jp/owpc/pc/race/beforeinfo?rno=9&jcd=20&hd=20200621
+def test_extract_start_exhibition_records_from_a_page_including_not_entered_the_course_racer() -> (
+    None
+):
+    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20200621_20#_9R.html"))
+
+    with open(file_path, mode="r") as file:
+        data = extract_start_exhibition_records(file)
+
+    assert data == [
+        StartExhibitionRecord(
+            race_holding_date=date(2020, 6, 21),
+            stadium_tel_code=StadiumTelCode.WAKAMATSU,
+            race_number=9,
+            pit_number=1,
+            start_course=1,
+            start_time=-0.03,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2020, 6, 21),
+            stadium_tel_code=StadiumTelCode.WAKAMATSU,
+            race_number=9,
+            pit_number=2,
+            start_course=2,
+            start_time=0.01,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2020, 6, 21),
+            stadium_tel_code=StadiumTelCode.WAKAMATSU,
+            race_number=9,
+            pit_number=4,
+            start_course=3,
+            start_time=0.11,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2020, 6, 21),
+            stadium_tel_code=StadiumTelCode.WAKAMATSU,
+            race_number=9,
+            pit_number=6,
+            start_course=4,
+            start_time=0.09,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2020, 6, 21),
+            stadium_tel_code=StadiumTelCode.WAKAMATSU,
+            race_number=9,
+            pit_number=5,
+            start_course=5,
+            start_time=0.09,
+        ),
+        StartExhibitionRecord(
+            race_holding_date=date(2020, 6, 21),
+            stadium_tel_code=StadiumTelCode.WAKAMATSU,
+            race_number=9,
+            pit_number=3,
+            start_course=6,
+            start_time=1,
         ),
     ]
 
