@@ -3,11 +3,13 @@ from datetime import date, datetime
 
 import pytz
 from metaboatrace.models.race import RaceEntry, RaceInformation
+from metaboatrace.models.racer import RacerPerformance
 from metaboatrace.models.stadium import StadiumTelCode
 
 from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.scraping import (
     extract_race_entries,
     extract_race_information,
+    extract_racer_performances,
 )
 
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -220,5 +222,51 @@ def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent() ->
             is_absent=False,
             motor_number=20,
             boat_number=69,
+        ),
+    ]
+
+
+def test_extract_racer_performances() -> None:
+    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231102_16#_2R.html"))
+
+    with open(file_path, mode="r") as file:
+        data = extract_racer_performances(file)
+
+    assert data == [
+        RacerPerformance(
+            racer_registration_number=4708,
+            aggregated_on=date(2023, 11, 2),
+            rate_in_all_stadium=4.47,
+            rate_in_event_going_stadium=3.7,
+        ),
+        RacerPerformance(
+            racer_registration_number=3401,
+            aggregated_on=date(2023, 11, 2),
+            rate_in_all_stadium=4.51,
+            rate_in_event_going_stadium=5.69,
+        ),
+        RacerPerformance(
+            racer_registration_number=4200,
+            aggregated_on=date(2023, 11, 2),
+            rate_in_all_stadium=4.6,
+            rate_in_event_going_stadium=4.49,
+        ),
+        RacerPerformance(
+            racer_registration_number=4957,
+            aggregated_on=date(2023, 11, 2),
+            rate_in_all_stadium=5.09,
+            rate_in_event_going_stadium=5.16,
+        ),
+        RacerPerformance(
+            racer_registration_number=3910,
+            aggregated_on=date(2023, 11, 2),
+            rate_in_all_stadium=4.24,
+            rate_in_event_going_stadium=4.37,
+        ),
+        RacerPerformance(
+            racer_registration_number=5317,
+            aggregated_on=date(2023, 11, 2),
+            rate_in_all_stadium=0,
+            rate_in_event_going_stadium=0,
         ),
     ]
