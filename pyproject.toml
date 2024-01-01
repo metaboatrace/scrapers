@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
     "beautifulsoup4>=4.12.2",
-    "metaboatrace.models>=2.1.4",
+    "metaboatrace.models>=2.1.6",
     "numpy>=1.25.2",
     "pytest>=7.4.3",
     "pytz>=2023.3.post1",

@@ -6,7 +6,7 @@ import pytz
 from bs4 import BeautifulSoup
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
 from metaboatrace.models.race import RaceEntry, RaceInformation
-from metaboatrace.models.racer import Racer, RacerRank
+from metaboatrace.models.racer import Racer, RacerPerformance, RacerRank
 
 from metaboatrace.scrapers.official.website.exceptions import ScrapingError
 from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
@@ -183,6 +183,37 @@ def extract_motor_performances(file: IO[str]) -> list[MotorPerformance]:
                 number=number,
                 quinella_rate=quinella_rate,
                 trio_rate=trio_rate,
+            )
+        )
+
+    return data
+
+
+@no_content_handleable
+def extract_racer_performances(file: IO[str]) -> list[RacerPerformance]:
+    soup = BeautifulSoup(file, "html.parser")
+    race_key_attributes = parse_race_key_attributes(soup)
+    race_holding_date = race_key_attributes["race_holding_date"]
+
+    data = []
+    for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
+        racer_photo_path = row.select_one("tr").select("td")[1].select_one("img")["src"]
+        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
+            racer_registration_number = int(m.group(1))
+        else:
+            raise ScrapingError
+
+        rate_in_all_stadium = float(row.select_one("tr").select("td")[4].text.strip().split()[0])
+        rate_in_event_going_stadium = float(
+            row.select_one("tr").select("td")[5].text.strip().split()[0]
+        )
+
+        data.append(
+            RacerPerformance(
+                racer_registration_number=racer_registration_number,
+                aggregated_on=race_holding_date,
+                rate_in_all_stadium=rate_in_all_stadium,
+                rate_in_event_going_stadium=rate_in_event_going_stadium,
             )
         )
 
