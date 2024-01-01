@@ -17,7 +17,7 @@ codecov==2.1.13
 coverage==7.2.7
 idna==3.4
 iniconfig==2.0.0
-metaboatrace-models==2.1.4
+metaboatrace-models==2.1.6
 mypy==1.4.1
 mypy-extensions==1.0.0
 numpy==1.25.2
