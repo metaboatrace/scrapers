@@ -86,8 +86,14 @@ def extract_circumference_exhibition_records(
 
         try:
             exhibition_time = float(row.select("td")[4].text)
-        except TypeError:
+        except (TypeError, ValueError):
             # 欠場じゃなくても展示だけ不参加とか展示中に転覆とかだとNoneをfloatで評価した結果ここに来るかも？
+            #
+            # 以下のように、スタート展示だけ実施されたがその後の周回展示が中止になった場合
+            # https://boatrace.jp/owpc/pc/race/beforeinfo?rno=8&jcd=03&hd=20240322
+            #
+            # この場合は `row.select("td")[4].text` の評価結果が '\xa0' になる
+            # ('\xa0' は &nbsp の 数字文字参照)
             continue
 
         data.append(
