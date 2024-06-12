@@ -412,6 +412,21 @@ def test_extract_circumference_exhibition_records_including_race_absent_racer() 
     ]
 
 
+def test_extract_records_with_only_start_exhibition_and_canceled_circumference_exhibition() -> None:
+    file_path = os.path.normpath(
+        # 周回展示直前で中止決定
+        os.path.join(
+            fixture_dir_path,
+            "20240322_03#_8R.html",
+        )
+    )
+
+    with open(file_path, mode="r") as file:
+        data = extract_circumference_exhibition_records(file)
+
+    assert data == []
+
+
 def test_extract_weather_condition() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151115_07#_12R.html"))
 
