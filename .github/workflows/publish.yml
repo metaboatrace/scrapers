@@ -15,7 +15,7 @@ jobs:
         uses: baptiste0928/cargo-install@v2
         with:
           crate: rye
-          git: https://github.com/mitsuhiko/rye
+          git: https://github.com/astral-sh/rye
           branch: main
       - name: Fix Python version
         run: rye pin 3.11
