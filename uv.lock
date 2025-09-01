@@ -260,7 +260,7 @@ wheels = [
 
 [[package]]
 name = "metaboatrace-scrapers"
-version = "3.3.1"
+version = "3.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
