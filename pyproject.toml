@@ -1,6 +1,6 @@
 [project]
 name = "metaboatrace.scrapers"
-version = "3.3.1"
+version = "3.3.2"
 description = "Scrapers for Japanese boatrace websites"
 authors = [
     { name = "k0kishima", email = "okishimaxyz@gmail.com" }
@@ -17,20 +17,18 @@ readme = "README.md"
 requires-python = ">= 3.11"
 license = "MIT"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.rye]
-managed = true
-dev_dependencies = []
-dev-dependencies = [
+[project.optional-dependencies]
+dev = [
     "mypy>=1.4.1",
     "black>=23.7.0",
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
     "codecov>=2.1.13",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -49,6 +47,10 @@ disallow_any_generics = true
 disallow_untyped_defs = true
 no_implicit_optional = true
 explicit_package_bases = true
+exclude = [
+    "metaboatrace/scrapers/official/website/v1707/decorators.py",
+    "metaboatrace/scrapers/official/website/v1707/pages/",
+]
 
 [tool.black]
 line-length = 100

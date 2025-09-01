@@ -8,19 +8,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install rye
-        uses: baptiste0928/cargo-install@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          crate: rye
-          git: https://github.com/astral-sh/rye
-          branch: main
-      - name: Fix Python version
-        run: rye pin 3.11
-      - name: Install Dependencies
-        run: rye sync
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
       - name: Run tests with coverage
-        run: |
-          rye run pytest --cov=metaboatrace.scrapers tests --cov-report=xml:coverage.xml
+        run: uv run pytest --cov=metaboatrace.scrapers tests --cov-report=xml:coverage.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
