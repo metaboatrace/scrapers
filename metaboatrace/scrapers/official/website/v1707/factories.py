@@ -35,7 +35,12 @@ class DisqualificationFactory:
             # レース不成立で着順が定まらなかったケース
             # 例)
             # http://boatrace.jp/owpc/pc/race/raceresult?rno=11&jcd=23&hd=20170429
-            # TODO:
+            return None
+        elif "　" in name:
+            # NOTE: これは失格ではない
+            # レース不成立で着順が定まらなかったケース
+            # 例)
+            # https://boatrace.jp/owpc/pc/race/raceresult?rno=2&jcd=23&hd=20160507
             return None
         else:
             raise ValueError

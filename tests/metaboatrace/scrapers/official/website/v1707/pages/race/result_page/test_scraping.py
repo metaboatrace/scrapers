@@ -468,3 +468,94 @@ def test_extract_race_records_from_a_canceled_race() -> None:
     with open(file_path, mode="r") as file:
         with pytest.raises(RaceCanceled):
             extract_race_records(file)
+
+
+def test_extract_payoffs_from_a_race_with_mass_flying() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20160507_23#_2R.html"))
+
+    with open(file_path, mode="r") as file:
+        data = extract_race_payoffs(file)
+
+    assert data == []
+
+
+def test_extract_race_records_from_a_race_with_mass_flying() -> None:
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20160507_23#_2R.html"))
+
+    with open(file_path, mode="r") as file:
+        data = extract_race_records(file)
+
+    assert data == [
+        RaceRecord(
+            race_holding_date=date(2016, 5, 7),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=2,
+            pit_number=1,
+            start_course=1,
+            arrival=None,
+            total_time=None,
+            start_time=-0.01,
+            winning_trick=None,
+            disqualification=Disqualification.FLYING,
+        ),
+        RaceRecord(
+            race_holding_date=date(2016, 5, 7),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=2,
+            pit_number=2,
+            start_course=2,
+            arrival=None,
+            total_time=None,
+            start_time=-0.01,
+            winning_trick=None,
+            disqualification=Disqualification.FLYING,
+        ),
+        RaceRecord(
+            race_holding_date=date(2016, 5, 7),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=2,
+            pit_number=3,
+            start_course=3,
+            arrival=None,
+            total_time=None,
+            start_time=-0.01,
+            winning_trick=None,
+            disqualification=Disqualification.FLYING,
+        ),
+        RaceRecord(
+            race_holding_date=date(2016, 5, 7),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=2,
+            pit_number=4,
+            start_course=6,
+            arrival=None,
+            total_time=None,
+            start_time=0.03,
+            winning_trick=None,
+            disqualification=None,
+        ),
+        RaceRecord(
+            race_holding_date=date(2016, 5, 7),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=2,
+            pit_number=5,
+            start_course=4,
+            arrival=None,
+            total_time=None,
+            start_time=-0.01,
+            winning_trick=None,
+            disqualification=Disqualification.FLYING,
+        ),
+        RaceRecord(
+            race_holding_date=date(2016, 5, 7),
+            stadium_tel_code=StadiumTelCode.KARATSU,
+            race_number=2,
+            pit_number=6,
+            start_course=5,
+            arrival=None,
+            total_time=None,
+            start_time=-0.05,
+            winning_trick=None,
+            disqualification=Disqualification.FLYING,
+        ),
+    ]
