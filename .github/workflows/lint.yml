@@ -21,4 +21,4 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run mypy
-        run: uv run mypy metaboatrace/scrapers
+        run: uv run mypy metaboatrace
