@@ -5,9 +5,9 @@ from metaboatrace.models.racer import Gender, Racer, RacerRank
 
 from metaboatrace.scrapers.official.website.exceptions import DataNotFound
 from metaboatrace.scrapers.official.website.v1707.pages.pre_inspection_information_page.scraping import (
-    extract_racers,
-    extract_event_entries,
     EventEntry,
+    extract_event_entries,
+    extract_racers,
 )
 
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +15,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 def test_extract_racers_a_pre_inspection_information_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151112_23#.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_racers(file)
 
     assert len(data) == 44
@@ -39,14 +39,13 @@ def test_extract_racers_a_pre_inspection_information_page() -> None:
 def test_extract_racers_from_a_no_contents_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/data_not_found.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_racers(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_racers(file)
 
 
 def test_extract_racers_a_pre_inspection_information_of_parallel_series() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20191218_12#.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_racers(file)
 
     assert len(data) == 59
@@ -69,14 +68,13 @@ def test_extract_racers_a_pre_inspection_information_of_parallel_series() -> Non
 def test_extract_event_entries_from_a_no_contents_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/data_not_found.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_event_entries(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_event_entries(file)
 
 
 def test_extract_event_entries_a_pre_inspection_information_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151112_23#.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_event_entries(file)
 
     assert len(data) == 44

@@ -11,7 +11,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 def test_scrape_event_holdings_with_cancellations_and_delays() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2015_08_25.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_event_holdings(file)
 
     expected_results = [
@@ -83,7 +83,7 @@ def test_scrape_event_holdings_with_cancellations_and_delays() -> None:
         ),
     ]
 
-    for expected, actual in zip(expected_results, data):
+    for expected, actual in zip(expected_results, data, strict=True):
         assert actual.stadium_tel_code == expected.stadium_tel_code
         assert actual.date == expected.date
         assert actual.status == expected.status
@@ -92,7 +92,7 @@ def test_scrape_event_holdings_with_cancellations_and_delays() -> None:
 
 def test_scrape_event_holdings_with_postponements_after_nth_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2020_08_13.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_event_holdings(file)
 
     expected_results = [
@@ -188,13 +188,13 @@ def test_scrape_event_holdings_with_postponements_after_nth_race() -> None:
         ),
     ]
 
-    for expected, actual in zip(expected_results, data):
+    for expected, actual in zip(expected_results, data, strict=True):
         assert actual == expected
 
 
 def test_scrape_event_holdings_with_ongoing_races() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2018_05_23.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_event_holdings(file)
 
     expected_results = [
@@ -284,13 +284,13 @@ def test_scrape_event_holdings_with_ongoing_races() -> None:
         ),
     ]
 
-    for expected, actual in zip(expected_results, data):
+    for expected, actual in zip(expected_results, data, strict=True):
         assert actual == expected
 
 
 def test_scrape_event_holdings_with_advance_sale_races() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/pre_sale_presents.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_event_holdings(file)
 
     expected_results = [
@@ -380,5 +380,5 @@ def test_scrape_event_holdings_with_advance_sale_races() -> None:
         ),
     ]
 
-    for expected, actual in zip(expected_results, data):
+    for expected, actual in zip(expected_results, data, strict=True):
         assert actual == expected

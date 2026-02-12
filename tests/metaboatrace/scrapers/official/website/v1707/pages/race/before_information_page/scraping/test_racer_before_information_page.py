@@ -14,7 +14,7 @@ fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
 def test_extract_racer_conditions() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_racer_conditions(file)
 
     assert data == [
@@ -66,7 +66,7 @@ def test_extract_racer_conditions_including_race_absent_racer() -> None:
         )
     )
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_racer_conditions(file)
 
     assert data == [

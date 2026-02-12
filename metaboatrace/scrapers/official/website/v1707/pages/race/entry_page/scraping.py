@@ -223,4 +223,7 @@ def extract_racer_performances(file: IO[str]) -> list[RacerPerformance]:
 @no_content_handleable
 def is_deadline_changed(file: IO[str]) -> bool:
     soup = BeautifulSoup(file, "html.parser")
-    return "締切予定時刻が変更されております。ご注意ください。" in soup.select_one(".l-main").get_text().strip()
+    return (
+        "締切予定時刻が変更されております。ご注意ください。"
+        in soup.select_one(".l-main").get_text().strip()
+    )

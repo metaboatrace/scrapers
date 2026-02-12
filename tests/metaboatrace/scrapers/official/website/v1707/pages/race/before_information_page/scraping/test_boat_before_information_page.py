@@ -30,7 +30,7 @@ fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
 def test_extract_boat_settings() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_boat_settings(file)
 
     assert data == [
@@ -94,7 +94,7 @@ def test_extract_boat_settings() -> None:
 def test_extract_boat_settings_including_propeller_exchanges() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180619_04#_4R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_boat_settings(file)
 
     assert data == [
@@ -158,7 +158,7 @@ def test_extract_boat_settings_including_propeller_exchanges() -> None:
 def test_extract_boat_settings_including_absent_racers() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_boat_settings(file)
 
     assert data == [
@@ -213,15 +213,14 @@ def test_extract_boat_settings_including_absent_racers() -> None:
 def test_extract_boat_settings_data_not_found() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20200630_12#_12R.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_boat_settings(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_boat_settings(file)
 
 
 def test_scrape_boat_settings_including_motor_parts_exchanges() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_12R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_boat_settings(file)
 
     assert data == [
