@@ -1,5 +1,5 @@
 import re
-from typing import IO, Dict
+from typing import IO
 
 import numpy as np
 from bs4 import BeautifulSoup

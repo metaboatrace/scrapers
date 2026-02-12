@@ -1,5 +1,5 @@
 import re
-from typing import IO, Protocol, TypeVar, cast
+from typing import IO, Protocol, cast
 
 from bs4 import BeautifulSoup
 
@@ -7,14 +7,10 @@ from metaboatrace.scrapers.official.website.exceptions import DataNotFound, Race
 
 
 class FuncProtocol(Protocol):
-    def __call__(self, file: IO[str]) -> BeautifulSoup:
-        ...
+    def __call__(self, file: IO[str]) -> BeautifulSoup: ...
 
 
-F = TypeVar("F", bound=FuncProtocol)
-
-
-def no_content_handleable(func: F) -> F:
+def no_content_handleable[F: FuncProtocol](func: F) -> F:
     def wrapper(file: IO[str]) -> BeautifulSoup:
         soup = BeautifulSoup(file, "html.parser")
 
@@ -33,7 +29,7 @@ def no_content_handleable(func: F) -> F:
     return cast(F, wrapper)
 
 
-def race_cancellation_handleable(func: F) -> F:
+def race_cancellation_handleable[F: FuncProtocol](func: F) -> F:
     def wrapper(file: IO[str]) -> BeautifulSoup:
         soup = BeautifulSoup(file, "html.parser")
 

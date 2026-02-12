@@ -25,7 +25,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 def test_extract_race_payoffs() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151115_07#_12R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_payoffs(file)
 
     assert data == [
@@ -42,7 +42,7 @@ def test_extract_race_payoffs() -> None:
 
 def test_extract_payoffs_from_a_race_which_has_an_absent() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_03#_11R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_payoffs(file)
 
     assert data == [
@@ -60,7 +60,7 @@ def test_extract_payoffs_from_a_race_which_has_an_absent() -> None:
 def test_extract_payoffs_from_a_race_which_has_a_tie() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20181116_18#_7R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_payoffs(file)
 
     assert data == [
@@ -85,7 +85,7 @@ def test_extract_payoffs_from_a_race_which_has_a_tie() -> None:
 
 def test_extract_payoffs_from_a_race_which_has_four_disqualified_racers() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151114_02#_2R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_payoffs(file)
 
     assert data == []
@@ -94,23 +94,21 @@ def test_extract_payoffs_from_a_race_which_has_four_disqualified_racers() -> Non
 def test_extract_payoffs_from_a_no_contents_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/data_not_found.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_race_payoffs(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_race_payoffs(file)
 
 
 def test_extract_payoffs_from_a_canceled_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/canceled.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(RaceCanceled):
-            extract_race_payoffs(file)
+    with open(file_path) as file, pytest.raises(RaceCanceled):
+        extract_race_payoffs(file)
 
 
 def test_extract_weather_condition() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20181116_18#_7R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_weather_condition(file)
 
     assert data == WeatherCondition(
@@ -130,7 +128,7 @@ def test_extract_weather_condition() -> None:
 def test_extract_race_record_from_a_race_includes_lateness_on_course() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20231204_16#_5R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_records(file)
 
     assert data == [
@@ -212,7 +210,7 @@ def test_extract_race_record_from_a_race_includes_lateness_on_course() -> None:
 def test_extract_race_record_from_a_race_includes_lateness_not_on_course() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151116_09#_7R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_records(file)
 
     assert data == [
@@ -294,7 +292,7 @@ def test_extract_race_record_from_a_race_includes_lateness_not_on_course() -> No
 def test_extract_race_records_from_a_race_which_has_a_tie() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20181116_18#_7R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_records(file)
 
     assert data == [
@@ -375,10 +373,10 @@ def test_extract_race_records_from_a_race_which_has_a_tie() -> None:
 
 def test_extract_race_records_from_a_race_which_has_four_disqualified_racers() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20151114_02#_2R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_records(file)
 
-    assert [
+    assert data == [
         RaceRecord(
             race_holding_date=date(2015, 11, 14),
             stadium_tel_code=StadiumTelCode.TODA,
@@ -457,23 +455,21 @@ def test_extract_race_records_from_a_race_which_has_four_disqualified_racers() -
 def test_extract_race_records_from_a_no_contents_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/data_not_found.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_race_records(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_race_records(file)
 
 
 def test_extract_race_records_from_a_canceled_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/canceled.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(RaceCanceled):
-            extract_race_records(file)
+    with open(file_path) as file, pytest.raises(RaceCanceled):
+        extract_race_records(file)
 
 
 def test_extract_payoffs_from_a_race_with_mass_flying() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20160507_23#_2R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_payoffs(file)
 
     assert data == []
@@ -482,7 +478,7 @@ def test_extract_payoffs_from_a_race_with_mass_flying() -> None:
 def test_extract_race_records_from_a_race_with_mass_flying() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20160507_23#_2R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_records(file)
 
     assert data == [

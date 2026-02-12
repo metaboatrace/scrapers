@@ -7,7 +7,6 @@ from metaboatrace.models.region import Branch, Prefecture
 
 from metaboatrace.scrapers.official.website.exceptions import DataNotFound
 from metaboatrace.scrapers.official.website.v1707.pages.racer.profile_page.scraping import (
-    Racer,
     extract_racer_profile,
 )
 
@@ -17,7 +16,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 def test_extract_racer_profile() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/4444.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_racer_profile(file)
 
     assert data == Racer(
@@ -38,6 +37,5 @@ def test_scrape_a_no_contents_page() -> None:
         os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
     )
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_racer_profile(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_racer_profile(file)

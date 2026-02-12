@@ -23,7 +23,7 @@ fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
 def test_extract_start_exhibition_records() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_start_exhibition_records(file)
 
     assert data == [
@@ -82,7 +82,7 @@ def test_extract_start_exhibition_records() -> None:
 def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20170625_06#_10R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_start_exhibition_records(file)
 
     assert data == [
@@ -134,7 +134,7 @@ def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -
 def test_extract_start_exhibition_records_from_a_page_including_lateness_racer() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231125_06#_4R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_start_exhibition_records(file)
 
     assert data == [
@@ -196,7 +196,7 @@ def test_extract_start_exhibition_records_from_a_page_including_not_entered_the_
 ):
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20200621_20#_9R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_start_exhibition_records(file)
 
     assert data == [
@@ -254,7 +254,7 @@ def test_extract_start_exhibition_records_from_a_page_including_not_entered_the_
 def test_extract_circumference_exhibition_records() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
 
     assert data == [
@@ -312,7 +312,7 @@ def test_extarct_circumference_exhibition_records_including_st_absent_racer() ->
         )
     )
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
 
     assert data == [
@@ -370,7 +370,7 @@ def test_extract_circumference_exhibition_records_including_race_absent_racer() 
         )
     )
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
 
     assert data == [
@@ -421,7 +421,7 @@ def test_extract_records_with_only_start_exhibition_and_canceled_circumference_e
         )
     )
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
 
     assert data == []
@@ -430,7 +430,7 @@ def test_extract_records_with_only_start_exhibition_and_canceled_circumference_e
 def test_extract_weather_condition() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151115_07#_12R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_weather_condition(file)
 
     assert data == WeatherCondition(
@@ -450,7 +450,6 @@ def test_extract_weather_condition() -> None:
 def test_extract_weather_condition_from_incomplete_information() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20171030_03#_1R.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(ValueError):
-            # 0:00現在表示があったら欠損値があるはずなのでこの例外になる
-            extract_weather_condition(file)
+    with open(file_path) as file, pytest.raises(ValueError):
+        # 0:00現在表示があったら欠損値があるはずなのでこの例外になる
+        extract_weather_condition(file)
