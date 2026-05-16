@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import date, datetime
 from typing import IO, Literal, cast
 
 import pytz
@@ -14,6 +14,46 @@ from metaboatrace.scrapers.official.website.v1707.factories import RaceLapsFacto
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 
 
+def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int, datetime]:
+    """締切予定時刻テーブル (.table1) から全レースの締切時刻 (UTC) を抽出する.
+
+    返り値は race_number (1 始まり) をキー、UTC aware datetime を値とする dict。
+    """
+    deadline_table = soup.select_one(".table1")
+    deadline_cells = deadline_table.select("tbody tr")[-1].select("td")
+
+    jst = pytz.timezone("Asia/Tokyo")
+    deadlines: dict[int, datetime] = {}
+    # 先頭セルは見出し ("締切予定時刻") なので 2 番目以降が 1R 〜 12R に対応する
+    for race_number, cell in enumerate(deadline_cells[1:], start=1):
+        hour, minute = [int(t) for t in cell.get_text(strip=True).split(":")]
+        deadline_at_jst = jst.localize(
+            datetime(
+                race_holding_date.year,
+                race_holding_date.month,
+                race_holding_date.day,
+                hour,
+                minute,
+            )
+        )
+        deadlines[race_number] = deadline_at_jst.astimezone(pytz.utc)
+
+    return deadlines
+
+
+@no_content_handleable
+def extract_race_deadlines(file: IO[str]) -> dict[int, datetime]:
+    """出走表ページから当該開催日の全レースの締切時刻 (UTC) を抽出する.
+
+    出走表ページ (racelist) には rno を問わず全レース分の締切予定時刻テーブルが
+    含まれているため、任意の rno のページから 12R 分をまとめて取得できる。
+    返り値は race_number (1 始まり) をキー、UTC aware datetime を値とする dict。
+    """
+    soup = BeautifulSoup(file, "html.parser")
+    race_holding_date = parse_race_key_attributes(soup)["race_holding_date"]
+    return _extract_deadlines(soup, race_holding_date)
+
+
 @no_content_handleable
 def extract_race_information(file: IO[str]) -> RaceInformation:
     soup = BeautifulSoup(file, "html.parser")
@@ -22,20 +62,7 @@ def extract_race_information(file: IO[str]) -> RaceInformation:
     stadium_tel_code = race_key_attributes["stadium_tel_code"]
     race_number = race_key_attributes["race_number"]
 
-    deadline_table = soup.select_one(".table1")
-    deadline_text = deadline_table.select("tbody tr")[-1].select("td")[race_number].get_text()
-    hour, minute = [int(t) for t in deadline_text.split(":")]
-    jst = pytz.timezone("Asia/Tokyo")
-    deadline_at_jst = jst.localize(
-        datetime(
-            race_holding_date.year,
-            race_holding_date.month,
-            race_holding_date.day,
-            hour,
-            minute,
-        )
-    )
-    deadline_at = deadline_at_jst.astimezone(pytz.utc)
+    deadline_at = _extract_deadlines(soup, race_holding_date)[race_number]
 
     if m := re.match(
         # note: r"(\w+)\s*(1200|1800)m" だと 'ガチ勝゛ち８\u3000\n\t\t1800m' みたいなのがパースできない
