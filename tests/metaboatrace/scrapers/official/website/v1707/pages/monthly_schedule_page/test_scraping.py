@@ -14,7 +14,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 def test_extract_events_from_a_monthly_schedule_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2015_11.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_events(file)
 
     assert len(data) == 59
@@ -97,9 +97,8 @@ def test_extract_events_from_a_monthly_schedule_page() -> None:
 def test_extract_events_from_a_monthly_schedule_page_for_specified_stadium() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2016_03_14#.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(ScrapingError):
-            extract_events(file)
+    with open(file_path) as file, pytest.raises(ScrapingError):
+        extract_events(file)
 
 
 def test_extract_events_from_a_no_contents_page() -> None:
@@ -107,6 +106,5 @@ def test_extract_events_from_a_no_contents_page() -> None:
         os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
     )
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_events(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_events(file)

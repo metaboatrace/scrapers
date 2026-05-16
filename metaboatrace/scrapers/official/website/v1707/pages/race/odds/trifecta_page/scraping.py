@@ -1,6 +1,6 @@
 from functools import reduce
 from itertools import zip_longest
-from typing import IO, Generator
+from typing import IO
 
 from bs4 import BeautifulSoup, ResultSet, Tag
 from metaboatrace.models.race import BettingMethod, Odds
@@ -12,9 +12,9 @@ from metaboatrace.scrapers.official.website.v1707.decorators import (
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 
 
-def _grouper(n: int, iterable: ResultSet[Tag], fillvalue=None):  # type: ignore
+def _grouper(n: int, iterable: ResultSet[Tag], fillvalue: Tag | None = None):
     args = [iter(iterable)] * n
-    return zip_longest(fillvalue=fillvalue, *args)
+    return zip_longest(*args, fillvalue=fillvalue)
 
 
 @no_content_handleable

@@ -9,10 +9,11 @@ from metaboatrace.models.stadium import StadiumTelCode
 
 from metaboatrace.scrapers.official.website.exceptions import ScrapingError
 
-RaceKey = TypedDict(
-    "RaceKey",
-    {"race_holding_date": date, "stadium_tel_code": StadiumTelCode, "race_number": int},
-)
+
+class RaceKey(TypedDict):
+    race_holding_date: date
+    stadium_tel_code: StadiumTelCode
+    race_number: int
 
 
 def parse_race_key_attributes(soup: BeautifulSoup) -> RaceKey:
@@ -30,7 +31,6 @@ def parse_race_key_attributes(soup: BeautifulSoup) -> RaceKey:
     race_holding_date = date(int(date_string[:4]), int(date_string[4:6]), int(date_string[6:]))
 
     deadline_table = soup.select_one(".table1")
-    deadline_table.select_one("tr th:not([class])").text
     if m := re.match(r"(\d{1,2})R", deadline_table.select_one("tr th:not([class])").text):
         race_number = int(m.group(1))
     else:

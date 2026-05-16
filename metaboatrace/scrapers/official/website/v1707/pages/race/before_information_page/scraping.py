@@ -1,5 +1,4 @@
 import re
-from dataclasses import dataclass
 from typing import IO
 
 from bs4 import BeautifulSoup
@@ -162,10 +161,12 @@ def extract_boat_settings(file: IO[str]) -> BoatSetting:
         try:
             tilt = float(row.select("td")[5].text)
             is_new_propeller = row.select("td")[6].text.strip() == NEW_PROPELLER_MARK
-        except ValueError:
-            raise DataNotFound
+        except ValueError as err:
+            raise DataNotFound from err
 
-        numbers = dict(zip(["１", "２", "３", "４", "５", "６", "７", "８", "９"], range(1, 10)))
+        numbers = dict(
+            zip(["１", "２", "３", "４", "５", "６", "７", "８", "９"], range(1, 10), strict=True)
+        )
         motor_parts_exchanges = []
         for li in row.select("td")[7].select("li"):
             if MOTOR_PARTS_QUANTITY_DELIMITER in li.get_text():

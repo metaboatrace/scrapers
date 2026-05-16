@@ -20,7 +20,7 @@ jst = pytz.timezone("Asia/Tokyo")
 
 def test_extract_race_information_from_an_entry_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151016_08#_2R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_information(file)
 
     assert data == RaceInformation(
@@ -37,7 +37,7 @@ def test_extract_race_information_from_an_entry_page() -> None:
 
 def test_extract_race_information_using_stabilizers_from_an_entry_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_information(file)
 
     assert data == RaceInformation(
@@ -54,7 +54,7 @@ def test_extract_race_information_using_stabilizers_from_an_entry_page() -> None
 
 def test_extract_course_fixed_race_information_from_an_entry_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_7R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_information(file)
 
     assert data == RaceInformation(
@@ -71,7 +71,7 @@ def test_extract_course_fixed_race_information_from_an_entry_page() -> None:
 
 def test_extract_two_laps_race_information_from_an_entry_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_15#_12R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_information(file)
 
     assert data == RaceInformation(
@@ -89,7 +89,7 @@ def test_extract_two_laps_race_information_from_an_entry_page() -> None:
 def test_extract_race_entries_from_an_entry_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_entries(file)
 
     assert data == [
@@ -159,7 +159,7 @@ def test_extract_race_entries_from_an_entry_page() -> None:
 def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_entries(file)
 
     assert data == [
@@ -229,7 +229,7 @@ def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent() ->
 def test_extract_racer_performances() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231102_16#_2R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_racer_performances(file)
 
     assert data == [

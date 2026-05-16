@@ -1,4 +1,4 @@
-from typing import Literal, Optional, cast
+from typing import Literal, cast
 
 from metaboatrace.models.boat import MotorParts
 from metaboatrace.models.race import Disqualification, Weather, WinningTrick
@@ -7,7 +7,7 @@ from metaboatrace.models.stadium import EventHoldingStatus
 
 class DisqualificationFactory:
     @staticmethod
-    def create(name: str) -> Optional[Disqualification]:
+    def create(name: str) -> Disqualification | None:
         if "転" in name:
             return Disqualification.CAPSIZE
         elif "落" in name:
@@ -53,15 +53,13 @@ class MotorPartsFactory:
             return MotorParts.ELECTRICAL_SYSTEM
         elif "キャブ" in name:
             return MotorParts.CARBURETOR
-        elif "ピストン" == name:
+        elif name == "ピストン":
             return MotorParts.PISTON
         elif "リング" in name:
             return MotorParts.PISTON_RING
         elif "シリンダ" in name:
             return MotorParts.CYLINDER
-        elif "ギア" in name:
-            return MotorParts.GEAR_CASE
-        elif "ギヤ" in name:
+        elif "ギア" in name or "ギヤ" in name:
             return MotorParts.GEAR_CASE
         elif "キャリ" in name:
             return MotorParts.CARRIER_BODY
@@ -82,17 +80,17 @@ class RaceLapsFactory:
 class WinningTrickFactory:
     @staticmethod
     def create(name: str) -> WinningTrick:
-        if "逃げ" == name:
+        if name == "逃げ":
             return WinningTrick.NIGE
-        elif "差し" == name:
+        elif name == "差し":
             return WinningTrick.SASHI
-        elif "まくり" == name:
+        elif name == "まくり":
             return WinningTrick.MAKURI
-        elif "まくり差し" == name:
+        elif name == "まくり差し":
             return WinningTrick.MAKURIZASHI
-        elif "抜き" == name:
+        elif name == "抜き":
             return WinningTrick.NUKI
-        elif "恵まれ" == name:
+        elif name == "恵まれ":
             return WinningTrick.MEGUMARE
         else:
             raise ValueError
@@ -120,9 +118,9 @@ class WeatherFactory:
 class EventHoldingStatusFactory:
     @staticmethod
     def create(text: str) -> Weather:
-        if "中止" == text:
+        if text == "中止":
             return EventHoldingStatus.CANCELED
-        elif "中止順延" == text:
+        elif text == "中止順延":
             return EventHoldingStatus.POSTPONED
         else:
             return EventHoldingStatus.OPEN

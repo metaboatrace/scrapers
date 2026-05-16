@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Type, Union
+from typing import Literal
 
 import pytest
 from metaboatrace.models.boat import MotorParts
@@ -34,7 +34,7 @@ from metaboatrace.scrapers.official.website.v1707.factories import (
     ],
 )
 def test_disqualification_factory(
-    name: str, expected: Union[Optional[Disqualification], Type[ValueError]]
+    name: str, expected: Disqualification | None | type[ValueError]
 ) -> None:
     if expected is ValueError:
         with pytest.raises(expected):
@@ -58,10 +58,10 @@ def test_disqualification_factory(
         ("バルブ", ValueError),
     ],
 )
-def test_motor_parts_factory(name: str, expected: Union[MotorParts, Type[ValueError]]) -> None:
+def test_motor_parts_factory(name: str, expected: MotorParts | type[ValueError]) -> None:
     if expected is ValueError:
         with pytest.raises(expected):
-            MotorPartsFactory.create(name) == expected
+            MotorPartsFactory.create(name)
     else:
         assert MotorPartsFactory.create(name) == expected
 
@@ -89,10 +89,10 @@ def test_race_laps_factory(metre: Literal[1200, 1800], expected: Literal[2, 3]) 
         ("ツケマイ", ValueError),
     ],
 )
-def test_winning_trick_factory(name: str, expected: Union[WinningTrick, Type[ValueError]]) -> None:
+def test_winning_trick_factory(name: str, expected: WinningTrick | type[ValueError]) -> None:
     if expected is ValueError:
         with pytest.raises(expected):
-            WinningTrickFactory.create(name) == expected
+            WinningTrickFactory.create(name)
     else:
         assert WinningTrickFactory.create(name) == expected
 
@@ -109,10 +109,10 @@ def test_winning_trick_factory(name: str, expected: Union[WinningTrick, Type[Val
         ("嵐", ValueError),
     ],
 )
-def test_weather_factory(name: str, expected: Union[Weather, Type[ValueError]]) -> None:
+def test_weather_factory(name: str, expected: Weather | type[ValueError]) -> None:
     if expected is ValueError:
         with pytest.raises(expected):
-            WeatherFactory.create(name) == expected
+            WeatherFactory.create(name)
     else:
         assert WeatherFactory.create(name) == expected
 

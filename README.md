@@ -4,8 +4,8 @@
 ![Coverage](https://img.shields.io/codecov/c/github/metaboatrace/scrapers.svg)
 ![PyPI version](https://img.shields.io/pypi/v/metaboatrace.scrapers.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Python version](https://img.shields.io/badge/python-3.11-blue.svg)
-![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![Python version](https://img.shields.io/badge/python-3.13-blue.svg)
+![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
 
 ## 概要
 
@@ -50,3 +50,7 @@ Ubuntu は 22.04 のように年と月という形でバージョニングされ
 例えば、ここに入ってる関数は "https://boatrace.jp/owpc/pc/race/monthlyschedule?ym=202209" のファイルをスクレイピングして[エンティティ](https://github.com/metaboatrace/models)を返すような処理を行う。
 
 ※ ここでいうエンティティはクリーンアーキテクチャの定義上のエンティティのことであり、[metaboatrace.models](https://github.com/metaboatrace/models)はそういったものを提供しているパッケージ
+
+## ブランチ戦略
+
+[GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow) を採用している。

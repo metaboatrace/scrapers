@@ -1,5 +1,5 @@
 import re
-from typing import IO, Optional
+from typing import IO
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.stadium import EventHolding, EventHoldingStatus, StadiumTelCode
@@ -42,7 +42,7 @@ def _canceled(text: str) -> bool:
     return any(ct in text for ct in CANCELED_TEXTS)
 
 
-def _cancel_text(text: str) -> Optional[str]:
+def _cancel_text(text: str) -> str | None:
     if re.search(r"\d+R以降中止", text):
         return None
     for ct in CANCELED_TEXTS:
@@ -58,12 +58,12 @@ def _stadium_tel_code(html_string: str) -> StadiumTelCode:
     return StadiumTelCode(int(match.group(1)))
 
 
-def _day_text(text: str) -> Optional[str]:
+def _day_text(text: str) -> str | None:
     match = re.search(r"(初日|[\d１２３４５６７]日目|最終日)", text)
     return match.group(0) if match else None
 
 
-def _progress_day(text: str) -> Optional[int]:
+def _progress_day(text: str) -> int | None:
     match = re.search(r"(初日|[\d１２３４５６７]日目|最終日)", text)
 
     if not match:

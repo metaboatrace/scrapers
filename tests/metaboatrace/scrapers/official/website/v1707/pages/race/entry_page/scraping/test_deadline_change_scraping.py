@@ -11,12 +11,12 @@ fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
 def test_scraping_in_not_deadline_changed_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
 
-    with open(file_path, mode="r") as file:
-        assert is_deadline_changed(file) == False
+    with open(file_path) as file:
+        assert not is_deadline_changed(file)
 
 
 def test_scraping_in_deadline_changed_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20240104_14#_8R.html"))
 
-    with open(file_path, mode="r") as file:
-        assert is_deadline_changed(file) == True
+    with open(file_path) as file:
+        assert is_deadline_changed(file)

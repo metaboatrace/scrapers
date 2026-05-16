@@ -16,7 +16,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 def test_extract_odds() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20170919_19#_11R.html"))
 
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_odds(file)
 
     assert len(data) == 60
@@ -42,14 +42,12 @@ def test_extract_odds() -> None:
 def test_extarct_odds_from_a_no_contents_page() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20170102_01#_1R.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(DataNotFound):
-            extract_odds(file)
+    with open(file_path) as file, pytest.raises(DataNotFound):
+        extract_odds(file)
 
 
 def test_extract_odds_from_a_canceled_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/20180103_03#_11R.html"))
 
-    with open(file_path, mode="r") as file:
-        with pytest.raises(RaceCanceled):
-            extract_odds(file)
+    with open(file_path) as file, pytest.raises(RaceCanceled):
+        extract_odds(file)

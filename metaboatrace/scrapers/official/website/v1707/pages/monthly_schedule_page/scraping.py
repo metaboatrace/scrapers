@@ -1,7 +1,7 @@
 import calendar
 import re
 from datetime import date, timedelta
-from typing import IO, Optional
+from typing import IO
 
 from bs4 import BeautifulSoup
 from metaboatrace.models.stadium import Event, SeriesGrade, SeriesKind, StadiumTelCode
@@ -104,8 +104,10 @@ def _parse_offset_date(soup: BeautifulSoup) -> date:
         raise ScrapingError
 
 
-def _parse_race_grade_from_event_title(event_title: str) -> Optional[SeriesGrade]:
-    if match := re.search(r"G[1-3]{1}", event_title.translate(str.maketrans("ＧⅠⅡⅢ１２３", "G123123"))):
+def _parse_race_grade_from_event_title(event_title: str) -> SeriesGrade | None:
+    if match := re.search(
+        r"G[1-3]{1}", event_title.translate(str.maketrans("ＧⅠⅡⅢ１２３", "G123123"))
+    ):
         try:
             return SeriesGrade(match.group(0))
         except ValueError:
@@ -114,7 +116,7 @@ def _parse_race_grade_from_event_title(event_title: str) -> Optional[SeriesGrade
         return None
 
 
-def _parse_race_grade_from_html_class(html_class: str) -> Optional[SeriesGrade]:
+def _parse_race_grade_from_html_class(html_class: str) -> SeriesGrade | None:
     if match := re.match(r"is-gradeColor(SG|G[123])", html_class):
         return SeriesGrade.from_string(match.group(1))
 
@@ -124,21 +126,19 @@ def _parse_race_grade_from_html_class(html_class: str) -> Optional[SeriesGrade]:
     return None
 
 
-def _parse_race_kind_from_event_title(event_title: str) -> Optional[SeriesKind]:
-    if match := re.search(r"男女[wWＷ]優勝戦", event_title):
+def _parse_race_kind_from_event_title(event_title: str) -> SeriesKind | None:
+    if re.search(r"男女[wWＷ]優勝戦", event_title):
         return SeriesKind.DOUBLE_WINNER
-    else:
-        return None
+    return None
 
 
-def _parse_race_kind_from_html_class(html_class: str) -> Optional[SeriesKind]:
-    if html_class == "is-gradeColorRookie":
-        return SeriesKind.ROOKIE
-    elif html_class == "is-gradeColorVenus":
-        return SeriesKind.VENUS
-    elif html_class == "is-gradeColorLady":
-        return SeriesKind.ALL_LADIES
-    elif html_class == "is-gradeColorTakumi":
-        return SeriesKind.SENIOR
-    else:
-        return None
+_HTML_CLASS_TO_SERIES_KIND: dict[str, SeriesKind] = {
+    "is-gradeColorRookie": SeriesKind.ROOKIE,
+    "is-gradeColorVenus": SeriesKind.VENUS,
+    "is-gradeColorLady": SeriesKind.ALL_LADIES,
+    "is-gradeColorTakumi": SeriesKind.SENIOR,
+}
+
+
+def _parse_race_kind_from_html_class(html_class: str) -> SeriesKind | None:
+    return _HTML_CLASS_TO_SERIES_KIND.get(html_class)
