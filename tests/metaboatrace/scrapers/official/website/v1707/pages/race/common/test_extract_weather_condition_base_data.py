@@ -12,7 +12,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 def test_extract_weather_condition_base_data_normal():
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/weather_normal.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_weather_condition_base_data(file)
 
     assert data == {
@@ -27,7 +27,7 @@ def test_extract_weather_condition_base_data_normal():
 
 def test_extract_weather_condition_base_data_no_wind():
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/weather_no_wind.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_weather_condition_base_data(file)
 
     assert data == {
@@ -44,7 +44,7 @@ def test_extract_weather_condition_base_data_empty_wavelength():
     file_path = os.path.normpath(
         os.path.join(base_path, "./fixtures/weather_empty_wavelength.html")
     )
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_weather_condition_base_data(file)
 
     assert data == {
@@ -71,7 +71,7 @@ def test_extract_weather_condition_base_data_various_wind_directions():
 
     for wind_class, expected_angle in test_cases:
         html_content = f"""<div class="weather1">
-            <p class="weather1_title">水面気象情報</p>                  
+            <p class="weather1_title">水面気象情報</p>
             <div class="weather1_body is-type1__3rdadd">
                 <div class="weather1_bodyUnit is-direction">
                     <p class="weather1_bodyUnitImage is-direction11 is-type1__3rdadd"></p>
@@ -115,9 +115,9 @@ def test_extract_weather_condition_base_data_various_wind_directions():
         file = StringIO(html_content)
         data = extract_weather_condition_base_data(file)
 
-        assert (
-            data["wind_angle"] == expected_angle
-        ), f"Failed for {wind_class}: expected {expected_angle}, got {data['wind_angle']}"
+        assert data["wind_angle"] == expected_angle, (
+            f"Failed for {wind_class}: expected {expected_angle}, got {data['wind_angle']}"
+        )
 
 
 def test_extract_weather_condition_base_data_no_weather_container():
@@ -132,7 +132,7 @@ def test_extract_weather_condition_base_data_no_weather_container():
 
 def test_extract_weather_condition_base_data_invalid_wind_direction():
     html_content = """<div class="weather1">
-        <p class="weather1_title">水面気象情報</p>                  
+        <p class="weather1_title">水面気象情報</p>
         <div class="weather1_body is-type1__3rdadd">
             <div class="weather1_bodyUnit is-direction">
                 <p class="weather1_bodyUnitImage is-direction11 is-type1__3rdadd"></p>

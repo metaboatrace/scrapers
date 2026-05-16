@@ -15,7 +15,7 @@ jst = pytz.timezone("Asia/Tokyo")
 
 def test_extract_race_deadlines_from_an_entry_page() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151016_08#_2R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_deadlines(file)
 
     race_holding_date = date(2015, 10, 16)
@@ -45,7 +45,7 @@ def test_extract_race_deadlines_from_an_entry_page() -> None:
 
 def test_extract_race_deadlines_returns_utc_aware_datetimes() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
-    with open(file_path, mode="r") as file:
+    with open(file_path) as file:
         data = extract_race_deadlines(file)
 
     assert len(data) == 12
