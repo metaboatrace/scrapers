@@ -131,7 +131,10 @@ def extract_racers(file: IO[str]) -> list[Racer]:
             raise ScrapingError
 
         racer_full_name = row.select_one("tr").select("td")[2].select_one("a").text.strip()
-        racer_last_name, racer_first_name = re.split(r"[　 ]+", racer_full_name)
+        # 区切りスペースが落ちている場合は姓に全体、名は空文字 (profile_page 側と同じ扱い).
+        name_parts = re.split(r"[　 ]+", racer_full_name, maxsplit=1)
+        racer_last_name = name_parts[0]
+        racer_first_name = name_parts[1] if len(name_parts) > 1 else ""
 
         racer_rank = RacerRank.from_string(
             row.select_one("tr").select("td")[2].select_one("span").text.strip()

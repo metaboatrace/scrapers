@@ -32,6 +32,27 @@ def test_extract_racer_profile() -> None:
     )
 
 
+def test_extract_racer_profile_when_name_has_no_separator_space() -> None:
+    # 公式サイトは姓+名が長い場合に表示幅都合でスペースを落とすことがある (toban=4011 堀之内紀代子).
+    # 仮名から漢字分割は復元できないので姓側に全体を寄せ、名は空文字で返す.
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/4011.html"))
+
+    with open(file_path) as file:
+        data = extract_racer_profile(file)
+
+    assert data == Racer(
+        registration_number=4011,
+        last_name="堀之内紀代子",
+        first_name="",
+        term=84,
+        birth_date=date(1979, 9, 9),
+        height=158,
+        born_prefecture=Prefecture.OKAYAMA,
+        branch=Branch.OKAYAMA,
+        current_rating=RacerRank.A1,
+    )
+
+
 def test_scrape_a_no_contents_page() -> None:
     file_path = os.path.normpath(
         os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
