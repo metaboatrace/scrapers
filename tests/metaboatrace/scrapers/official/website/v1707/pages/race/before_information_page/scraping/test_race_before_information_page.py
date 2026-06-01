@@ -10,6 +10,7 @@ from metaboatrace.models.race import (
 )
 from metaboatrace.models.stadium import StadiumTelCode
 
+from metaboatrace.scrapers.official.website.exceptions import DataNotReady
 from metaboatrace.scrapers.official.website.v1707.pages.race.before_information_page.scraping import (
     extract_circumference_exhibition_records,
     extract_start_exhibition_records,
@@ -450,6 +451,6 @@ def test_extract_weather_condition() -> None:
 def test_extract_weather_condition_from_incomplete_information() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20171030_03#_1R.html"))
 
-    with open(file_path) as file, pytest.raises(ValueError):
-        # 0:00現在表示があったら欠損値があるはずなのでこの例外になる
+    with open(file_path) as file, pytest.raises(DataNotReady):
+        # 0:00現在表示があったら欠損値があるはず = 速報で天候欄が確定前の状態
         extract_weather_condition(file)
