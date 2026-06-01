@@ -13,7 +13,11 @@ from metaboatrace.models.race import (
 )
 from metaboatrace.models.stadium import StadiumTelCode
 
-from metaboatrace.scrapers.official.website.exceptions import DataNotFound, RaceCanceled
+from metaboatrace.scrapers.official.website.exceptions import (
+    DataNotFound,
+    DataNotReady,
+    RaceCanceled,
+)
 from metaboatrace.scrapers.official.website.v1707.pages.race.result_page.scraping import (
     extract_race_payoffs,
     extract_race_records,
@@ -102,6 +106,15 @@ def test_extract_payoffs_from_a_canceled_race() -> None:
     file_path = os.path.normpath(os.path.join(base_path, "./fixtures/canceled.html"))
 
     with open(file_path) as file, pytest.raises(RaceCanceled):
+        extract_race_payoffs(file)
+
+
+def test_extract_payoffs_from_a_too_early_page() -> None:
+    # 公式サイトが結果ページを速報公開し、払戻金がまだ未確定 (払戻テーブルが
+    # 空セル1つだけで rowspan 無し) の状態。確定前なので DataNotReady を送出する。
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/too_early.html"))
+
+    with open(file_path) as file, pytest.raises(DataNotReady):
         extract_race_payoffs(file)
 
 

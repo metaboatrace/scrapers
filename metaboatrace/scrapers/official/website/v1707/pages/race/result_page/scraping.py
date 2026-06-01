@@ -5,6 +5,7 @@ from typing import IO
 from bs4 import BeautifulSoup
 from metaboatrace.models.race import BettingMethod, Payoff, RaceRecord, WeatherCondition
 
+from metaboatrace.scrapers.official.website.exceptions import DataNotReady
 from metaboatrace.scrapers.official.website.v1707.decorators import (
     no_content_handleable,
     race_cancellation_handleable,
@@ -31,7 +32,13 @@ def extract_race_payoffs(file: IO[str]) -> list[Payoff]:
     payment_table = soup.select(".table1")[3]
     # YAGNI原則に則って今の所三連単だけ対応
     trifecta_tbody = payment_table.select_one("tbody")
-    rowspan = int(trifecta_tbody.select_one("td")["rowspan"])
+    first_cell = trifecta_tbody.select_one("td")
+    # 速報段階では払戻テーブルが空セル1つ (<td class="is-fs16"></td>) だけで、
+    # 確定後に付くはずの rowspan がまだ無い。確定前 = DataNotReady として扱う
+    # (払戻が永久に存在しない DataNotFound とは別事象)。
+    if first_cell is None or not first_cell.has_attr("rowspan"):
+        raise DataNotReady
+    rowspan = int(first_cell["rowspan"])
 
     data = []
     for tr in trifecta_tbody.select("tr"):

@@ -4,6 +4,7 @@ from typing import IO
 import numpy as np
 from bs4 import BeautifulSoup
 
+from metaboatrace.scrapers.official.website.exceptions import DataNotReady
 from metaboatrace.scrapers.official.website.v1707.factories import WeatherFactory
 
 
@@ -39,26 +40,31 @@ def extract_weather_condition_base_data(file: IO[str]):  # type: ignore # todo: 
         )
 
     else:
-        raise ValueError
+        # 風向きアイコン未掲載 = 速報で天候欄がまだ埋まっていない (確定前)
+        raise DataNotReady
 
     weather = WeatherFactory.create(data_container.select_one(".is-weather").text.strip())
 
-    # NOTE: 数年に一度ぐらいの頻度ではあるが波高が入っていないケースがある
-    # https://www.boatrace.jp/owpc/pc/race/raceresult?rno=9&jcd=23&hd=20200209
-    wavelength_str = (
-        data_container.select(".weather1_bodyUnitLabelData")[3].text.strip().replace("cm", "")
-    )
-    wavelength = float(wavelength_str) if wavelength_str else 0.0
+    try:
+        # NOTE: 数年に一度ぐらいの頻度ではあるが波高が入っていないケースがある
+        # https://www.boatrace.jp/owpc/pc/race/raceresult?rno=9&jcd=23&hd=20200209
+        wavelength_str = (
+            data_container.select(".weather1_bodyUnitLabelData")[3].text.strip().replace("cm", "")
+        )
+        wavelength = float(wavelength_str) if wavelength_str else 0.0
 
-    wind_velocity = float(
-        data_container.select(".weather1_bodyUnitLabelData")[1].text.strip().replace("m", "")
-    )
-    air_temperature = float(
-        data_container.select(".weather1_bodyUnitLabelData")[0].text.strip().replace("℃", "")
-    )
-    water_temperature = float(
-        data_container.select(".weather1_bodyUnitLabelData")[2].text.strip().replace("℃", "")
-    )
+        wind_velocity = float(
+            data_container.select(".weather1_bodyUnitLabelData")[1].text.strip().replace("m", "")
+        )
+        air_temperature = float(
+            data_container.select(".weather1_bodyUnitLabelData")[0].text.strip().replace("℃", "")
+        )
+        water_temperature = float(
+            data_container.select(".weather1_bodyUnitLabelData")[2].text.strip().replace("℃", "")
+        )
+    except ValueError as e:
+        # 風速・気温・水温が空 / プレースホルダ = 速報で未確定 (確定前)
+        raise DataNotReady from e
 
     return {
         "weather": weather,
