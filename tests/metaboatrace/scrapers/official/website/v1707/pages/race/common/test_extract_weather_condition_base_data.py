@@ -3,6 +3,7 @@ import os
 import pytest
 from metaboatrace.models.race import Weather
 
+from metaboatrace.scrapers.official.website.exceptions import DataNotReady
 from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
@@ -175,5 +176,6 @@ def test_extract_weather_condition_base_data_invalid_wind_direction():
 
     file = StringIO(html_content)
 
-    with pytest.raises(ValueError):
+    # 風向きアイコンが未掲載 = 速報で天候欄が確定前の状態。DataNotReady を送出する。
+    with pytest.raises(DataNotReady):
         extract_weather_condition_base_data(file)
