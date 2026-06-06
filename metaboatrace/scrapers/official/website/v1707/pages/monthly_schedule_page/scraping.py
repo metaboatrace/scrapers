@@ -16,7 +16,7 @@ from metaboatrace.scrapers.official.website.v1707.utils import (
 
 
 @no_content_handleable
-# note: 命名について
+# 命名について（extract を採用した理由）
 # scrape_events にしようと思ったが scrape の目的語はスクレイピング対象のWebページだから違和感ある
 # get_events はアクセサメソッド見たいなニュアンスがあって違和感ある
 # 引数のWebページのHTMLからデータを抜き出すという意味で extract が合ってると思ったので以下の名前にした
@@ -80,8 +80,7 @@ def _parse_calendar(soup: BeautifulSoup) -> tuple[int, int]:
         get_attribute_or_raise(select_one_or_raise(soup, "li.title2_navsLeft a"), "href"),
     ):
         return calendar._nextmonth(year=int(match.group(1)[:4]), month=int(match.group(1)[4:]))  # type: ignore
-    else:
-        raise ScrapingError
+    raise ScrapingError
 
 
 def _parse_offset_date(soup: BeautifulSoup) -> date:
@@ -104,12 +103,10 @@ def _parse_offset_date(soup: BeautifulSoup) -> date:
         start_day = int(match.group(1))
         if start_day == 1:
             return date(year, month, 1)
-        else:
-            year_of_last_month, last_month = calendar._prevmonth(year, month)  # type: ignore
-            return date(year_of_last_month, last_month, start_day)
+        year_of_last_month, last_month = calendar._prevmonth(year, month)  # type: ignore
+        return date(year_of_last_month, last_month, start_day)
 
-    else:
-        raise ScrapingError
+    raise ScrapingError
 
 
 def _parse_race_grade_from_event_title(event_title: str) -> SeriesGrade | None:

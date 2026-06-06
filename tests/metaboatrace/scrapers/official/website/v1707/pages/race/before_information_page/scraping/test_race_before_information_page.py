@@ -130,7 +130,7 @@ def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -
     ]
 
 
-# note: これはコースに入ったけど出遅れたケース
+# コースに入ったが、出遅れたケース
 # https://boatrace.jp/owpc/pc/race/beforeinfo?rno=4&jcd=06&hd=20231125
 def test_extract_start_exhibition_records_from_a_page_including_lateness_racer() -> None:
     file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231125_06#_4R.html"))

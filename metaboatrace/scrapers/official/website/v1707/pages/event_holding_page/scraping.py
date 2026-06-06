@@ -72,7 +72,6 @@ def _progress_day(text: str) -> int | None:
     day_text = match.group(0)
     if day_text == "初日":
         return 1
-    elif day_text == "最終日":
+    if day_text == "最終日":
         return -1
-    else:
-        return int(day_text[0].translate(str.maketrans("１２３４５６７", "1234567")))
+    return int(day_text[0].translate(str.maketrans("１２３４５６７", "1234567")))
