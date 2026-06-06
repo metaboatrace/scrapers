@@ -21,5 +21,3 @@ class DataNotReady(ScrapingError):
     恒久的にデータが存在しない ``DataNotFound`` や、レース中止 ``RaceCanceled``
     とは原因も対処も異なるため、別の例外型として区別する。
     """
-
-    pass
