@@ -1,23 +1,34 @@
 import re
-from typing import IO
+from typing import IO, TypedDict
 
 import numpy as np
 from bs4 import BeautifulSoup
+from metaboatrace.models.race import Weather
 
 from metaboatrace.scrapers.official.website.exceptions import DataNotReady
 from metaboatrace.scrapers.official.website.v1707.factories import WeatherFactory
+from metaboatrace.scrapers.official.website.v1707.utils import select_one_or_raise
 
 
-def extract_weather_condition_base_data(file: IO[str]):  # type: ignore # todo: fix typ
+class WeatherConditionBaseData(TypedDict):
+    weather: Weather
+    wavelength: float
+    wind_angle: float | None
+    wind_velocity: float
+    air_temperature: float
+    water_temperature: float
+
+
+def extract_weather_condition_base_data(file: IO[str]) -> WeatherConditionBaseData:
     soup = BeautifulSoup(file, "html.parser")
 
     WIND_ICON_IDS = list(range(1, 17))
     NO_WIND_ICON_ID = 17
 
-    data_container = soup.select_one(".weather1")
+    data_container = select_one_or_raise(soup, ".weather1")
     if m := re.search(
         r"is-wind(\d{1,2})",
-        "".join(data_container.select_one(".is-windDirection p")["class"]),
+        "".join(select_one_or_raise(data_container, ".is-windDirection p")["class"]),
     ):
         wind_direction_id_in_official = int(m.group(1))
         # NOTE: 方位を角度としてとった風向きの配列。スリットの北が0度。
@@ -43,7 +54,7 @@ def extract_weather_condition_base_data(file: IO[str]):  # type: ignore # todo: 
         # 風向きアイコン未掲載 = 速報で天候欄がまだ埋まっていない (確定前)
         raise DataNotReady
 
-    weather = WeatherFactory.create(data_container.select_one(".is-weather").text.strip())
+    weather = WeatherFactory.create(select_one_or_raise(data_container, ".is-weather").text.strip())
 
     try:
         # NOTE: 数年に一度ぐらいの頻度ではあるが波高が入っていないケースがある

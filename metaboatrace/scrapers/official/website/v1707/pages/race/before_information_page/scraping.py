@@ -20,6 +20,10 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
+from metaboatrace.scrapers.official.website.v1707.utils import (
+    get_attribute_or_raise,
+    select_one_or_raise,
+)
 
 
 @no_content_handleable
@@ -30,14 +34,15 @@ def extract_start_exhibition_records(file: IO[str]) -> list[StartExhibitionRecor
 
     data = []
     for start_course, row in enumerate(soup.select(".table1")[2].select("tbody tr"), 1):
-        if row.select_one("img") is None:
+        img = row.select_one("img")
+        if img is None:
             # 画像がない場合は出遅れか展示不出走
             #
             # 出遅れが発生した展示
             # http://boatrace.jp/owpc/pc/race/beforeinfo?rno=2&jcd=17&hd=20170511
             continue
 
-        m = re.search(r"_([1-6]{1}).png$", row.select_one("img")["src"])
+        m = re.search(r"_([1-6]{1}).png$", get_attribute_or_raise(img, "src"))
         pit_number = int(m.group(1))  # type: ignore
 
         start_time_element = row.select("span")[-1]
@@ -120,7 +125,10 @@ def extract_racer_conditions(file: IO[str]) -> list[RacerCondition]:
             # 欠場
             continue
 
-        if m := re.search(r"toban=(\d{4})$", row.select("td")[2].select_one("a")["href"]):
+        if m := re.search(
+            r"toban=(\d{4})$",
+            get_attribute_or_raise(select_one_or_raise(row.select("td")[2], "a"), "href"),
+        ):
             racer_registration_number = int(m.group(1))
         else:
             raise ValueError
@@ -177,9 +185,8 @@ def extract_boat_settings(file: IO[str]) -> BoatSetting:
                 parts_name = li.get_text().replace("\xa0", "")
                 quantity_text = None
 
-            motor_parts_exchanges.append(
-                (MotorPartsFactory.create(parts_name), numbers.get(quantity_text, 1))
-            )
+            quantity = numbers.get(quantity_text, 1) if quantity_text is not None else 1
+            motor_parts_exchanges.append((MotorPartsFactory.create(parts_name), quantity))
 
         data.append(
             BoatSetting(

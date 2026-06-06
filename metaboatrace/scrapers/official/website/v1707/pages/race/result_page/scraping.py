@@ -18,6 +18,10 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
+from metaboatrace.scrapers.official.website.v1707.utils import (
+    get_attribute_or_raise,
+    select_one_or_raise,
+)
 
 
 @race_cancellation_handleable
@@ -31,14 +35,14 @@ def extract_race_payoffs(file: IO[str]) -> list[Payoff]:
 
     payment_table = soup.select(".table1")[3]
     # YAGNI原則に則って今の所三連単だけ対応
-    trifecta_tbody = payment_table.select_one("tbody")
+    trifecta_tbody = select_one_or_raise(payment_table, "tbody")
     first_cell = trifecta_tbody.select_one("td")
     # 速報段階では払戻テーブルが空セル1つ (<td class="is-fs16"></td>) だけで、
     # 確定後に付くはずの rowspan がまだ無い。確定前 = DataNotReady として扱う
     # (払戻が永久に存在しない DataNotFound とは別事象)。
     if first_cell is None or not first_cell.has_attr("rowspan"):
         raise DataNotReady
-    rowspan = int(first_cell["rowspan"])
+    rowspan = int(get_attribute_or_raise(first_cell, "rowspan"))
 
     data = []
     for tr in trifecta_tbody.select("tr"):
@@ -117,9 +121,9 @@ def extract_race_records(file: IO[str]) -> RaceRecord:
     # ここからはスリットのテーブル
     data_originated_slit_table = []
     for start_course, row in enumerate(soup.select(".table1")[2].select("tbody tr"), 1):
-        pit_number = int(row.select_one(".table1_boatImage1Number").text)
+        pit_number = int(select_one_or_raise(row, ".table1_boatImage1Number").text)
 
-        time_text = row.select_one(".table1_boatImage1TimeInner").text.strip()
+        time_text = select_one_or_raise(row, ".table1_boatImage1TimeInner").text.strip()
         if m := re.search(r"([\u4E00-\u9FD0あ-ん]+)", time_text):
             winning_trick = WinningTrickFactory.create(m.group(1))
         else:

@@ -12,6 +12,10 @@ from metaboatrace.scrapers.official.website.exceptions import ScrapingError
 from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
 from metaboatrace.scrapers.official.website.v1707.factories import RaceLapsFactory
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
+from metaboatrace.scrapers.official.website.v1707.utils import (
+    get_attribute_or_raise,
+    select_one_or_raise,
+)
 
 
 def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int, datetime]:
@@ -19,7 +23,7 @@ def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int
 
     返り値は race_number (1 始まり) をキー、UTC aware datetime を値とする dict。
     """
-    deadline_table = soup.select_one(".table1")
+    deadline_table = select_one_or_raise(soup, ".table1")
     deadline_cells = deadline_table.select("tbody tr")[-1].select("td")
 
     jst = pytz.timezone("Asia/Tokyo")
@@ -63,11 +67,12 @@ def extract_race_information(file: IO[str]) -> RaceInformation:
     race_number = race_key_attributes["race_number"]
 
     deadline_at = _extract_deadlines(soup, race_holding_date)[race_number]
+    body_text = select_one_or_raise(soup, "body").get_text()
 
     if m := re.match(
         # note: r"(\w+)\s*(1200|1800)m" だと 'ガチ勝゛ち８\u3000\n\t\t1800m' みたいなのがパースできない
         r"(.+?)\s*(1200|1800)m",
-        soup.select_one("h3.title16_titleDetail__add2020").get_text().strip(),
+        select_one_or_raise(soup, "h3.title16_titleDetail__add2020").get_text().strip(),
     ):
         title = m.group(1)
         metre = cast(Literal[1200, 1800], int(m.group(2)))
@@ -81,8 +86,8 @@ def extract_race_information(file: IO[str]) -> RaceInformation:
         title=title,
         number_of_laps=RaceLapsFactory.create(metre),
         deadline_at=deadline_at,
-        is_course_fixed="進入固定" in soup.body.get_text(),
-        use_stabilizer="安定板使用" in soup.body.get_text(),
+        is_course_fixed="進入固定" in body_text,
+        use_stabilizer="安定板使用" in body_text,
     )
 
 
@@ -93,14 +98,17 @@ def extract_race_entries(file: IO[str]) -> list[RaceEntry]:
 
     data = []
     for pit_number, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        racer_photo_path = row.select_one("tr").select("td")[1].select_one("img")["src"]
+        tr = select_one_or_raise(row, "tr")
+        racer_photo_path = get_attribute_or_raise(
+            select_one_or_raise(tr.select("td")[1], "img"), "src"
+        )
         if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
             racer_registration_number = int(m.group(1))
         else:
             raise ScrapingError
 
-        motor_number = int(row.select_one("tr").select("td")[6].text.strip().split()[0])
-        boat_number = int(row.select_one("tr").select("td")[7].text.strip().split()[0])
+        motor_number = int(tr.select("td")[6].text.strip().split()[0])
+        boat_number = int(tr.select("td")[7].text.strip().split()[0])
 
         is_absent = "is-miss" in row["class"]
 
@@ -124,20 +132,23 @@ def extract_racers(file: IO[str]) -> list[Racer]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        racer_photo_path = row.select_one("tr").select("td")[1].select_one("img")["src"]
+        tr = select_one_or_raise(row, "tr")
+        racer_photo_path = get_attribute_or_raise(
+            select_one_or_raise(tr.select("td")[1], "img"), "src"
+        )
         if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
             racer_registration_number = int(m.group(1))
         else:
             raise ScrapingError
 
-        racer_full_name = row.select_one("tr").select("td")[2].select_one("a").text.strip()
+        racer_full_name = select_one_or_raise(tr.select("td")[2], "a").text.strip()
         # 区切りスペースが落ちている場合は姓に全体、名は空文字 (profile_page 側と同じ扱い).
         name_parts = re.split(r"[　 ]+", racer_full_name, maxsplit=1)
         racer_last_name = name_parts[0]
         racer_first_name = name_parts[1] if len(name_parts) > 1 else ""
 
         racer_rank = RacerRank.from_string(
-            row.select_one("tr").select("td")[2].select_one("span").text.strip()
+            select_one_or_raise(tr.select("td")[2], "span").text.strip()
         )
 
         data.append(
@@ -162,7 +173,7 @@ def extract_boat_performances(file: IO[str]) -> list[BoatPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        data_strings = row.select_one("tr").select("td")[7].text.strip().split()
+        data_strings = select_one_or_raise(row, "tr").select("td")[7].text.strip().split()
         number = int(data_strings[0])
         quinella_rate = (
             float(data_strings[1]) if data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA else None
@@ -193,7 +204,7 @@ def extract_motor_performances(file: IO[str]) -> list[MotorPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        motor_data_strings = row.select_one("tr").select("td")[6].text.strip().split()
+        motor_data_strings = select_one_or_raise(row, "tr").select("td")[6].text.strip().split()
         number = int(motor_data_strings[0])
         quinella_rate = (
             float(motor_data_strings[1])
@@ -227,16 +238,17 @@ def extract_racer_performances(file: IO[str]) -> list[RacerPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        racer_photo_path = row.select_one("tr").select("td")[1].select_one("img")["src"]
+        tr = select_one_or_raise(row, "tr")
+        racer_photo_path = get_attribute_or_raise(
+            select_one_or_raise(tr.select("td")[1], "img"), "src"
+        )
         if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
             racer_registration_number = int(m.group(1))
         else:
             raise ScrapingError
 
-        rate_in_all_stadium = float(row.select_one("tr").select("td")[4].text.strip().split()[0])
-        rate_in_event_going_stadium = float(
-            row.select_one("tr").select("td")[5].text.strip().split()[0]
-        )
+        rate_in_all_stadium = float(tr.select("td")[4].text.strip().split()[0])
+        rate_in_event_going_stadium = float(tr.select("td")[5].text.strip().split()[0])
 
         data.append(
             RacerPerformance(
@@ -255,5 +267,5 @@ def is_deadline_changed(file: IO[str]) -> bool:
     soup = BeautifulSoup(file, "html.parser")
     return (
         "締切予定時刻が変更されております。ご注意ください。"
-        in soup.select_one(".l-main").get_text().strip()
+        in select_one_or_raise(soup, ".l-main").get_text().strip()
     )

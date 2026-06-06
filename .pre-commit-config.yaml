@@ -3,16 +3,23 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        # Markdown の行末2スペース（ハード改行）は保持する
+        args: [--markdown-linebreak-ext=md]
+        # テスト fixture は公式サイトの生 HTML スナップショット（CRLF 含むバイト厳密
+        # データ）なので整形対象から除外する
+        exclude: ^tests/.*/fixtures/
       - id: end-of-file-fixer
+        exclude: ^tests/.*/fixtures/
       - id: check-yaml
       - id: check-added-large-files
       - id: check-toml
       - id: check-merge-conflict
       - id: debug-statements
       - id: mixed-line-ending
+        exclude: ^tests/.*/fixtures/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
+    rev: v0.15.0
     hooks:
       # Run the linter
       - id: ruff
