@@ -8,6 +8,11 @@ from metaboatrace.models.stadium import Event, SeriesGrade, SeriesKind, StadiumT
 
 from metaboatrace.scrapers.official.website.exceptions import ScrapingError
 from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
+from metaboatrace.scrapers.official.website.v1707.utils import (
+    get_attribute_or_raise,
+    get_optional_attribute,
+    select_one_or_raise,
+)
 
 
 @no_content_handleable
@@ -32,7 +37,7 @@ def extract_events(file: IO[str]) -> list[Event]:
         date_pointer = offset_day
 
         for series_cell in row.select("td"):
-            series_days_str = series_cell.get("colspan")
+            series_days_str = get_optional_attribute(series_cell, "colspan")
             if series_days_str is None:
                 date_pointer = date_pointer + timedelta(1)
                 continue
@@ -70,7 +75,10 @@ def _parse_calendar(soup: BeautifulSoup) -> tuple[int, int]:
     Returns:
         tuple[int, int]: 西暦と月のタプル
     """
-    if match := re.search(r"\?ym=(\d{6})", soup.select_one("li.title2_navsLeft a")["href"]):
+    if match := re.search(
+        r"\?ym=(\d{6})",
+        get_attribute_or_raise(select_one_or_raise(soup, "li.title2_navsLeft a"), "href"),
+    ):
         return calendar._nextmonth(year=int(match.group(1)[:4]), month=int(match.group(1)[4:]))  # type: ignore
     else:
         raise ScrapingError
@@ -91,7 +99,7 @@ def _parse_offset_date(soup: BeautifulSoup) -> date:
     year, month = _parse_calendar(soup)
 
     if match := re.search(
-        r"(\d{1,2})", soup.select_one("table thead tr").select("th")[1].get_text()
+        r"(\d{1,2})", select_one_or_raise(soup, "table thead tr").select("th")[1].get_text()
     ):
         start_day = int(match.group(1))
         if start_day == 1:

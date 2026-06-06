@@ -3,7 +3,7 @@ import os
 import pytest
 from metaboatrace.models.race import Weather
 
-from metaboatrace.scrapers.official.website.exceptions import DataNotReady
+from metaboatrace.scrapers.official.website.exceptions import DataNotReady, ScrapingError
 from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
@@ -127,7 +127,9 @@ def test_extract_weather_condition_base_data_no_weather_container():
 
     file = StringIO(html_content)
 
-    with pytest.raises(AttributeError):
+    # 必須要素 (.weather1) が無い場合は、従来の偶発的な AttributeError ではなく、
+    # 既存のスクレイピング例外設計に揃えて ScrapingError を送出する。
+    with pytest.raises(ScrapingError):
         extract_weather_condition_base_data(file)
 
 
