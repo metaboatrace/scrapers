@@ -75,6 +75,13 @@ select = [
     "UP",   # pyupgrade
     "ARG",  # flake8-unused-arguments
     "SIM",  # flake8-simplify
+    "N",    # pep8-naming
+    "RET",  # flake8-return
+    "PIE",  # flake8-pie
+    "ISC",  # flake8-implicit-str-concat
+    "T10",  # flake8-debugger
+    "DTZ",  # flake8-datetimez
+    "ERA",  # eradicate (commented-out dead code)
     "RUF",  # Ruff-specific rules
 ]
 ignore = [
@@ -83,6 +90,10 @@ ignore = [
     "RUF002", # Docstring contains ambiguous unicode character
     "RUF003", # Comment contains ambiguous unicode character
     "W293",  # whitespace on blank line (conflicts with docstring formatting)
+    "ISC001", # single-line implicit string concatenation (conflicts with formatter)
+    "RET504", # unnecessary assignment before return (allowed for readability)
+    "N818",  # exception name should end with Error (existing naming convention)
+    "DTZ007", # naive datetime from strptime (localized after parse by convention)
 ]
 
 [tool.ruff.lint.per-file-ignores]
