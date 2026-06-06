@@ -224,14 +224,14 @@ wheels = [
 
 [[package]]
 name = "metaboatrace-models"
-version = "2.4.0"
+version = "2.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/84/f4/9af5c7c71ce0eca7c5c22ee9eec8207d59e04996053c58c7cc8c4ea1eede/metaboatrace_models-2.4.0.tar.gz", hash = "sha256:9e9863903f1e75a58d0eafe4b36f7969bdacca8718a38f85f6e6bfc8c314da89", size = 26377 }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/de/97c237d51871c8dba21114deab7a5fc20ed108b9fb51139ad257198b5679/metaboatrace_models-2.4.2.tar.gz", hash = "sha256:7451dada07aefa88caabd0751a12cdee7416ff68dcbf2c6f192afb955ce45804", size = 27499 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/49/00/d2b749f67a6cee8d1bb7419d3f0f70abec6a754a108f805d2f1611d2d060/metaboatrace_models-2.4.0-py3-none-any.whl", hash = "sha256:7ee70d12cdd017dcfe0e3fb0aa5ce11b7fc0c25c9d6ccc5f61aca0d6254fe628", size = 35142 },
+    { url = "https://files.pythonhosted.org/packages/f2/4c/c54b184896e074ee3db5724ae0173d760fdde1e60a1c78fe4a64cab31ef4/metaboatrace_models-2.4.2-py3-none-any.whl", hash = "sha256:078449a91e78673ac8cad4b6cc8311ea32814112a0ca96c2a67e62439824bdfd", size = 36335 },
 ]
 
 [[package]]
@@ -258,7 +258,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.2" },
-    { name = "metaboatrace-models", specifier = ">=2.4.0" },
+    { name = "metaboatrace-models", specifier = ">=2.4.2" },
     { name = "numpy", specifier = ">=1.25.2" },
     { name = "pytz", specifier = ">=2023.3.post1" },
     { name = "types-pytz", specifier = ">=2023.3.1.1" },
