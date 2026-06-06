@@ -53,11 +53,6 @@ ignore_missing_imports = true
 # レイアウト都合（namespace package のため維持）
 explicit_package_bases = true
 namespace_packages = true
-# 型注釈未整備のため除外（Phase 2 で撤廃する）
-exclude = [
-    "metaboatrace/scrapers/official/website/v1707/decorators.py",
-    "metaboatrace/scrapers/official/website/v1707/pages/",
-]
 
 [[tool.mypy.overrides]]
 module = "tests.*"

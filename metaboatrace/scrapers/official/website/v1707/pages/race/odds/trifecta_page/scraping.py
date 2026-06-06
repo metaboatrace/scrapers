@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from functools import reduce
 from itertools import zip_longest
 from typing import IO
@@ -12,7 +13,9 @@ from metaboatrace.scrapers.official.website.v1707.decorators import (
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 
 
-def _grouper(n: int, iterable: ResultSet[Tag], fillvalue: Tag | None = None):
+def _grouper(
+    n: int, iterable: ResultSet[Tag], fillvalue: Tag | None = None
+) -> Iterator[tuple[Tag | None, ...]]:
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
 
@@ -32,7 +35,10 @@ def extract_odds(file: IO[str]) -> list[Odds]:
     second_arrived_cells = odds_table.select('tbody tr td[rowspan="4"]')
     second_arrived_numbers = reduce(
         lambda a, b: a + b,
-        [[int(cell.text) for cell in cells] * 4 for cells in _grouper(6, second_arrived_cells)],
+        [
+            [int(cell.text) for cell in cells if cell is not None] * 4
+            for cells in _grouper(6, second_arrived_cells)
+        ],
     )
     third_arrived_numbers = [
         int(td.text) for td in odds_table.select('tbody tr td[class^="is-boatColor"]')

@@ -8,6 +8,10 @@ from bs4 import BeautifulSoup
 from metaboatrace.models.stadium import StadiumTelCode
 
 from metaboatrace.scrapers.official.website.exceptions import ScrapingError
+from metaboatrace.scrapers.official.website.v1707.utils import (
+    get_attribute_or_raise,
+    select_one_or_raise,
+)
 
 
 class RaceKey(TypedDict):
@@ -17,7 +21,9 @@ class RaceKey(TypedDict):
 
 
 def parse_race_key_attributes(soup: BeautifulSoup) -> RaceKey:
-    todays_race_list_url = soup.select_one("body > div.l-header > ul > li:nth-child(3) > a")["href"]
+    todays_race_list_url = get_attribute_or_raise(
+        select_one_or_raise(soup, "body > div.l-header > ul > li:nth-child(3) > a"), "href"
+    )
 
     stadiutm_tel_codes, dates = itemgetter("jcd", "hd")(
         parse_qs(urlparse(todays_race_list_url).query)
@@ -30,8 +36,8 @@ def parse_race_key_attributes(soup: BeautifulSoup) -> RaceKey:
     date_string = dates[0]
     race_holding_date = date(int(date_string[:4]), int(date_string[4:6]), int(date_string[6:]))
 
-    deadline_table = soup.select_one(".table1")
-    if m := re.match(r"(\d{1,2})R", deadline_table.select_one("tr th:not([class])").text):
+    deadline_table = select_one_or_raise(soup, ".table1")
+    if m := re.match(r"(\d{1,2})R", select_one_or_raise(deadline_table, "tr th:not([class])").text):
         race_number = int(m.group(1))
     else:
         raise ScrapingError
