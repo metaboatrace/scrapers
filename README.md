@@ -1,7 +1,6 @@
 ![GitHub Workflow Status](https://github.com/metaboatrace/scrapers/actions/workflows/publish.yml/badge.svg)
 ![GitHub Workflow Status](https://github.com/metaboatrace/scrapers/actions/workflows/tests.yml/badge.svg)
 ![GitHub Workflow Status](https://github.com/metaboatrace/scrapers/actions/workflows/lint.yml/badge.svg)
-![Coverage](https://img.shields.io/codecov/c/github/metaboatrace/scrapers.svg)
 ![PyPI version](https://img.shields.io/pypi/v/metaboatrace.scrapers.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Python version](https://img.shields.io/badge/python-3.13-blue.svg)
