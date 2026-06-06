@@ -99,7 +99,7 @@ def extract_race_records(file: IO[str]) -> RaceRecord:
             arrival = int(unicodedata.normalize("NFKC", arrival_mark))
             disqualification = None
         except ValueError:
-            # note: 失格はレース不成立で着順が定まらなかったケースにNoneになり得る
+            # 失格やレース不成立で着順が定まらなかったケースでは、arrival は None になり得る
             arrival = None
             disqualification = DisqualificationFactory.create(arrival_mark)
 
@@ -136,7 +136,7 @@ def extract_race_records(file: IO[str]) -> RaceRecord:
                 # disqualification でフライングかどうかはわかるが、正常なスタートと同じ値で返すのは違和感あるため
                 start_time = start_time * -1
         elif time_text == "L":
-            # note: 出遅れはここに出るケースと出ないケースがある
+            # 出遅れは、ここに出るケースと出ないケースがある
             # 出るケース -> https://boatrace.jp/owpc/pc/race/raceresult?rno=5&jcd=16&hd=20231204
             # 出ないケース -> https://boatrace.jp/owpc/pc/race/raceresult?rno=7&jcd=09&hd=20151116
             start_time = 1

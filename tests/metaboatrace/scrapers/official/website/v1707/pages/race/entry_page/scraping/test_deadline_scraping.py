@@ -21,8 +21,9 @@ def test_extract_race_deadlines_from_an_entry_page() -> None:
     race_holding_date = date(2015, 10, 16)
 
     def deadline_at(hour: int, minute: int) -> datetime:
+        # pytz では naive な datetime を localize() するのが正しい使い方
         return jst.localize(
-            datetime(
+            datetime(  # noqa: DTZ001
                 race_holding_date.year, race_holding_date.month, race_holding_date.day, hour, minute
             )
         ).astimezone(pytz.utc)

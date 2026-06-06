@@ -10,40 +10,35 @@ class DisqualificationFactory:
     def create(name: str) -> Disqualification | None:
         if "転" in name:
             return Disqualification.CAPSIZE
-        elif "落" in name:
+        if "落" in name:
             return Disqualification.FALL
-        elif "沈" in name:
+        if "沈" in name:
             return Disqualification.SINKING
-        elif "妨" in name:
+        if "妨" in name:
             return Disqualification.VIOLATION
-        elif "失" in name:
+        if "失" in name:
             return Disqualification.DISQUALIFICATION_AFTER_START
-        elif "エ" in name:
+        if "エ" in name:
             return Disqualification.ENGINE_STOP
-        elif "不" in name:
+        if "不" in name:
             return Disqualification.UNFINISHED
-        elif "返" in name:
+        if "返" in name:
             return Disqualification.REPAYMENT_OTHER_THAN_FLYING_AND_LATENESS
-        elif "Ｆ" in name:
+        if "Ｆ" in name:
             return Disqualification.FLYING
-        elif "Ｌ" in name:
+        if "Ｌ" in name:
             return Disqualification.LATENESS
-        elif "欠" in name:
+        if "欠" in name:
             return Disqualification.ABSENT
-        elif "＿" in name:
-            # NOTE: これは失格ではない
-            # レース不成立で着順が定まらなかったケース
-            # 例)
-            # http://boatrace.jp/owpc/pc/race/raceresult?rno=11&jcd=23&hd=20170429
+        if "＿" in name:
+            # 失格ではなく、レース不成立で着順が定まらなかったケース
+            # 例) http://boatrace.jp/owpc/pc/race/raceresult?rno=11&jcd=23&hd=20170429
             return None
-        elif "　" in name:
-            # NOTE: これは失格ではない
-            # レース不成立で着順が定まらなかったケース
-            # 例)
-            # https://boatrace.jp/owpc/pc/race/raceresult?rno=2&jcd=23&hd=20160507
+        if "　" in name:
+            # 失格ではなく、レース不成立で着順が定まらなかったケース
+            # 例) https://boatrace.jp/owpc/pc/race/raceresult?rno=2&jcd=23&hd=20160507
             return None
-        else:
-            raise ValueError
+        raise ValueError
 
 
 class MotorPartsFactory:
@@ -51,22 +46,21 @@ class MotorPartsFactory:
     def create(name: str) -> MotorParts:
         if "電気" in name:
             return MotorParts.ELECTRICAL_SYSTEM
-        elif "キャブ" in name:
+        if "キャブ" in name:
             return MotorParts.CARBURETOR
-        elif name == "ピストン":
+        if name == "ピストン":
             return MotorParts.PISTON
-        elif "リング" in name:
+        if "リング" in name:
             return MotorParts.PISTON_RING
-        elif "シリンダ" in name:
+        if "シリンダ" in name:
             return MotorParts.CYLINDER
-        elif "ギア" in name or "ギヤ" in name:
+        if "ギア" in name or "ギヤ" in name:
             return MotorParts.GEAR_CASE
-        elif "キャリ" in name:
+        if "キャリ" in name:
             return MotorParts.CARRIER_BODY
-        elif "シャフト" in name:
+        if "シャフト" in name:
             return MotorParts.CRANKSHAFT
-        else:
-            raise ValueError
+        raise ValueError
 
 
 class RaceLapsFactory:
@@ -82,18 +76,17 @@ class WinningTrickFactory:
     def create(name: str) -> WinningTrick:
         if name == "逃げ":
             return WinningTrick.NIGE
-        elif name == "差し":
+        if name == "差し":
             return WinningTrick.SASHI
-        elif name == "まくり":
+        if name == "まくり":
             return WinningTrick.MAKURI
-        elif name == "まくり差し":
+        if name == "まくり差し":
             return WinningTrick.MAKURIZASHI
-        elif name == "抜き":
+        if name == "抜き":
             return WinningTrick.NUKI
-        elif name == "恵まれ":
+        if name == "恵まれ":
             return WinningTrick.MEGUMARE
-        else:
-            raise ValueError
+        raise ValueError
 
 
 class WeatherFactory:
@@ -101,18 +94,17 @@ class WeatherFactory:
     def create(name: str) -> Weather:
         if "晴" in name:
             return Weather.FINE
-        elif "曇" in name:
+        if "曇" in name:
             return Weather.CLOUDY
-        elif "雨" in name:
+        if "雨" in name:
             return Weather.RAINY
-        elif "雪" in name:
+        if "雪" in name:
             return Weather.SNOWY
-        elif "台風" in name:
+        if "台風" in name:
             return Weather.TYPHOON
-        elif "霧" in name:
+        if "霧" in name:
             return Weather.FOG
-        else:
-            raise ValueError
+        raise ValueError
 
 
 class EventHoldingStatusFactory:
@@ -120,7 +112,6 @@ class EventHoldingStatusFactory:
     def create(text: str) -> Weather:
         if text == "中止":
             return EventHoldingStatus.CANCELED
-        elif text == "中止順延":
+        if text == "中止順延":
             return EventHoldingStatus.POSTPONED
-        else:
-            return EventHoldingStatus.OPEN
+        return EventHoldingStatus.OPEN

@@ -9,6 +9,10 @@ from metaboatrace.scrapers.official.website.exceptions import DataNotReady
 from metaboatrace.scrapers.official.website.v1707.factories import WeatherFactory
 from metaboatrace.scrapers.official.website.v1707.utils import select_one_or_raise
 
+# 風向きアイコンの ID。1〜16 が各方位を表し、17 は「風向きなし」を表す。
+WIND_ICON_IDS = list(range(1, 17))
+NO_WIND_ICON_ID = 17
+
 
 class WeatherConditionBaseData(TypedDict):
     weather: Weather
@@ -22,27 +26,15 @@ class WeatherConditionBaseData(TypedDict):
 def extract_weather_condition_base_data(file: IO[str]) -> WeatherConditionBaseData:
     soup = BeautifulSoup(file, "html.parser")
 
-    WIND_ICON_IDS = list(range(1, 17))
-    NO_WIND_ICON_ID = 17
-
     data_container = select_one_or_raise(soup, ".weather1")
     if m := re.search(
         r"is-wind(\d{1,2})",
         "".join(select_one_or_raise(data_container, ".is-windDirection p")["class"]),
     ):
         wind_direction_id_in_official = int(m.group(1))
-        # NOTE: 方位を角度としてとった風向きの配列。スリットの北が0度。
-        # http://boatrace.jp/static_extra/pc/images/icon_wind1_1.png
-        #
-        # 先頭の要素は0°で、以降22.5°ずつ増えていく
-        # wind_clock_angles[0]
-        # => 0.0
-        # wind_clock_angles[1]
-        # => 22.5
-        # wind_clock_angles[2]
-        # => 90.0
-        # wind_clock_angles[15]
-        # => 337.5
+        # wind_angles は方位を角度で表した配列で、スリットの北を 0 度とする。
+        # 先頭が 0 度で、以降は 22.5 度ずつ増える（0.0, 22.5, 45.0, ..., 最後は 337.5）。
+        # 参考: http://boatrace.jp/static_extra/pc/images/icon_wind1_1.png
         wind_angles = np.arange(0, 361, (360 / len(WIND_ICON_IDS)))
         wind_angle = (
             None
@@ -51,13 +43,13 @@ def extract_weather_condition_base_data(file: IO[str]) -> WeatherConditionBaseDa
         )
 
     else:
-        # 風向きアイコン未掲載 = 速報で天候欄がまだ埋まっていない (確定前)
+        # 風向きアイコンが未掲載なのは、速報で天候欄がまだ埋まっていない（確定前）状態
         raise DataNotReady
 
     weather = WeatherFactory.create(select_one_or_raise(data_container, ".is-weather").text.strip())
 
     try:
-        # NOTE: 数年に一度ぐらいの頻度ではあるが波高が入っていないケースがある
+        # 数年に一度ぐらいの頻度だが、波高が入っていないケースがある
         # https://www.boatrace.jp/owpc/pc/race/raceresult?rno=9&jcd=23&hd=20200209
         wavelength_str = (
             data_container.select(".weather1_bodyUnitLabelData")[3].text.strip().replace("cm", "")
