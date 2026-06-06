@@ -25,6 +25,10 @@ from metaboatrace.scrapers.official.website.v1707.utils import (
     select_one_or_raise,
 )
 
+# プロペラ交換欄の表記。新品マークと「部品名×個数」を区切る記号。
+NEW_PROPELLER_MARK = "新"
+MOTOR_PARTS_QUANTITY_DELIMITER = "×"
+
 
 @no_content_handleable
 @race_cancellation_handleable
@@ -116,7 +120,7 @@ def extract_circumference_exhibition_records(
 def extract_racer_conditions(file: IO[str]) -> list[RacerCondition]:
     soup = BeautifulSoup(file, "html.parser")
 
-    # hack: 欲しいのは日付だけで場コードと何レース目かは不要なんだけどいったんこれで
+    # 欲しいのは日付だけで、場コードと何レース目かは不要だが、いったんこれで取得する
     race_key_attributes = parse_race_key_attributes(soup)
 
     data = []
@@ -151,9 +155,6 @@ def extract_racer_conditions(file: IO[str]) -> list[RacerCondition]:
 @no_content_handleable
 @race_cancellation_handleable
 def extract_boat_settings(file: IO[str]) -> BoatSetting:
-    NEW_PROPELLER_MARK = "新"
-    MOTOR_PARTS_QUANTITY_DELIMITER = "×"
-
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
     race_holding_date = race_key_attributes["race_holding_date"]

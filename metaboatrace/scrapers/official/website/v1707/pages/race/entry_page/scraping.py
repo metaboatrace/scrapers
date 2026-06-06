@@ -17,6 +17,9 @@ from metaboatrace.scrapers.official.website.v1707.utils import (
     select_one_or_raise,
 )
 
+# 成績欄が未記録のときに公式サイトが入れるプレースホルダ文字
+PLACE_HOLDER_OF_UNRECORDED_DATA = "-"
+
 
 def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int, datetime]:
     """締切予定時刻テーブル (.table1) から全レースの締切時刻 (UTC) を抽出する.
@@ -31,8 +34,10 @@ def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int
     # 先頭セルは見出し ("締切予定時刻") なので 2 番目以降が 1R 〜 12R に対応する
     for race_number, cell in enumerate(deadline_cells[1:], start=1):
         hour, minute = [int(t) for t in cell.get_text(strip=True).split(":")]
+        # pytz は naive な datetime を localize() するのが正しい使い方で、
+        # datetime(..., tzinfo=jst) は LMT になり誤った offset になるため localize する
         deadline_at_jst = jst.localize(
-            datetime(
+            datetime(  # noqa: DTZ001
                 race_holding_date.year,
                 race_holding_date.month,
                 race_holding_date.day,
@@ -152,7 +157,7 @@ def extract_racers(file: IO[str]) -> list[Racer]:
         )
 
         data.append(
-            # note: 出走表から性別は取れない
+            # 出走表からは性別を取得できないため、ここでは設定しない
             Racer(
                 registration_number=racer_registration_number,
                 last_name=racer_last_name,
@@ -168,8 +173,6 @@ def extract_racers(file: IO[str]) -> list[Racer]:
 def extract_boat_performances(file: IO[str]) -> list[BoatPerformance]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
-
-    PLACE_HOLDER_OF_UNRECORDED_DATA = "-"
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
@@ -199,8 +202,6 @@ def extract_boat_performances(file: IO[str]) -> list[BoatPerformance]:
 def extract_motor_performances(file: IO[str]) -> list[MotorPerformance]:
     soup = BeautifulSoup(file, "html.parser")
     race_key_attributes = parse_race_key_attributes(soup)
-
-    PLACE_HOLDER_OF_UNRECORDED_DATA = "-"
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
