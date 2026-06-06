@@ -29,7 +29,7 @@ def test_extract_race_information_from_an_entry_page() -> None:
         race_number=2,
         title="予選",
         number_of_laps=3,
-        deadline_at=jst.localize(datetime(2015, 10, 16, 11, 13)).astimezone(pytz.utc),
+        deadline_at=jst.localize(datetime(2015, 10, 16, 11, 13)).astimezone(pytz.utc),  # noqa: DTZ001
         is_course_fixed=False,
         use_stabilizer=False,
     )
@@ -46,7 +46,7 @@ def test_extract_race_information_using_stabilizers_from_an_entry_page() -> None
         race_number=8,
         title="一般戦",
         number_of_laps=3,
-        deadline_at=jst.localize(datetime(2018, 3, 1, 18, 26)).astimezone(pytz.utc),
+        deadline_at=jst.localize(datetime(2018, 3, 1, 18, 26)).astimezone(pytz.utc),  # noqa: DTZ001
         is_course_fixed=False,
         use_stabilizer=True,
     )
@@ -63,7 +63,7 @@ def test_extract_course_fixed_race_information_from_an_entry_page() -> None:
         race_number=7,
         title="一般戦",
         number_of_laps=3,
-        deadline_at=jst.localize(datetime(2018, 3, 1, 17, 57)).astimezone(pytz.utc),
+        deadline_at=jst.localize(datetime(2018, 3, 1, 17, 57)).astimezone(pytz.utc),  # noqa: DTZ001
         is_course_fixed=True,
         use_stabilizer=True,
     )
@@ -80,7 +80,7 @@ def test_extract_two_laps_race_information_from_an_entry_page() -> None:
         race_number=12,
         title="一般選抜",
         number_of_laps=2,
-        deadline_at=jst.localize(datetime(2018, 3, 1, 20, 42)).astimezone(pytz.utc),
+        deadline_at=jst.localize(datetime(2018, 3, 1, 20, 42)).astimezone(pytz.utc),  # noqa: DTZ001
         is_course_fixed=False,
         use_stabilizer=True,
     )
