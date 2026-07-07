@@ -1,13 +1,13 @@
 [project]
 name = "metaboatrace.scrapers"
-version = "3.6.2"
+version = "3.6.3"
 description = "Scrapers for Japanese boatrace websites"
 authors = [
     { name = "k0kishima", email = "okishimaxyz@gmail.com" }
 ]
 dependencies = [
     "beautifulsoup4>=4.12.2",
-    "metaboatrace.models>=2.4.2",
+    "metaboatrace.models>=2.4.2,<3.0.0",
     "numpy>=1.25.2",
     "pytz>=2023.3.post1",
     "types-pytz>=2023.3.1.1",
