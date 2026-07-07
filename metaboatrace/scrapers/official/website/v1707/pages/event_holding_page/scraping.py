@@ -14,6 +14,13 @@ def extract_event_holdings(file: IO[str]) -> list[EventHolding]:
 
     data = []
     for tbody in soup.select(".table1 table tbody"):
+        # ページには「本日のレース」の .table1 とは別に、翌日開催分の
+        # 「電話投票前日発売」プレビューを表示する .table1 が id="dyn-presaleTitle"
+        # の見出しに続けて存在する。CSS クラスではこの2つを区別できないため、
+        # 見出しより後ろの tbody (= 翌日開催分) は本日の開催状況として扱わない。
+        if tbody.find_previous(id="dyn-presaleTitle") is not None:
+            continue
+
         text = tbody.get_text()
         html_string = str(tbody)
 
