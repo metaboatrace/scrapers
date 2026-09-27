@@ -26,12 +26,16 @@ def extract_racer_profile(file: IO[str]) -> Racer:
     registration_number = int(dd_list[0].get_text())
     birth_date = date(*[int(ymd) for ymd in dd_list[1].get_text().split("/")])
 
-    if m := re.match(r"(\d{3})cm", dd_list[2].get_text()):
-        height = int(m.group(1))
-    branch = Branch(BranchFactory.create(dd_list[5].get_text()))
-    born_prefecture = PrefectureFactory.create(dd_list[6].get_text())
-    if m := re.match(r"(\d{2,3})期", dd_list[7].get_text()):
-        term = int(m.group(1))
+    # デビュー前の新人 (養成所卒業直後〜初出走まで) はプロフィールが部分的にしか公開されず、
+    # 出身地・血液型が空欄になる (例: toban=5493, 2026-09 時点の 139 期全員)。任意項目の空欄で
+    # レコード全体 (氏名・登録期・支部) を捨てないよう、空欄は None にする。空欄ではない未知の
+    # 文字列はこれまで通り ValueError にして、サイト側の表記変更に気づけるようにする。
+    height = int(m.group(1)) if (m := re.match(r"(\d{3})cm", dd_list[2].get_text())) else None
+    branch_text = dd_list[5].get_text().strip()
+    branch = Branch(BranchFactory.create(branch_text)) if branch_text else None
+    prefecture_text = dd_list[6].get_text().strip()
+    born_prefecture = PrefectureFactory.create(prefecture_text) if prefecture_text else None
+    term = int(m.group(1)) if (m := re.match(r"(\d{2,3})期", dd_list[7].get_text())) else None
     racer_rank = RacerRank.from_string(dd_list[8].get_text()[:2])
 
     return Racer(
