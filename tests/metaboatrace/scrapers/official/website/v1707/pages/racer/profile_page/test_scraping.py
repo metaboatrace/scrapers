@@ -1,3 +1,4 @@
+import io
 import os
 from datetime import date
 
@@ -72,6 +73,39 @@ def test_extract_racer_profile_of_rookie_before_debut() -> None:
         branch=Branch.NAGASAKI,
         current_rating=RacerRank.B2,
     )
+
+
+def _rookie_html_with(dd_before: str, dd_after: str) -> str:
+    """5493 fixture の 1 セルだけ差し替えた HTML を返す (欠損・表記変更のシミュレーション)."""
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/5493.html"))
+    with open(file_path) as file:
+        html = file.read()
+    assert html.count(dd_before) == 1, f"fixture に {dd_before!r} が一意に存在すること"
+    return html.replace(dd_before, dd_after)
+
+
+def test_blank_term_and_height_are_none() -> None:
+    # 任意項目は空欄なら None。登録期が空欄でもレコードは捨てない (欠損は crawlers 側の
+    # 補完対象判定で拾う)。
+    html = _rookie_html_with("<dd>139期</dd>", "<dd></dd>").replace("<dd>172cm</dd>", "<dd> </dd>")
+
+    data = extract_racer_profile(io.StringIO(html))
+
+    assert data.term is None
+    assert data.height is None
+
+
+@pytest.mark.parametrize(
+    ("before", "after"),
+    [
+        ("<dd>139期</dd>", "<dd>第139期</dd>"),
+        ("<dd>172cm</dd>", "<dd>172 cm</dd>"),
+    ],
+)
+def test_unknown_format_is_not_silently_none(before: str, after: str) -> None:
+    # 空欄だけを許容し、非空欄の表記変更は ValueError で検知する (None に潰さない)。
+    with pytest.raises(ValueError, match=r"unexpected .* format"):
+        extract_racer_profile(io.StringIO(_rookie_html_with(before, after)))
 
 
 def test_scrape_a_no_contents_page() -> None:
