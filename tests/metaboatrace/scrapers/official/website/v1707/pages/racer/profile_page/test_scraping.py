@@ -53,6 +53,27 @@ def test_extract_racer_profile_when_name_has_no_separator_space() -> None:
     )
 
 
+def test_extract_racer_profile_of_rookie_before_debut() -> None:
+    # デビュー前の新人は出身地・血液型が空欄のまま公開される (toban=5493 松尾青波, 139 期,
+    # 2026-09-27 取得)。任意項目の空欄は None として、氏名・登録期・支部は取得できること。
+    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/5493.html"))
+
+    with open(file_path) as file:
+        data = extract_racer_profile(file)
+
+    assert data == Racer(
+        registration_number=5493,
+        last_name="松尾",
+        first_name="青波",
+        term=139,
+        birth_date=date(2007, 3, 5),
+        height=172,
+        born_prefecture=None,
+        branch=Branch.NAGASAKI,
+        current_rating=RacerRank.B2,
+    )
+
+
 def test_scrape_a_no_contents_page() -> None:
     file_path = os.path.normpath(
         os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
