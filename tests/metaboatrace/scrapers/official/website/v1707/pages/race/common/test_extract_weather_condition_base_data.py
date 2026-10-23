@@ -1,4 +1,5 @@
 import os
+from io import StringIO
 
 import pytest
 from metaboatrace.models.race import Weather
@@ -9,6 +10,57 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
 )
 
 base_path = os.path.dirname(os.path.abspath(__file__))
+
+
+def _weather_html(wind_direction_class: str) -> str:
+    """水面気象情報ブロック (.weather1) の HTML。風向きアイコンのクラスだけ差し替える.
+
+    空文字を渡すとアイコン未掲載 (速報で確定前) の状態になる。
+    """
+    wind_direction_class_attr = (
+        f'class="weather1_bodyUnitImage {wind_direction_class}"'
+        if wind_direction_class
+        else 'class="weather1_bodyUnitImage"'
+    )
+    return f"""<div class="weather1">
+        <p class="weather1_title">水面気象情報</p>
+        <div class="weather1_body is-type1__3rdadd">
+            <div class="weather1_bodyUnit is-direction">
+                <p class="weather1_bodyUnitImage is-direction11 is-type1__3rdadd"></p>
+                <div class="weather1_bodyUnitLabel">
+                    <span class="weather1_bodyUnitLabelTitle">気温</span>
+                    <span class="weather1_bodyUnitLabelData">20.0℃</span>
+                </div>
+            </div>
+            <div class="weather1_bodyUnit is-weather">
+                <p class="weather1_bodyUnitImage is-weather1"></p>
+                <div class="weather1_bodyUnitLabel">
+                    <span class="weather1_bodyUnitLabelTitle">晴</span>
+                </div>
+            </div>
+            <div class="weather1_bodyUnit is-wind">
+                <div class="weather1_bodyUnitLabel">
+                    <span class="weather1_bodyUnitLabelTitle">風速</span>
+                    <span class="weather1_bodyUnitLabelData">3m</span>
+                </div>
+            </div>
+            <div class="weather1_bodyUnit is-windDirection">
+                <p {wind_direction_class_attr}></p>
+            </div>
+            <div class="weather1_bodyUnit is-waterTemperature">
+                <div class="weather1_bodyUnitLabel">
+                    <span class="weather1_bodyUnitLabelTitle">水温</span>
+                    <span class="weather1_bodyUnitLabelData">18.0℃</span>
+                </div>
+            </div>
+            <div class="weather1_bodyUnit is-wave">
+                <div class="weather1_bodyUnitLabel">
+                    <span class="weather1_bodyUnitLabelTitle">波高</span>
+                    <span class="weather1_bodyUnitLabelData">5cm</span>
+                </div>
+            </div>
+        </div>
+    </div>"""
 
 
 def test_extract_weather_condition_base_data_normal():
@@ -71,47 +123,7 @@ def test_extract_weather_condition_base_data_various_wind_directions():
     ]
 
     for wind_class, expected_angle in test_cases:
-        html_content = f"""<div class="weather1">
-            <p class="weather1_title">水面気象情報</p>
-            <div class="weather1_body is-type1__3rdadd">
-                <div class="weather1_bodyUnit is-direction">
-                    <p class="weather1_bodyUnitImage is-direction11 is-type1__3rdadd"></p>
-                    <div class="weather1_bodyUnitLabel">
-                        <span class="weather1_bodyUnitLabelTitle">気温</span>
-                        <span class="weather1_bodyUnitLabelData">20.0℃</span>
-                    </div>
-                </div>
-                <div class="weather1_bodyUnit is-weather">
-                    <p class="weather1_bodyUnitImage is-weather1"></p>
-                    <div class="weather1_bodyUnitLabel">
-                        <span class="weather1_bodyUnitLabelTitle">晴</span>
-                    </div>
-                </div>
-                <div class="weather1_bodyUnit is-wind">
-                    <div class="weather1_bodyUnitLabel">
-                        <span class="weather1_bodyUnitLabelTitle">風速</span>
-                        <span class="weather1_bodyUnitLabelData">3m</span>
-                    </div>
-                </div>
-                <div class="weather1_bodyUnit is-windDirection">
-                    <p class="weather1_bodyUnitImage {wind_class}"></p>
-                </div>
-                <div class="weather1_bodyUnit is-waterTemperature">
-                    <div class="weather1_bodyUnitLabel">
-                        <span class="weather1_bodyUnitLabelTitle">水温</span>
-                        <span class="weather1_bodyUnitLabelData">18.0℃</span>
-                    </div>
-                </div>
-                <div class="weather1_bodyUnit is-wave">
-                    <div class="weather1_bodyUnitLabel">
-                        <span class="weather1_bodyUnitLabelTitle">波高</span>
-                        <span class="weather1_bodyUnitLabelData">5cm</span>
-                    </div>
-                </div>
-            </div>
-        </div>"""
-
-        from io import StringIO
+        html_content = _weather_html(wind_class)
 
         file = StringIO(html_content)
         data = extract_weather_condition_base_data(file)
@@ -123,7 +135,6 @@ def test_extract_weather_condition_base_data_various_wind_directions():
 
 def test_extract_weather_condition_base_data_no_weather_container():
     html_content = "<html><body>No weather data</body></html>"
-    from io import StringIO
 
     file = StringIO(html_content)
 
@@ -134,47 +145,7 @@ def test_extract_weather_condition_base_data_no_weather_container():
 
 
 def test_extract_weather_condition_base_data_invalid_wind_direction():
-    html_content = """<div class="weather1">
-        <p class="weather1_title">水面気象情報</p>
-        <div class="weather1_body is-type1__3rdadd">
-            <div class="weather1_bodyUnit is-direction">
-                <p class="weather1_bodyUnitImage is-direction11 is-type1__3rdadd"></p>
-                <div class="weather1_bodyUnitLabel">
-                    <span class="weather1_bodyUnitLabelTitle">気温</span>
-                    <span class="weather1_bodyUnitLabelData">20.0℃</span>
-                </div>
-            </div>
-            <div class="weather1_bodyUnit is-weather">
-                <p class="weather1_bodyUnitImage is-weather1"></p>
-                <div class="weather1_bodyUnitLabel">
-                    <span class="weather1_bodyUnitLabelTitle">晴</span>
-                </div>
-            </div>
-            <div class="weather1_bodyUnit is-wind">
-                <div class="weather1_bodyUnitLabel">
-                    <span class="weather1_bodyUnitLabelTitle">風速</span>
-                    <span class="weather1_bodyUnitLabelData">3m</span>
-                </div>
-            </div>
-            <div class="weather1_bodyUnit is-windDirection">
-                <p class="weather1_bodyUnitImage"></p>
-            </div>
-            <div class="weather1_bodyUnit is-waterTemperature">
-                <div class="weather1_bodyUnitLabel">
-                    <span class="weather1_bodyUnitLabelTitle">水温</span>
-                    <span class="weather1_bodyUnitLabelData">18.0℃</span>
-                </div>
-            </div>
-            <div class="weather1_bodyUnit is-wave">
-                <div class="weather1_bodyUnitLabel">
-                    <span class="weather1_bodyUnitLabelTitle">波高</span>
-                    <span class="weather1_bodyUnitLabelData">5cm</span>
-                </div>
-            </div>
-        </div>
-    </div>"""
-
-    from io import StringIO
+    html_content = _weather_html("")
 
     file = StringIO(html_content)
 
