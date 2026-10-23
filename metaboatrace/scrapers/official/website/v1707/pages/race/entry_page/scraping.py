@@ -30,6 +30,16 @@ def _extract_racer_registration_number(tr: Tag) -> int:
     raise ScrapingError(f"racer registration number not found in photo path: {racer_photo_path!r}")
 
 
+def _parse_performance_cell(td: Tag) -> tuple[int, float | None, float | None]:
+    """モーター / ボート欄のセルから (番号, 2連率, 3連率) を読む。未記録の率は None."""
+    data_strings = td.text.strip().split()
+    return (
+        int(data_strings[0]),
+        float(data_strings[1]) if data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA else None,
+        float(data_strings[2]) if data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA else None,
+    )
+
+
 def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int, datetime]:
     """締切予定時刻テーブル (.table1) から全レースの締切時刻 (UTC) を抽出する.
 
@@ -171,13 +181,8 @@ def extract_boat_performances(file: IO[str]) -> list[BoatPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        data_strings = select_one_or_raise(row, "tr").select("td")[7].text.strip().split()
-        number = int(data_strings[0])
-        quinella_rate = (
-            float(data_strings[1]) if data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA else None
-        )
-        trio_rate = (
-            float(data_strings[2]) if data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA else None
+        number, quinella_rate, trio_rate = _parse_performance_cell(
+            select_one_or_raise(row, "tr").select("td")[7]
         )
 
         data.append(
@@ -200,17 +205,8 @@ def extract_motor_performances(file: IO[str]) -> list[MotorPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        motor_data_strings = select_one_or_raise(row, "tr").select("td")[6].text.strip().split()
-        number = int(motor_data_strings[0])
-        quinella_rate = (
-            float(motor_data_strings[1])
-            if motor_data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA
-            else None
-        )
-        trio_rate = (
-            float(motor_data_strings[2])
-            if motor_data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA
-            else None
+        number, quinella_rate, trio_rate = _parse_performance_cell(
+            select_one_or_raise(row, "tr").select("td")[6]
         )
 
         data.append(
