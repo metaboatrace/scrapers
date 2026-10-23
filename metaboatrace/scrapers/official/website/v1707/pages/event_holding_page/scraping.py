@@ -59,11 +59,6 @@ def _stadium_tel_code(html_string: str) -> StadiumTelCode:
     return StadiumTelCode(int(match.group(1)))
 
 
-def _day_text(text: str) -> str | None:
-    match = re.search(r"(初日|[\d１２３４５６７]日目|最終日)", text)
-    return match.group(0) if match else None
-
-
 def _progress_day(text: str) -> int | None:
     match = re.search(r"(初日|[\d１２３４５６７]日目|最終日)", text)
 
