@@ -15,6 +15,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 from metaboatrace.scrapers.official.website.v1707.utils import (
     get_attribute_or_raise,
     select_one_or_raise,
+    split_racer_name,
 )
 
 # 成績欄が未記録のときに公式サイトが入れるプレースホルダ文字
@@ -146,11 +147,9 @@ def extract_racers(file: IO[str]) -> list[Racer]:
         else:
             raise ScrapingError
 
-        racer_full_name = select_one_or_raise(tr.select("td")[2], "a").text.strip()
-        # 区切りスペースが落ちている場合は姓に全体、名は空文字 (profile_page 側と同じ扱い).
-        name_parts = re.split(r"[　 ]+", racer_full_name, maxsplit=1)
-        racer_last_name = name_parts[0]
-        racer_first_name = name_parts[1] if len(name_parts) > 1 else ""
+        racer_last_name, racer_first_name = split_racer_name(
+            select_one_or_raise(tr.select("td")[2], "a").text
+        )
 
         racer_rank = RacerRank.from_string(
             select_one_or_raise(tr.select("td")[2], "span").text.strip()

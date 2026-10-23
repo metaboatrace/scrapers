@@ -1,3 +1,4 @@
+import re
 from datetime import date
 
 from bs4 import BeautifulSoup, Tag
@@ -50,3 +51,17 @@ def get_optional_attribute(tag: Tag, name: str) -> str | None:
     if value is None or isinstance(value, str):
         return value
     raise ScrapingError(f"attribute is not single-valued: {name!r}")
+
+
+def split_racer_name(full_name: str) -> tuple[str, str]:
+    """公式サイト表記のレーサー氏名を (姓, 名) に分割する。
+
+    姓と名は全角 / 半角スペースで区切られるが、公式サイトは姓+名が長いと表示幅都合で
+    区切りを落とすことがある (例: toban=4011 堀之内紀代子)。仮名側からの正確な漢字分割は
+    復元不能なので、区切りが無い場合は姓に全体を入れて名は空文字にする。
+    出走表・プロフィール・前検情報の各ページで同じ規則を使う。
+    """
+    name_parts = re.split(r"[\s　]+", full_name.strip(), maxsplit=1)
+    last_name = name_parts[0]
+    first_name = name_parts[1] if len(name_parts) > 1 else ""
+    return last_name, first_name

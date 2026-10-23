@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass
 from typing import IO
 
@@ -6,6 +5,7 @@ from bs4 import BeautifulSoup
 from metaboatrace.models.racer import Gender, Racer, RacerRank
 
 from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
+from metaboatrace.scrapers.official.website.v1707.utils import split_racer_name
 
 
 @dataclass(frozen=True)
@@ -28,17 +28,10 @@ def extract_racers(file: IO[str]) -> list[Racer]:
 
     data = []
     series_entry_rows = soup.select(".table1 table tbody tr")
-    pattern_of_name_delimiter = re.compile(r"[　]+")
 
     for row in series_entry_rows:
         cells = row.select("td")
-        try:
-            racer_last_name, racer_first_name = pattern_of_name_delimiter.split(
-                cells[2].get_text().strip()
-            )
-        except ValueError:
-            racer_last_name = cells[2].get_text()
-            racer_first_name = ""
+        racer_last_name, racer_first_name = split_racer_name(cells[2].get_text())
 
         data.append(
             Racer(
@@ -59,17 +52,10 @@ def extract_event_entries(file: IO[str]) -> list[EventEntry]:
 
     data = []
     series_entry_rows = soup.select(".table1 table tbody tr")
-    pattern_of_name_delimiter = re.compile(r"[　]+")
 
     for row in series_entry_rows:
         cells = row.select("td")
-        try:
-            racer_last_name, racer_first_name = pattern_of_name_delimiter.split(
-                cells[2].get_text().strip()
-            )
-        except ValueError:
-            racer_last_name = cells[2].get_text()
-            racer_first_name = ""
+        racer_last_name, racer_first_name = split_racer_name(cells[2].get_text())
 
         data.append(
             EventEntry(
