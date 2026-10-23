@@ -34,6 +34,15 @@ def test_extract_racers_a_pre_inspection_information_page() -> None:
         gender=Gender.FEMALE,
         current_rating=RacerRank.A2,
     )
+    # 小神野紀代子のセルは姓名の区切りが無く、前後に空白・改行がある。
+    # 空白を除いた全体が姓、名は空文字になる
+    assert data[31] == Racer(
+        registration_number=2995,
+        last_name="小神野紀代子",
+        first_name="",
+        gender=Gender.FEMALE,
+        current_rating=RacerRank.B1,
+    )
 
 
 def test_extract_racers_from_a_no_contents_page() -> None:
@@ -101,4 +110,17 @@ def test_extract_event_entries_a_pre_inspection_information_page() -> None:
         boat_number=36,
         quinella_rate_of_boat=31.7,
         anterior_time=6.96,
+    )
+    # 小神野紀代子のセルは姓名の区切りが無く、前後に空白・改行がある
+    assert data[31] == EventEntry(
+        racer_registration_number=2995,
+        racer_gender=Gender.FEMALE,
+        racer_last_name="小神野紀代子",
+        racer_first_name="",
+        racer_rank=RacerRank.B1,
+        motor_number=18,
+        quinella_rate_of_motor=32.3,
+        boat_number=45,
+        quinella_rate_of_boat=29.7,
+        anterior_time=6.91,
     )
