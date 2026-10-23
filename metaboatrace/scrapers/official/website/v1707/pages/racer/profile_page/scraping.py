@@ -7,7 +7,10 @@ from metaboatrace.models.racer import Racer, RacerRank
 from metaboatrace.models.region import Branch, BranchFactory, PrefectureFactory
 
 from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
-from metaboatrace.scrapers.official.website.v1707.utils import select_one_or_raise
+from metaboatrace.scrapers.official.website.v1707.utils import (
+    select_one_or_raise,
+    split_racer_name,
+)
 
 
 def _optional_int(text: str, pattern: str, label: str) -> int | None:
@@ -28,12 +31,9 @@ def _optional_int(text: str, pattern: str, label: str) -> int | None:
 def extract_racer_profile(file: IO[str]) -> Racer:
     soup = BeautifulSoup(file, "html.parser")
 
-    full_name = select_one_or_raise(soup, ".racer1_bodyName").get_text()
-    # 公式サイトは姓+名が長いと表示幅都合で区切りスペースを落とすことがある (例: toban=4011 堀之内紀代子).
-    # 仮名側からの正確な漢字分割は復元不能なので、区切りが無い場合は姓に全体を入れて名は空文字にする.
-    name_parts = re.split(r"[\s　]+", full_name, maxsplit=1)
-    last_name = name_parts[0]
-    first_name = name_parts[1] if len(name_parts) > 1 else ""
+    last_name, first_name = split_racer_name(
+        select_one_or_raise(soup, ".racer1_bodyName").get_text()
+    )
 
     dd_list = select_one_or_raise(soup, "dl.list3").select("dd")
 

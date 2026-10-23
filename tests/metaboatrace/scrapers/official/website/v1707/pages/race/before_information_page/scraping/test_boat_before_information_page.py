@@ -8,10 +8,8 @@
 #
 # かといってこのディレクトリのテストを全て test_scraping.py に集約するとファイルが肥大化するので分割は維持する
 # とはいえテストは通さなきゃいけないのでテストファイルに接尾辞をつける
-
-
-import os
 from datetime import date
+from pathlib import Path
 
 import pytest
 from metaboatrace.models.boat import MotorParts
@@ -23,12 +21,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.before_information_
     extract_boat_settings,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
+FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def test_extract_boat_settings() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
+    file_path = FIXTURE_DIR / "20151116_23#_1R.html"
 
     with open(file_path) as file:
         data = extract_boat_settings(file)
@@ -92,7 +89,7 @@ def test_extract_boat_settings() -> None:
 
 
 def test_extract_boat_settings_including_propeller_exchanges() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180619_04#_4R.html"))
+    file_path = FIXTURE_DIR / "20180619_04#_4R.html"
 
     with open(file_path) as file:
         data = extract_boat_settings(file)
@@ -156,7 +153,7 @@ def test_extract_boat_settings_including_propeller_exchanges() -> None:
 
 
 def test_extract_boat_settings_including_absent_racers() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_boat_settings(file)
@@ -211,14 +208,14 @@ def test_extract_boat_settings_including_absent_racers() -> None:
 
 
 def test_extract_boat_settings_data_not_found() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20200630_12#_12R.html"))
+    file_path = FIXTURE_DIR / "20200630_12#_12R.html"
 
     with open(file_path) as file, pytest.raises(DataNotFound):
         extract_boat_settings(file)
 
 
 def test_scrape_boat_settings_including_motor_parts_exchanges() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_12R.html"))
+    file_path = FIXTURE_DIR / "20151116_23#_12R.html"
 
     with open(file_path) as file:
         data = extract_boat_settings(file)

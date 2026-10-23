@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from metaboatrace.models.racer import Racer, RacerRank
 
@@ -6,12 +6,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.scraping
     extract_racers,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
+FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def test_extract_racers_from_an_entry_page() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
+    file_path = FIXTURE_DIR / "20180301_07#_8R.html"
 
     with open(file_path) as file:
         data = extract_racers(file)
@@ -57,7 +56,7 @@ def test_extract_racers_from_an_entry_page() -> None:
 
 
 def test_extract_racers_from_an_entry_page_of_a_race_including_absent() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_racers(file)

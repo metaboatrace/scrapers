@@ -1,5 +1,5 @@
-import os
 from datetime import date, datetime
+from pathlib import Path
 
 import pytz
 from metaboatrace.models.race import RaceEntry, RaceInformation
@@ -12,14 +12,13 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.scraping
     extract_racer_performances,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
+FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 jst = pytz.timezone("Asia/Tokyo")
 
 
 def test_extract_race_information_from_an_entry_page() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151016_08#_2R.html"))
+    file_path = FIXTURE_DIR / "20151016_08#_2R.html"
     with open(file_path) as file:
         data = extract_race_information(file)
 
@@ -36,7 +35,7 @@ def test_extract_race_information_from_an_entry_page() -> None:
 
 
 def test_extract_race_information_using_stabilizers_from_an_entry_page() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
+    file_path = FIXTURE_DIR / "20180301_07#_8R.html"
     with open(file_path) as file:
         data = extract_race_information(file)
 
@@ -53,7 +52,7 @@ def test_extract_race_information_using_stabilizers_from_an_entry_page() -> None
 
 
 def test_extract_course_fixed_race_information_from_an_entry_page() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_7R.html"))
+    file_path = FIXTURE_DIR / "20180301_07#_7R.html"
     with open(file_path) as file:
         data = extract_race_information(file)
 
@@ -70,7 +69,7 @@ def test_extract_course_fixed_race_information_from_an_entry_page() -> None:
 
 
 def test_extract_two_laps_race_information_from_an_entry_page() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_15#_12R.html"))
+    file_path = FIXTURE_DIR / "20180301_15#_12R.html"
     with open(file_path) as file:
         data = extract_race_information(file)
 
@@ -87,7 +86,7 @@ def test_extract_two_laps_race_information_from_an_entry_page() -> None:
 
 
 def test_extract_race_entries_from_an_entry_page() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
+    file_path = FIXTURE_DIR / "20180301_07#_8R.html"
 
     with open(file_path) as file:
         data = extract_race_entries(file)
@@ -157,7 +156,7 @@ def test_extract_race_entries_from_an_entry_page() -> None:
 
 
 def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_race_entries(file)
@@ -227,7 +226,7 @@ def test_extract_race_entries_from_an_entry_page_of_a_race_including_absent() ->
 
 
 def test_extract_racer_performances() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231102_16#_2R.html"))
+    file_path = FIXTURE_DIR / "20231102_16#_2R.html"
 
     with open(file_path) as file:
         data = extract_racer_performances(file)
