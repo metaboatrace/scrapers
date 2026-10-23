@@ -33,7 +33,7 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["."]
+packages = ["metaboatrace"]
 
 [tool.mypy]
 python_version = "3.13"
