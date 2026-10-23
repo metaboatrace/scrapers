@@ -1,7 +1,8 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import IO
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from metaboatrace.models.racer import Gender, Racer, RacerRank
 
 from metaboatrace.scrapers.official.website.v1707.decorators import no_content_handleable
@@ -22,28 +23,48 @@ class EventEntry:
     anterior_time: float
 
 
+@dataclass(frozen=True)
+class _EntryRacer:
+    """前検情報テーブルの 1 行から読めるレーサー属性。Racer / EventEntry の両方の材料になる."""
+
+    registration_number: int
+    gender: Gender
+    last_name: str
+    first_name: str
+    rank: RacerRank
+
+
+def _iter_entry_rows(soup: BeautifulSoup) -> Iterator[tuple[Tag, _EntryRacer]]:
+    """前検情報テーブルの各行と、そこから読んだレーサー属性 (両 extractor 共通部分) を返す."""
+    for row in soup.select(".table1 table tbody tr"):
+        cells = row.select("td")
+        racer_last_name, racer_first_name = split_racer_name(cells[2].get_text())
+        yield (
+            row,
+            _EntryRacer(
+                registration_number=int(cells[1].get_text()),
+                gender=Gender.FEMALE if row.select_one("i.is-lady") else Gender.MALE,
+                last_name=racer_last_name,
+                first_name=racer_first_name,
+                rank=RacerRank.from_string(cells[3].get_text().strip()),
+            ),
+        )
+
+
 @no_content_handleable
 def extract_racers(file: IO[str]) -> list[Racer]:
     soup = BeautifulSoup(file, "html.parser")
 
-    data = []
-    series_entry_rows = soup.select(".table1 table tbody tr")
-
-    for row in series_entry_rows:
-        cells = row.select("td")
-        racer_last_name, racer_first_name = split_racer_name(cells[2].get_text())
-
-        data.append(
-            Racer(
-                registration_number=int(cells[1].get_text()),
-                last_name=racer_last_name,
-                first_name=racer_first_name,
-                gender=Gender.FEMALE if row.select_one("i.is-lady") else Gender.MALE,
-                current_rating=RacerRank.from_string(cells[3].get_text().strip()),
-            )
+    return [
+        Racer(
+            registration_number=racer.registration_number,
+            last_name=racer.last_name,
+            first_name=racer.first_name,
+            gender=racer.gender,
+            current_rating=racer.rank,
         )
-
-    return data
+        for _, racer in _iter_entry_rows(soup)
+    ]
 
 
 @no_content_handleable
@@ -51,19 +72,15 @@ def extract_event_entries(file: IO[str]) -> list[EventEntry]:
     soup = BeautifulSoup(file, "html.parser")
 
     data = []
-    series_entry_rows = soup.select(".table1 table tbody tr")
-
-    for row in series_entry_rows:
+    for row, racer in _iter_entry_rows(soup):
         cells = row.select("td")
-        racer_last_name, racer_first_name = split_racer_name(cells[2].get_text())
-
         data.append(
             EventEntry(
-                racer_registration_number=int(cells[1].get_text()),
-                racer_gender=Gender.FEMALE if row.select_one("i.is-lady") else Gender.MALE,
-                racer_last_name=racer_last_name,
-                racer_first_name=racer_first_name,
-                racer_rank=RacerRank.from_string(cells[3].get_text().strip()),
+                racer_registration_number=racer.registration_number,
+                racer_gender=racer.gender,
+                racer_last_name=racer.last_name,
+                racer_first_name=racer.first_name,
+                racer_rank=racer.rank,
                 motor_number=int(cells[4].get_text().strip()),
                 quinella_rate_of_motor=float(cells[5].get_text().strip()[:-1]),
                 boat_number=int(cells[6].get_text().strip()),
