@@ -3,7 +3,7 @@ from datetime import date, datetime
 from typing import IO, Literal, cast
 
 import pytz
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
 from metaboatrace.models.race import RaceEntry, RaceInformation
 from metaboatrace.models.racer import Racer, RacerPerformance, RacerRank
@@ -20,6 +20,14 @@ from metaboatrace.scrapers.official.website.v1707.utils import (
 
 # 成績欄が未記録のときに公式サイトが入れるプレースホルダ文字
 PLACE_HOLDER_OF_UNRECORDED_DATA = "-"
+
+
+def _extract_racer_registration_number(tr: Tag) -> int:
+    """出走表の 1 行 (tr) から、写真 URL のファイル名に埋まっているレーサー登録番号を読む."""
+    racer_photo_path = get_attribute_or_raise(select_one_or_raise(tr.select("td")[1], "img"), "src")
+    if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
+        return int(m.group(1))
+    raise ScrapingError(f"racer registration number not found in photo path: {racer_photo_path!r}")
 
 
 def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int, datetime]:
@@ -105,13 +113,7 @@ def extract_race_entries(file: IO[str]) -> list[RaceEntry]:
     data = []
     for pit_number, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         tr = select_one_or_raise(row, "tr")
-        racer_photo_path = get_attribute_or_raise(
-            select_one_or_raise(tr.select("td")[1], "img"), "src"
-        )
-        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
-            racer_registration_number = int(m.group(1))
-        else:
-            raise ScrapingError
+        racer_registration_number = _extract_racer_registration_number(tr)
 
         motor_number = int(tr.select("td")[6].text.strip().split()[0])
         boat_number = int(tr.select("td")[7].text.strip().split()[0])
@@ -139,13 +141,7 @@ def extract_racers(file: IO[str]) -> list[Racer]:
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         tr = select_one_or_raise(row, "tr")
-        racer_photo_path = get_attribute_or_raise(
-            select_one_or_raise(tr.select("td")[1], "img"), "src"
-        )
-        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
-            racer_registration_number = int(m.group(1))
-        else:
-            raise ScrapingError
+        racer_registration_number = _extract_racer_registration_number(tr)
 
         racer_last_name, racer_first_name = split_racer_name(
             select_one_or_raise(tr.select("td")[2], "a").text
@@ -239,13 +235,7 @@ def extract_racer_performances(file: IO[str]) -> list[RacerPerformance]:
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         tr = select_one_or_raise(row, "tr")
-        racer_photo_path = get_attribute_or_raise(
-            select_one_or_raise(tr.select("td")[1], "img"), "src"
-        )
-        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
-            racer_registration_number = int(m.group(1))
-        else:
-            raise ScrapingError
+        racer_registration_number = _extract_racer_registration_number(tr)
 
         rate_in_all_stadium = float(tr.select("td")[4].text.strip().split()[0])
         rate_in_event_going_stadium = float(tr.select("td")[5].text.strip().split()[0])
