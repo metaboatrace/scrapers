@@ -24,7 +24,7 @@ def extract_event_holdings(file: IO[str]) -> list[EventHolding]:
         text = tbody.get_text()
         html_string = str(tbody)
 
-        if _canceled(text) and (day_text := _cancel_text(text)):
+        if day_text := _cancel_text(text):
             status = EventHoldingStatusFactory.create(day_text)
             progress_day = None
         else:
@@ -41,12 +41,6 @@ def extract_event_holdings(file: IO[str]) -> list[EventHolding]:
         )
 
     return data
-
-
-def _canceled(text: str) -> bool:
-    if re.search(r"\d+R以降中止", text):
-        return False
-    return any(ct in text for ct in CANCELED_TEXTS)
 
 
 def _cancel_text(text: str) -> str | None:
