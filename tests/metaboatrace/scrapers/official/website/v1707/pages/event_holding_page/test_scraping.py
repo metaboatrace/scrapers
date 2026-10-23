@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from metaboatrace.models.stadium import EventHolding, EventHoldingStatus, StadiumTelCode
 
@@ -6,11 +6,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.event_holding_page.scrap
     extract_event_holdings,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
+FIXTURE_DIR = Path(__file__).parent / "fixtures"
 
 
 def test_scrape_event_holdings_with_cancellations_and_delays() -> None:
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2015_08_25.html"))
+    file_path = FIXTURE_DIR / "2015_08_25.html"
     with open(file_path) as file:
         data = extract_event_holdings(file)
 
@@ -91,7 +91,7 @@ def test_scrape_event_holdings_with_cancellations_and_delays() -> None:
 
 
 def test_scrape_event_holdings_with_postponements_after_nth_race() -> None:
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2020_08_13.html"))
+    file_path = FIXTURE_DIR / "2020_08_13.html"
     with open(file_path) as file:
         data = extract_event_holdings(file)
 
@@ -193,7 +193,7 @@ def test_scrape_event_holdings_with_postponements_after_nth_race() -> None:
 
 
 def test_scrape_event_holdings_with_ongoing_races() -> None:
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2018_05_23.html"))
+    file_path = FIXTURE_DIR / "2018_05_23.html"
     with open(file_path) as file:
         data = extract_event_holdings(file)
 
@@ -294,7 +294,7 @@ def test_scrape_event_holdings_excludes_next_day_presale_preview() -> None:
     bootstrap-errors アラーム原因: 戸田は本日未開催なのに前日発売欄の
     プレビュー行から OPEN として抽出されていた）。
     """
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2026_07_06_presale_only.html"))
+    file_path = FIXTURE_DIR / "2026_07_06_presale_only.html"
     with open(file_path) as file:
         data = extract_event_holdings(file)
 
@@ -374,7 +374,7 @@ def test_scrape_event_holdings_excludes_next_day_presale_preview() -> None:
 
 
 def test_scrape_event_holdings_with_advance_sale_races() -> None:
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/pre_sale_presents.html"))
+    file_path = FIXTURE_DIR / "pre_sale_presents.html"
     with open(file_path) as file:
         data = extract_event_holdings(file)
 

@@ -1,5 +1,5 @@
-import os
 from datetime import date
+from pathlib import Path
 
 import pytest
 from metaboatrace.models.race import (
@@ -17,12 +17,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.before_information_
     extract_weather_condition,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
+FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def test_extract_start_exhibition_records() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
+    file_path = FIXTURE_DIR / "20151116_23#_1R.html"
 
     with open(file_path) as file:
         data = extract_start_exhibition_records(file)
@@ -81,7 +80,7 @@ def test_extract_start_exhibition_records() -> None:
 
 # レース欠場者とスタ展欠場者で場合分けした方がいいかと思ったがどちらも出力されるtableは同じなのでこれで網羅できたと見做す
 def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20170625_06#_10R.html"))
+    file_path = FIXTURE_DIR / "20170625_06#_10R.html"
 
     with open(file_path) as file:
         data = extract_start_exhibition_records(file)
@@ -133,7 +132,7 @@ def test_extract_start_exhibition_records_from_a_page_including_absent_racer() -
 # コースに入ったが、出遅れたケース
 # https://boatrace.jp/owpc/pc/race/beforeinfo?rno=4&jcd=06&hd=20231125
 def test_extract_start_exhibition_records_from_a_page_including_lateness_racer() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20231125_06#_4R.html"))
+    file_path = FIXTURE_DIR / "20231125_06#_4R.html"
 
     with open(file_path) as file:
         data = extract_start_exhibition_records(file)
@@ -195,7 +194,7 @@ def test_extract_start_exhibition_records_from_a_page_including_lateness_racer()
 def test_extract_start_exhibition_records_from_a_page_including_not_entered_the_course_racer() -> (
     None
 ):
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20200621_20#_9R.html"))
+    file_path = FIXTURE_DIR / "20200621_20#_9R.html"
 
     with open(file_path) as file:
         data = extract_start_exhibition_records(file)
@@ -253,7 +252,7 @@ def test_extract_start_exhibition_records_from_a_page_including_not_entered_the_
 
 
 def test_extract_circumference_exhibition_records() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
+    file_path = FIXTURE_DIR / "20151116_23#_1R.html"
 
     with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
@@ -305,13 +304,8 @@ def test_extract_circumference_exhibition_records() -> None:
 
 
 def test_extarct_circumference_exhibition_records_including_st_absent_racer() -> None:
-    file_path = os.path.normpath(
-        # 5号艇がスタ展出てない
-        os.path.join(
-            fixture_dir_path,
-            "20170625_06#_10R.html",
-        )
-    )
+    # 5号艇がスタ展出てない
+    file_path = FIXTURE_DIR / "20170625_06#_10R.html"
 
     with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
@@ -363,13 +357,8 @@ def test_extarct_circumference_exhibition_records_including_st_absent_racer() ->
 
 
 def test_extract_circumference_exhibition_records_including_race_absent_racer() -> None:
-    file_path = os.path.normpath(
-        # 1号艇が欠場
-        os.path.join(
-            fixture_dir_path,
-            "20151116_03#_11R.html",
-        )
-    )
+    # 1号艇が欠場
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
@@ -414,13 +403,8 @@ def test_extract_circumference_exhibition_records_including_race_absent_racer() 
 
 
 def test_extract_records_with_only_start_exhibition_and_canceled_circumference_exhibition() -> None:
-    file_path = os.path.normpath(
-        # 周回展示直前で中止決定
-        os.path.join(
-            fixture_dir_path,
-            "20240322_03#_8R.html",
-        )
-    )
+    # 周回展示直前で中止決定
+    file_path = FIXTURE_DIR / "20240322_03#_8R.html"
 
     with open(file_path) as file:
         data = extract_circumference_exhibition_records(file)
@@ -429,7 +413,7 @@ def test_extract_records_with_only_start_exhibition_and_canceled_circumference_e
 
 
 def test_extract_weather_condition() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151115_07#_12R.html"))
+    file_path = FIXTURE_DIR / "20151115_07#_12R.html"
 
     with open(file_path) as file:
         data = extract_weather_condition(file)
@@ -449,7 +433,7 @@ def test_extract_weather_condition() -> None:
 
 
 def test_extract_weather_condition_from_incomplete_information() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20171030_03#_1R.html"))
+    file_path = FIXTURE_DIR / "20171030_03#_1R.html"
 
     with open(file_path) as file, pytest.raises(DataNotReady):
         # 0:00現在表示があったら欠損値があるはず = 速報で天候欄が確定前の状態

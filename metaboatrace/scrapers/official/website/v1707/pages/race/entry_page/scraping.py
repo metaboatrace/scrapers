@@ -3,7 +3,7 @@ from datetime import date, datetime
 from typing import IO, Literal, cast
 
 import pytz
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
 from metaboatrace.models.race import RaceEntry, RaceInformation
 from metaboatrace.models.racer import Racer, RacerPerformance, RacerRank
@@ -15,10 +15,29 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_
 from metaboatrace.scrapers.official.website.v1707.utils import (
     get_attribute_or_raise,
     select_one_or_raise,
+    split_racer_name,
 )
 
 # 成績欄が未記録のときに公式サイトが入れるプレースホルダ文字
 PLACE_HOLDER_OF_UNRECORDED_DATA = "-"
+
+
+def _extract_racer_registration_number(tr: Tag) -> int:
+    """出走表の 1 行 (tr) から、写真 URL のファイル名に埋まっているレーサー登録番号を読む."""
+    racer_photo_path = get_attribute_or_raise(select_one_or_raise(tr.select("td")[1], "img"), "src")
+    if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
+        return int(m.group(1))
+    raise ScrapingError(f"racer registration number not found in photo path: {racer_photo_path!r}")
+
+
+def _parse_performance_cell(td: Tag) -> tuple[int, float | None, float | None]:
+    """モーター / ボート欄のセルから (番号, 2連率, 3連率) を読む。未記録の率は None."""
+    data_strings = td.text.strip().split()
+    return (
+        int(data_strings[0]),
+        float(data_strings[1]) if data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA else None,
+        float(data_strings[2]) if data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA else None,
+    )
 
 
 def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int, datetime]:
@@ -104,13 +123,7 @@ def extract_race_entries(file: IO[str]) -> list[RaceEntry]:
     data = []
     for pit_number, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         tr = select_one_or_raise(row, "tr")
-        racer_photo_path = get_attribute_or_raise(
-            select_one_or_raise(tr.select("td")[1], "img"), "src"
-        )
-        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
-            racer_registration_number = int(m.group(1))
-        else:
-            raise ScrapingError
+        racer_registration_number = _extract_racer_registration_number(tr)
 
         motor_number = int(tr.select("td")[6].text.strip().split()[0])
         boat_number = int(tr.select("td")[7].text.strip().split()[0])
@@ -138,19 +151,11 @@ def extract_racers(file: IO[str]) -> list[Racer]:
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         tr = select_one_or_raise(row, "tr")
-        racer_photo_path = get_attribute_or_raise(
-            select_one_or_raise(tr.select("td")[1], "img"), "src"
-        )
-        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
-            racer_registration_number = int(m.group(1))
-        else:
-            raise ScrapingError
+        racer_registration_number = _extract_racer_registration_number(tr)
 
-        racer_full_name = select_one_or_raise(tr.select("td")[2], "a").text.strip()
-        # 区切りスペースが落ちている場合は姓に全体、名は空文字 (profile_page 側と同じ扱い).
-        name_parts = re.split(r"[　 ]+", racer_full_name, maxsplit=1)
-        racer_last_name = name_parts[0]
-        racer_first_name = name_parts[1] if len(name_parts) > 1 else ""
+        racer_last_name, racer_first_name = split_racer_name(
+            select_one_or_raise(tr.select("td")[2], "a").text
+        )
 
         racer_rank = RacerRank.from_string(
             select_one_or_raise(tr.select("td")[2], "span").text.strip()
@@ -176,13 +181,8 @@ def extract_boat_performances(file: IO[str]) -> list[BoatPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        data_strings = select_one_or_raise(row, "tr").select("td")[7].text.strip().split()
-        number = int(data_strings[0])
-        quinella_rate = (
-            float(data_strings[1]) if data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA else None
-        )
-        trio_rate = (
-            float(data_strings[2]) if data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA else None
+        number, quinella_rate, trio_rate = _parse_performance_cell(
+            select_one_or_raise(row, "tr").select("td")[7]
         )
 
         data.append(
@@ -205,17 +205,8 @@ def extract_motor_performances(file: IO[str]) -> list[MotorPerformance]:
 
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
-        motor_data_strings = select_one_or_raise(row, "tr").select("td")[6].text.strip().split()
-        number = int(motor_data_strings[0])
-        quinella_rate = (
-            float(motor_data_strings[1])
-            if motor_data_strings[1] != PLACE_HOLDER_OF_UNRECORDED_DATA
-            else None
-        )
-        trio_rate = (
-            float(motor_data_strings[2])
-            if motor_data_strings[2] != PLACE_HOLDER_OF_UNRECORDED_DATA
-            else None
+        number, quinella_rate, trio_rate = _parse_performance_cell(
+            select_one_or_raise(row, "tr").select("td")[6]
         )
 
         data.append(
@@ -240,13 +231,7 @@ def extract_racer_performances(file: IO[str]) -> list[RacerPerformance]:
     data = []
     for _, row in enumerate(soup.select(".table1")[-1].select("tbody"), 1):
         tr = select_one_or_raise(row, "tr")
-        racer_photo_path = get_attribute_or_raise(
-            select_one_or_raise(tr.select("td")[1], "img"), "src"
-        )
-        if m := re.search(r"(\d+)\.jpe?g$", racer_photo_path):
-            racer_registration_number = int(m.group(1))
-        else:
-            raise ScrapingError
+        racer_registration_number = _extract_racer_registration_number(tr)
 
         rate_in_all_stadium = float(tr.select("td")[4].text.strip().split()[0])
         rate_in_event_going_stadium = float(tr.select("td")[5].text.strip().split()[0])
