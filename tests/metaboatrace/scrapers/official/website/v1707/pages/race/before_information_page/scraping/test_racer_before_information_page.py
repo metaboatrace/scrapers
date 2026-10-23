@@ -1,5 +1,5 @@
-import os
 from datetime import date
+from pathlib import Path
 
 from metaboatrace.models.racer import RacerCondition
 
@@ -7,12 +7,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.before_information_
     extract_racer_conditions,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
+FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def test_extract_racer_conditions() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_23#_1R.html"))
+    file_path = FIXTURE_DIR / "20151116_23#_1R.html"
 
     with open(file_path) as file:
         data = extract_racer_conditions(file)
@@ -58,13 +57,8 @@ def test_extract_racer_conditions() -> None:
 
 
 def test_extract_racer_conditions_including_race_absent_racer() -> None:
-    file_path = os.path.normpath(
-        # 1号艇が欠場
-        os.path.join(
-            fixture_dir_path,
-            "20151116_03#_11R.html",
-        )
-    )
+    # 1号艇が欠場
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_racer_conditions(file)

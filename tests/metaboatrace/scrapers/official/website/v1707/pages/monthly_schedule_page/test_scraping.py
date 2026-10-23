@@ -1,5 +1,5 @@
-import os
 from datetime import date
+from pathlib import Path
 
 import pytest
 from metaboatrace.models.stadium import Event, SeriesGrade, SeriesKind, StadiumTelCode
@@ -9,11 +9,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.monthly_schedule_page.sc
     extract_events,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
+FIXTURE_DIR = Path(__file__).parent / "fixtures"
 
 
 def test_extract_events_from_a_monthly_schedule_page() -> None:
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2015_11.html"))
+    file_path = FIXTURE_DIR / "2015_11.html"
     with open(file_path) as file:
         data = extract_events(file)
 
@@ -95,16 +95,14 @@ def test_extract_events_from_a_monthly_schedule_page() -> None:
 
 
 def test_extract_events_from_a_monthly_schedule_page_for_specified_stadium() -> None:
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/2016_03_14#.html"))
+    file_path = FIXTURE_DIR / "2016_03_14#.html"
 
     with open(file_path) as file, pytest.raises(ScrapingError):
         extract_events(file)
 
 
 def test_extract_events_from_a_no_contents_page() -> None:
-    file_path = os.path.normpath(
-        os.path.join(os.path.join(base_path, "./fixtures/data_not_found.html"))
-    )
+    file_path = FIXTURE_DIR / "data_not_found.html"
 
     with open(file_path) as file, pytest.raises(DataNotFound):
         extract_events(file)

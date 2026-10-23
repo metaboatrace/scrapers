@@ -1,5 +1,5 @@
-import os
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from metaboatrace.models.race import Weather
@@ -9,7 +9,7 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.common import (
     extract_weather_condition_base_data,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
+FIXTURE_DIR = Path(__file__).parent / "fixtures"
 
 
 def _weather_html(wind_direction_class: str) -> str:
@@ -64,7 +64,7 @@ def _weather_html(wind_direction_class: str) -> str:
 
 
 def test_extract_weather_condition_base_data_normal():
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/weather_normal.html"))
+    file_path = FIXTURE_DIR / "weather_normal.html"
     with open(file_path) as file:
         data = extract_weather_condition_base_data(file)
 
@@ -79,7 +79,7 @@ def test_extract_weather_condition_base_data_normal():
 
 
 def test_extract_weather_condition_base_data_no_wind():
-    file_path = os.path.normpath(os.path.join(base_path, "./fixtures/weather_no_wind.html"))
+    file_path = FIXTURE_DIR / "weather_no_wind.html"
     with open(file_path) as file:
         data = extract_weather_condition_base_data(file)
 
@@ -94,9 +94,7 @@ def test_extract_weather_condition_base_data_no_wind():
 
 
 def test_extract_weather_condition_base_data_empty_wavelength():
-    file_path = os.path.normpath(
-        os.path.join(base_path, "./fixtures/weather_empty_wavelength.html")
-    )
+    file_path = FIXTURE_DIR / "weather_empty_wavelength.html"
     with open(file_path) as file:
         data = extract_weather_condition_base_data(file)
 

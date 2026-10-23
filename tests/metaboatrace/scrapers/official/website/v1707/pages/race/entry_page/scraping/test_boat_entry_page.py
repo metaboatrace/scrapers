@@ -1,5 +1,5 @@
-import os
 from datetime import date
+from pathlib import Path
 
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
 from metaboatrace.models.stadium import StadiumTelCode
@@ -9,12 +9,11 @@ from metaboatrace.scrapers.official.website.v1707.pages.race.entry_page.scraping
     extract_motor_performances,
 )
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-fixture_dir_path = os.path.join(base_path, os.pardir, "fixtures")
+FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def test_extract_boat_performances() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
+    file_path = FIXTURE_DIR / "20180301_07#_8R.html"
 
     with open(file_path) as file:
         data = extract_boat_performances(file)
@@ -66,7 +65,7 @@ def test_extract_boat_performances() -> None:
 
 
 def test_extract_boat_performances_including_missing_values() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_boat_performances(file)
@@ -118,7 +117,7 @@ def test_extract_boat_performances_including_missing_values() -> None:
 
 
 def test_extract_motor_performances() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20180301_07#_8R.html"))
+    file_path = FIXTURE_DIR / "20180301_07#_8R.html"
 
     with open(file_path) as file:
         data = extract_motor_performances(file)
@@ -170,7 +169,7 @@ def test_extract_motor_performances() -> None:
 
 
 def test_extract_motor_performances_including_missing_values() -> None:
-    file_path = os.path.normpath(os.path.join(fixture_dir_path, "20151116_03#_11R.html"))
+    file_path = FIXTURE_DIR / "20151116_03#_11R.html"
 
     with open(file_path) as file:
         data = extract_motor_performances(file)
