@@ -2,7 +2,6 @@ import re
 from datetime import date, datetime
 from typing import IO, Literal, cast
 
-import pytz
 from bs4 import BeautifulSoup, Tag
 from metaboatrace.models.boat import BoatPerformance, MotorPerformance
 from metaboatrace.models.race import RaceEntry, RaceInformation
@@ -14,6 +13,7 @@ from metaboatrace.scrapers.official.website.v1707.factories import RaceLapsFacto
 from metaboatrace.scrapers.official.website.v1707.pages.race.utils import parse_race_key_attributes
 from metaboatrace.scrapers.official.website.v1707.utils import (
     get_attribute_or_raise,
+    jst_wall_clock_to_utc,
     select_one_or_raise,
     split_racer_name,
 )
@@ -48,23 +48,11 @@ def _extract_deadlines(soup: BeautifulSoup, race_holding_date: date) -> dict[int
     deadline_table = select_one_or_raise(soup, ".table1")
     deadline_cells = deadline_table.select("tbody tr")[-1].select("td")
 
-    jst = pytz.timezone("Asia/Tokyo")
     deadlines: dict[int, datetime] = {}
     # 先頭セルは見出し ("締切予定時刻") なので 2 番目以降が 1R 〜 12R に対応する
     for race_number, cell in enumerate(deadline_cells[1:], start=1):
         hour, minute = [int(t) for t in cell.get_text(strip=True).split(":")]
-        # pytz は naive な datetime を localize() するのが正しい使い方で、
-        # datetime(..., tzinfo=jst) は LMT になり誤った offset になるため localize する
-        deadline_at_jst = jst.localize(
-            datetime(  # noqa: DTZ001
-                race_holding_date.year,
-                race_holding_date.month,
-                race_holding_date.day,
-                hour,
-                minute,
-            )
-        )
-        deadlines[race_number] = deadline_at_jst.astimezone(pytz.utc)
+        deadlines[race_number] = jst_wall_clock_to_utc(race_holding_date, hour, minute)
 
     return deadlines
 

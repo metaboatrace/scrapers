@@ -1,7 +1,8 @@
 import re
 import urllib.parse
-from datetime import date
+from datetime import date, datetime
 
+import pytz
 from bs4 import BeautifulSoup, Tag
 from metaboatrace.models.stadium import StadiumTelCode
 
@@ -34,6 +35,20 @@ def build_race_page_url(
         }
     )
     return f"{BASE_URL}/owpc/pc/race/{path}?{query}"
+
+
+def jst_wall_clock_to_utc(civil_date: date, hour: int, minute: int) -> datetime:
+    """公式サイトが表示する JST の時刻 (HH:MM) を、その暦日の UTC aware datetime に変換する。
+
+    公式サイトのページは時刻を「開催日の HH:MM」としてしか表示しないので、暦日は
+    呼び出し側がページの開催日から与える。
+    """
+    # pytz は naive な datetime を localize() するのが正しい使い方で、
+    # datetime(..., tzinfo=jst) は LMT になり誤った offset になるため localize する
+    at_jst = pytz.timezone("Asia/Tokyo").localize(
+        datetime(civil_date.year, civil_date.month, civil_date.day, hour, minute)  # noqa: DTZ001
+    )
+    return at_jst.astimezone(pytz.utc)
 
 
 def select_one_or_raise(soup: BeautifulSoup | Tag, selector: str) -> Tag:
